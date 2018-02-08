@@ -1,0 +1,18 @@
+html{
+	font-family: 'Roboto', sans-serif;
+}
+
+.testimg{
+	display:inline-block;
+	height: 84px;
+}
+
+.test{
+	display:inline-block;
+	font-size: 40px;
+	vertical-align: center;
+	vertical-align: top;
+	line-height: 40px;
+	margin-top: 20px;
+	margin-left: 20px;
+}
