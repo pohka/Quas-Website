@@ -38,12 +38,6 @@ h1{
 	font-size: 30px;
 }
 
-h2{
-	font-size: 40px;
-	margin: 40px auto;
-	margin-top: 80px;
-}
-
 
 /*----------- NAVBAR ---------*/
 nav{
@@ -141,6 +135,12 @@ nav a:hover{
 }
 
 /*----------- BODY ---------*/
+
+.section-heading{
+	font-size: 40px;
+	margin: 40px auto;
+	margin-top: 80px;
+}
 
 .landing-top{
 	display: flex;
