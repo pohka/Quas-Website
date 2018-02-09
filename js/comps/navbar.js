@@ -24,6 +24,11 @@ class Navbar{
         <div id="hex1" class="hexagon-wrapper">
           <span id="color1" class="hexagon"></span>
         </div>
+        <div class="nav-right">
+          <a href="https://github.com/pohka/Quas" target="_blank">
+            <img src="/img/github-logo.png">
+          </a>
+        </div>
       </nav>
     </quas>
   }

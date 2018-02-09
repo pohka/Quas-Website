@@ -4,12 +4,15 @@
 	--border: #ccc;
 	--shadow: #ddd;
 	--placeholder: #bbb;
+	--bg: #fff;
 }
 html{
 	font-family: 'Roboto', sans-serif;
 	box-sizing: border-box;
 	overflow-y: scroll;
 	overflow-x: hidden;
+	padding-top: 60px;
+	background: var(--bg);
 }
 
 *, *:before, *:after {
@@ -19,6 +22,7 @@ html{
 body{
 	margin: 0;
 	padding-bottom: 200px;
+	background: var(--bg);
 }
 
 input{
@@ -44,6 +48,10 @@ nav{
 	height: 60px;
 	display: flex;
 	box-shadow: 0px 0px 4px var(--shadow);
+	position: fixed;
+	width: 100%;
+	background: var(--bg);
+	top: 0;
 }
 
 nav a, nav a:visited, nav a:active{
@@ -132,6 +140,22 @@ nav a:hover{
 	width: 28px;
 	transform: scale(0.6,1) rotate(225deg);
   content: '';
+}
+
+.nav-right{
+	margin-left: auto;
+}
+
+.nav-right img{
+	width: 30px;
+}
+
+.nav-right a{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 15px;
+	min-width: 100px;
 }
 
 /*----------- BODY ---------*/
