@@ -12,6 +12,7 @@ class Quas{
     }
   }
 
+  //render with a rule, prepend, selector and before selector
   static renderRule(comp, parent, target){
     if(parent.constructor === String){
       parent = document.querySelector(parent);

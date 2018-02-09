@@ -2,23 +2,35 @@ html{
 	font-family: 'Roboto', sans-serif;
 }
 
-.testimg{
-	display:inline-block;
-	height: 84px;
-}
-
-.test{
-	display:inline-block;
-	font-size: 40px;
-	vertical-align: center;
-	vertical-align: top;
-	line-height: 40px;
-	margin-top: 20px;
-	margin-left: 20px;
+nav{
+	height: 50px;
 }
 
 .nav-item{
 	display: inline-block;
 	width: 200px;
+	height: 100%;
 	font-size: 25px;
+}
+
+.nav-logo{
+	font-size: 25px;
+	display: inline-block;
+}
+
+.nav-logo img{
+	height: 100%;
+}
+
+.nav-logo span{
+	display: inline-block;
+	vertical-align: top;
+	margin-top: 15px;
+	line-height: 25px;
+	margin-left: 10px;
+}
+
+.nav-con{
+	display: inline-block;
+	height: 100%;
 }

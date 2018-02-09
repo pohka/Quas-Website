@@ -7,6 +7,9 @@ Quas.filesToBundle = 0; //count of the number of files being bundled
 Quas.bundleData = []; //string data of each file
 Quas.bundle = "";
 
+//tags that require no closing tag
+Quas.noClosingTag = ["img", "source", "br", "hr", "area", "track", "link", "col", "meta", "base", "embed", "param", "input"];
+
 Quas.devBuild = function(config){
   Quas.isDevBuild = true;
   Quas.ajax({
@@ -117,7 +120,10 @@ Quas.jsArr = function(arr, tab){
     else if(i == 1){
       str += "{"
       for(let key in arr[i]){
-            str += "\"" + key + "\":" + arr[i][key] + ",";
+        if(arr[i][key] === ""){
+          arr[i][key] = "\"\"";
+        }
+        str += "\"" + key + "\":" + arr[i][key] + ",";
       }
       //remove last comma, only if this element has attributes
       if(Object.keys(arr[i]).length>0){
@@ -209,6 +215,8 @@ Quas.convertToQuasDOMInfo = function(html){
       //split by space but ignore spaces in quotes
       let tagInfo = tagContent.split(/ +(?=(?:(?:[^"]*"){2})*[^"]*$)/g);
 
+      console.log(tagInfo[0]);
+
       //this is a closing tag
       if(tagInfo[0][0] === "/"){
         depth--;
@@ -257,7 +265,9 @@ Quas.convertToQuasDOMInfo = function(html){
             }
           }
         }
-        depth++;
+        if(Quas.noClosingTag.indexOf(tagInfo[0]) == -1){
+          depth++;
+        }
       }
     }
     //text between tags
