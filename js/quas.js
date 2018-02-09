@@ -1,18 +1,3 @@
-class Comp{
-  //find an element with a matching selector, within this components DOM element
-  findChild(s){
-    return this.el.querySelector(s);
-  }
-
-  //call this function for each child specified for the selector
-  eachChild(s, func){
-    [].forEach.call(this.el.querySelectorAll(s), func);
-  }
-
-  render(){}
-}
-
-
 class Quas{
   //renders a component to a target HTML DOM element
   static render(comp, target){
@@ -68,7 +53,7 @@ class Quas{
       let prefix = a.substr(0,2);
       //custom attribute
       if(prefix === "q-"){
-        Quas.evalCustomAttr(el, a, attrs[a]);
+        Quas.evalCustomAttr(comp, el, a, attrs[a]);
         //don't set custom attribute in DOM if value is an array
       //  if(!Array.isArray(attrs[a])){
       //    el.setAttribute(a, attrs[a]);
@@ -176,7 +161,7 @@ class Quas{
   }
 
   //evaluates a custom attribute
-  static evalCustomAttr(parent, key, data){
+  static evalCustomAttr(comp, parent, key, data){
     let params = key.split("-");
 
     let command = params[1];
@@ -199,21 +184,31 @@ class Quas{
         parent.appendChild(el);
       }
     }
-    else if(command === "for"){
-      if(params[0] === "arr"){
-        for(let o in data[0]){
-          let domInfo = data[1](data[0][o]);
-          //let comp = new Comp();
+    else if(command === "bind"){
+        for(let o in data[1]){
+          let domInfo = data[0](data[1][o]);
           let newEl = Quas.createEl(domInfo, comp);
-          console.log(newEl);
-          //todo get comp for this because it needs access to the props
           parent.appendChild(newEl);
         }
-      }
     }
     else{
-      Quas.customAttrs[command](parent, params, data);
+      Quas.customAttrs[command](comp, parent, params, data);
     }
+  }
+
+
+  static remove(comp){
+    comp.el.parentNode.removeChild(comp.el);
+  }
+
+  //find an element with a matching selector, within this components DOM element
+  static findChild(comp, s){
+    return comp.el.querySelector(s);
+  }
+
+  //call this function for each child specified for the selector
+  static eachChild(comp, s, func){
+    [].forEach.call(comp.el.querySelectorAll(s), func);
   }
 
   /**

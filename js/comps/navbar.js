@@ -1,20 +1,18 @@
-class Navbar extends Comp{
+class Navbar{
   constructor(items){
-    super();
     this.navItems = items;
   }
 
-  static item(text, link){
+  static item(items){
     <quas>
-      <div class="nav-item" href=link>{text}</div>
+      <div class="nav-item" href=items.action>{items.text}</div>
     </quas>
   }
 
   render(){
     <quas>
       <nav>
-        <div q-for-arr=[this.navItems,Navbar.item] class="nav-con">
-          {Navbar.item("test3", "abc")}
+        <div q-bind=[Navbar.item,this.navItems] class="nav-con">
         </div>
       </nav>
     </quas>
