@@ -1,21 +1,54 @@
+:root{
+	--text: #000;
+	--hover: #fafafa;
+	--border: #ccc;
+	--shadow: #ddd;
+	--placeholder: #bbb;
+}
 html{
 	font-family: 'Roboto', sans-serif;
+	box-sizing: border-box;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+body{
+	margin: 0;
+}
+
+input{
+	outline: none;
+}
+
+input::placeholder{
+	color: var(--placeholder);
 }
 
 nav{
-	height: 50px;
+	height: 60px;
+	display: flex;
+	box-shadow: 0px 0px 4px var(--shadow);
 }
 
-.nav-item{
-	display: inline-block;
-	width: 200px;
-	height: 100%;
-	font-size: 25px;
+nav a, nav a:visited, nav a:active{
+	text-decoration: none;
+	color: var(--text);
+}
+
+nav a:hover{
+	background: var(--hover);
 }
 
 .nav-logo{
-	font-size: 25px;
-	display: inline-block;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-size: 20px;
+	padding: 14px;
+	height: 100%;
+	width: 200px;
 }
 
 .nav-logo img{
@@ -23,14 +56,66 @@ nav{
 }
 
 .nav-logo span{
-	display: inline-block;
-	vertical-align: top;
-	margin-top: 15px;
-	line-height: 25px;
+	line-height: 40px;
 	margin-left: 10px;
 }
 
 .nav-con{
-	display: inline-block;
+	display: flex;
 	height: 100%;
+}
+
+.nav-item{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 200px;
+	height: 100%;
+	font-size: 20px;
+	text-decoration: none;
+	color: var(--text);
+	padding: 0 20px;
+}
+
+.search-bar-con{
+	margin: 10px 30px;
+	border: 1px solid var(--border);
+	border-left:none;
+	border-right: none;
+}
+
+.search-bar{
+	font-size: 16px;
+	line-height: 38px;
+	width: 300px;
+	padding: 0px 10px;
+	border:none;
+}
+
+.search-bar-con:after {
+  position: absolute;
+  top: 16;
+	margin-left: -14px;
+	border:1px solid var(--border);
+	box-shadow: 1px -1px 1px var(--shadow);
+	border-left: none;
+	border-bottom: none;
+  height: 28px;
+	width: 28px;
+	transform: scale(0.6,1) rotate(45deg);
+  content: '';
+}
+
+.search-bar-con:before {
+  position: absolute;
+  top: 16;
+	margin-left: -14px;
+	border:1px solid var(--border);
+	box-shadow: 1px -1px 1px var(--shadow);
+	border-left: none;
+	border-bottom: none;
+  height: 28px;
+	width: 28px;
+	transform: scale(0.6,1) rotate(225deg);
+  content: '';
 }

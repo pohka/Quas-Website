@@ -1,0 +1,5 @@
+* create functions for which rerender the component:
+  * setstate
+  * set prop
+* props for string values in attributes
+* \{ escape for using curly brackets in text content

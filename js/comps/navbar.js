@@ -5,20 +5,25 @@ class Navbar{
 
   static genItems(items){
     <quas>
-      <div class="nav-item" href=items.action>{items.text}</div>
+      <a class="nav-item" href=items.action>{items.text}</div>
     </quas>
   }
 
   render(){
     <quas>
       <nav>
-        <div class="nav-logo" href="/">
+        <a class="nav-logo" href="/">
           <img src="/img/logo_sm.png">
           <span>Quas.js</span>
         </div>
         <div q-bind=[Navbar.genItems,this.navItems] class="nav-con">
         </div>
-        <input id="checkBox" type="checkbox" checked>
+        <div class="search-bar-con">
+          <input type="text" class="search-bar" autocomplete="off" spellcheck="false" placeholder="Search API">
+        </div>
+        <div id="hex1" class="hexagon-wrapper">
+          <span id="color1" class="hexagon"></span>
+        </div>
       </nav>
     </quas>
   }

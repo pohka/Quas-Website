@@ -215,8 +215,6 @@ Quas.convertToQuasDOMInfo = function(html){
       //split by space but ignore spaces in quotes
       let tagInfo = tagContent.split(/ +(?=(?:(?:[^"]*"){2})*[^"]*$)/g);
 
-      console.log(tagInfo[0]);
-
       //this is a closing tag
       if(tagInfo[0][0] === "/"){
         depth--;
