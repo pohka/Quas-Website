@@ -16,3 +16,9 @@ html{
 	margin-top: 20px;
 	margin-left: 20px;
 }
+
+.nav-item{
+	display: inline-block;
+	width: 200px;
+	font-size: 25px;
+}

@@ -3,7 +3,7 @@ class Navbar{
     this.navItems = items;
   }
 
-  static item(items){
+  static genItems(items){
     <quas>
       <div class="nav-item" href=items.action>{items.text}</div>
     </quas>
@@ -12,7 +12,7 @@ class Navbar{
   render(){
     <quas>
       <nav>
-        <div q-bind=[Navbar.item,this.navItems] class="nav-con">
+        <div q-bind=[Navbar.genItems,this.navItems] class="nav-con">
         </div>
       </nav>
     </quas>

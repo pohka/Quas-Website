@@ -1,13 +1,49 @@
 class Quas{
   //renders a component to a target HTML DOM element
-  static render(comp, target){
-    if(target.constructor === String){
-      target  = document.querySelector(target);
+  static render(comp, parent){
+    if(parent.constructor === String){
+      parent = document.querySelector(parent);
     }
-    if(target!==null){
+    if(parent !== null){
       let info = comp.render();
       let el = Quas.createEl(info, comp);
-      target.appendChild(el);
+      parent.appendChild(el);
+      comp.el = el;
+    }
+  }
+
+  static renderRule(comp, parent, target){
+    if(parent.constructor === String){
+      parent = document.querySelector(parent);
+    }
+    if(parent !== null){
+      let info = comp.render();
+      let el = Quas.createEl(info, comp);
+      if(target === undefined){
+        parent.appendChild(el);
+      }
+      else if(target === "prepend"){
+        parent.insertBefore(el, parent.childNodes[0]);
+      }
+      else{
+        let arr = target.split(" ");
+        let sel = arr[0];
+        let before = (arr[1]!==undefined && arr[1]==="before");
+        let t = parent.querySelector(sel);
+
+        //after
+        if(!before){
+          t = t.nextSibling;
+        }
+
+        if(t !== null){
+          parent.insertBefore(el, t);
+        }
+        else{
+          parent.appendChild(el);
+        }
+      }
+
       comp.el = el;
     }
   }
