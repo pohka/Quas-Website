@@ -3,3 +3,4 @@
   * set prop
 * props for string values in attributes
 * \{ escape for using curly brackets in text content
+* all the component doesnt have to be in a single container

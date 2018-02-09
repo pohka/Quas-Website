@@ -1,2 +1,3 @@
 /js/comps/navbar.js
+/js/comps/card.js
 /js/quas-site.js
