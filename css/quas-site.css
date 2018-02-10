@@ -5,6 +5,7 @@
 	--shadow: #ddd;
 	--placeholder: #bbb;
 	--bg: #fff;
+	--pri: #06b5e0;
 }
 html{
 	font-family: 'Roboto', sans-serif;
@@ -25,7 +26,7 @@ body{
 	background: var(--bg);
 }
 
-input{
+input, textarea{
 	outline: none;
 }
 
@@ -40,6 +41,17 @@ h1, h2, h3{
 
 h1{
 	font-size: 30px;
+}
+
+pre{
+	padding: 0px 30px;
+
+	min-height: 100%;
+	overflow: auto;
+}
+
+code{
+
 }
 
 
@@ -160,6 +172,11 @@ nav a:hover{
 
 /*----------- BODY ---------*/
 
+.container{
+	width: 1000px;
+	margin: 0 auto;
+}
+
 .section-heading{
 	font-size: 40px;
 	margin: 40px auto;
@@ -219,4 +236,49 @@ nav a:hover{
 
 .card h3{
 	padding-top: 30px;
+}
+
+/*-------------- PLAYGROUND ---------*/
+.playground
+{
+	height: 400px;
+	width: 100%;
+	display: flex;
+
+}
+
+.playground-titles{
+	display:flex;
+}
+
+.playground-titles div{
+	width: 50%;
+	padding: 12px 20px;
+	font-size: 16px;
+	background: var(--hover);
+	border-left: 1px solid var(--pri);
+	border-top: 1px solid var(--pri);
+}
+
+.playground-title-out{
+	border-right: 1px solid var(--pri);
+}
+
+.playground-input, .playground-output{
+	width: 50%;
+	height: 100%;
+	border: 1px solid var(--pri);
+}
+
+.playground-input textarea{
+	height: 100%;
+	width: 100%;
+	resize: none;
+	font-size: 16px;
+	padding: 6px;
+	border: none;
+}
+
+.playground-input{
+	border-right: none;
 }
