@@ -5,11 +5,16 @@ For production use a static build and remember to remove links to this script
 
 Quas.filesToBundle = 0; //count of the number of files being bundled
 Quas.bundleData = []; //string data of each file
-Quas.bundle = "";
+Quas.bundle = ""; //the current bundle as a string
 
 //tags that require no closing tag
 Quas.noClosingTag = ["img", "source", "br", "hr", "area", "track", "link", "col", "meta", "base", "embed", "param", "input"];
 
+/**
+  Creates a development build using a config file
+
+  @param {String} configPath - path to the config file
+*/
 Quas.devBuild = function(config){
   Quas.isDevBuild = true;
   Quas.ajax({
@@ -42,7 +47,9 @@ Quas.devBuild = function(config){
   });
 }
 
-//concatates each file and evaluates it
+/**
+  Concatates each file and evaluates it
+*/
 Quas.evalDevBundle = function(){
   let bundle = "";
   for(let i=0; i<Quas.bundleData.length; i++){
@@ -51,11 +58,19 @@ Quas.evalDevBundle = function(){
 
   bundle = Quas.parseBundle(bundle);
   Quas.bundle = bundle;
-  bundle += "\nif(typeof start==='function'){start();}";
+  bundle += "\nif(typeof startQuas==='function'){startQuas();}";
   eval(bundle);
 }
 
-//returns the javascript string for the bundle with Quas DOM info
+/**
+  Returns the bundle as as javascript valid code
+  The returned string will have all the HTML syntax transpiled to a render info array
+  which is valid JavaScript syntax
+
+  @param {Array} bundle
+
+  @return {String}
+*/
 Quas.parseBundle = function(bundle){
   let lines = bundle.split("\n");
   let open = -1;
@@ -78,7 +93,7 @@ Quas.parseBundle = function(bundle){
       let closeIndex = lines[i].indexOf("</"+tagName+">");
       if(closeIndex > -1){
         html += lines[i].substr(0, closeIndex);
-        let info = Quas.convertToQuasDOMInfo(html);
+        let info = Quas.convertToRenderInfo(html);
         lines[i] = "\treturn " + info + ";" + lines[i].substr(closeIndex + tagName.length + 3);
         open = -1;
         html = "";
@@ -95,7 +110,14 @@ Quas.parseBundle = function(bundle){
   return bundle;
 }
 
-//returns the array as a javascript valid array with indent
+/**
+  Returns an array as a javascript valid styntax for the array with indentation
+
+  @param {Array} array
+  @param {Number} indentCount
+
+  @return {String}
+*/
 Quas.jsArr = function(arr, tab){
   let str = "";
   if(tab === undefined){
@@ -185,8 +207,15 @@ Quas.jsArr = function(arr, tab){
   return str;
 }
 
-//convert HTML for Quas DOM info
-Quas.convertToQuasDOMInfo = function(html){
+/**
+  Convert HTML syntax to render info as a string
+  with JavaScript valid syntax for an array
+
+  @param {String} htmlString
+
+  @return {Sting}
+*/
+Quas.convertToRenderInfo = function(html){
   let info;
   let depth = 0;
   let tagStart = -1;
@@ -278,7 +307,13 @@ Quas.convertToQuasDOMInfo = function(html){
   return Quas.jsArr(info);
 }
 
-//parses props
+/**
+  Parses the props in the HTML syntax
+
+  @param {String} htmlString
+
+  @param {String}
+*/
 Quas.parseProps = function(str){
   let matches =  str.match(/\{.*?\}/g);
   for(let i in matches){
@@ -295,7 +330,11 @@ Quas.parseProps = function(str){
   return str;
 }
 
-//returns a string with the excess white spacing removed
+/**
+  Returns a string with the excess white spacing removed
+
+  @return {String}
+*/
 String.prototype.trimExcess = function(){
   let end = "";
   let start = "";
@@ -313,7 +352,21 @@ String.prototype.trimExcess = function(){
   return start + removedSpace + end;
 }
 
-//downloads the bundle, set minify to true to use minify, default filename is bundle
+/**
+  Downloads the current bundle.
+  You can call this from you browsers console examples:
+    Quas.bundle();
+    Quas.bundle(false, "my-bundle-name");
+
+  set useMinfier to true to use minifier
+  fileName will set the name of the file being downloaded
+
+  Note: The minifier is experimental and it is recommented that
+  you use something like UglifyJS, minfier.org or Closure
+
+  @param {Boolean} useMinifier - (optional)
+  @param {String} fileName - (optional) default value is bundle
+*/
 Quas.build = function(minify, filename){
   var element = document.createElement('a');
   var text = Quas.bundle;
@@ -336,6 +389,13 @@ Quas.build = function(minify, filename){
  document.body.removeChild(element);
 }
 
+/**
+  This will minify a JavaScript string
+
+  @param {String}
+
+  @return {String}
+*/
 Quas.minify = function(str){
   let lines = str.split("\n");
 
@@ -385,7 +445,7 @@ Quas.minify = function(str){
   str = str.replace(/(\[\s)(?=(?:[^"]|"[^"]*")*$)/g,'[');
   str = str.replace(/(]\s)(?=(?:[^"]|"[^"]*")*$)/g,']');
   str = str.replace(/(\s=\s)(?=(?:[^"]|"[^"]*")*$)/g,'=');
-  str+="\nif(typeof start==='function'){start();}";
+  str+="\nif(typeof startQuas==='function'){startQuas();}";
 
   return str;
 }

@@ -1,5 +1,6 @@
-class Card{
+class Card extends Component{
   constructor(img, title, text){
+    super();
     this.img = img;
     this.title = title;
     this.text = text;

@@ -1,5 +1,6 @@
-class Navbar{
+class Navbar extends Component{
   constructor(items){
+    super();
     this.navItems = items;
   }
 

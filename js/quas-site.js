@@ -1,4 +1,4 @@
-function start(){
+function startQuas(){
   let nav = new Navbar([
     {text : "Docs", action:"/docs"},
     {text : "Examples", action:"/"},
@@ -21,6 +21,8 @@ function start(){
   Quas.render(card5, "#card-row-2");
 
   let card6 = new Card("/img/refresh-page-option.png", "Cookies", "what to put here");
+
   Quas.render(card6, "#card-row-2");
-  //Quas.remove(nav);
+  card6.setProp("title", "hello");
+  card6.remove();
 }
