@@ -601,12 +601,12 @@ class Quas{
     @param {Function} callback
 
   */
-  static addCustomEventListener(eventName, callback){
-    if(Quas.customEvents[eventName] === undefined){
-      Quas.customEvents[eventName] = [];
+  static addEventListener(eventName, callback){
+    if(Quas.events[eventName] === undefined){
+      Quas.events[eventName] = [];
     }
 
-    Quas.customEvents[eventName].push(callback);
+    Quas.events[eventName].push(callback);
   }
 
   /**
@@ -616,16 +616,16 @@ class Quas{
     @param {String} eventName
     @param {OBJECT} data - (optional)
   */
-  static broadcastCustomEvent(e, data){
-    if(Quas.customEvents[e] !== undefined){
-      for(let i in Quas.customEvents[e]){
-        Quas.customEvents[e][i](data);
+  static broadcastEvent(e, data){
+    if(Quas.events[e] !== undefined){
+      for(let i in Quas.events[e]){
+        Quas.events[e][i](data);
       }
     }
   }
 }
 
-Quas.customEvents = [];
+Quas.events = [];
 Quas.trackingEls = {"enter" : [], "exit": []}; //all the scroll tracking events
 Quas.scrollKeys = {37: 1, 38: 1, 39: 1, 40: 1}; //Keys codes that can scroll
 Quas.scrollSafeZone = {"top": 0, "bottom" : 0}; //safezone padding for scroll listeners
