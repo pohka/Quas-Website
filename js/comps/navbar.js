@@ -5,8 +5,16 @@ class Navbar extends Component{
   }
 
   static genItems(items){
+    let cls = "";
+    if(items.text === "Docs" && Quas.path !== undefined){
+      let path = Quas.path.split("/")[0];
+
+      if(path === "docs"){
+        cls = "active";
+      }
+    }
     <quas>
-      <a class="nav-item" href=items.action>{items.text}</div>
+      <a class="nav-item {cls}" href="{items.action}">{items.text}</div>
     </quas>
   }
 

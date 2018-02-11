@@ -1,10 +1,21 @@
 function startQuas(){
   let nav = new Navbar([
     {text : "Docs", action:"/docs"},
-    {text : "Examples", action:"/"},
+    {text : "Download", action:"/"},
   ]);
   Quas.renderRule(nav, "body", "prepend");
 
+  let path = location.pathname.replace("/", "");
+  console.log(Quas.path);
+  if(path === ""){
+    pageHome();
+  }
+  else if(path === "docs"){
+    pageDocs();
+  }
+}
+
+function pageHome(){
   let card1 = new Card("small-rocket-ship-silhouette.png", "Super Fast", "Some text");
   Quas.render(card1, "#card-row-1");
 
@@ -49,6 +60,11 @@ function startQuas(){
   '  "Quas.js", "A lightweight UI library");\n'+
   'Quas.render(c, "#pg1 .playground-output");',
   "#pg1");
+}
+
+function pageDocs(){
+  let nav = new DocsNav();
+  Quas.render(nav, ".docs-con");
 }
 
 

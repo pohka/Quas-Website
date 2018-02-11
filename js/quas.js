@@ -578,9 +578,10 @@ Quas.scrollSafeZone = {"top": 0, "bottom" : 0}; //safezone padding for scroll li
 Quas.isScrollable = true; //true if scrolling is enabled
 Quas.customAttrs = {}; //custom attributes
 Quas.isDevBuild = false; //true if using development mode
-Quas.path;  //current pathname
+//Quas.path;  //current pathname
 window.onload = function(){
-  Quas.path = location.pathname.substr(1);
+  //Quas.path = location.pathname.replace("/", " ");
+
   if(typeof startQuas === "function" && !Quas.isDevBuild){
     startQuas();
   }

@@ -320,12 +320,17 @@ Quas.parseProps = function(str){
   	let parsed = matches[i].replace("{", '"+');
     parsed = parsed.replace("}", '+"');
     let res = matches[i].substr(1,matches[i].length-2);
-    //function
-    if(res.match(/\(.*?\)/g)){
-      return res;
+
+    //ignore is using \} 
+    let char = matches[i].charAt(matches[i].length-2);
+    if(char !== "\\"){
+      //function
+      if(res.match(/\(.*?\)/g)){
+        return res;
+      }
+      //text component
+      str = str.replace(matches[i], parsed);
     }
-    //text component
-    str = str.replace(matches[i], parsed);
   }
   return str;
 }

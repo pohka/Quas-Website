@@ -24,6 +24,7 @@ body{
 	margin: 0;
 	padding-bottom: 200px;
 	background: var(--bg);
+	min-height: 100vh;
 }
 
 input, textarea{
@@ -64,6 +65,7 @@ nav{
 	width: 100%;
 	background: var(--bg);
 	top: 0;
+	z-index: 10;
 }
 
 nav a, nav a:visited, nav a:active{
@@ -103,12 +105,16 @@ nav a:hover{
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	width: 180px;
+	width: 160px;
 	height: 100%;
 	font-size: 20px;
 	text-decoration: none;
 	color: var(--text);
 	padding: 0 20px;
+}
+
+.nav-item.active{
+	border-bottom: 3px solid var(--pri);
 }
 
 .search-bar-con{
@@ -281,4 +287,49 @@ nav a:hover{
 
 .playground-input{
 	border-right: none;
+}
+
+/*------- DOCS --------*/
+.docs-con{
+	display: flex;
+}
+
+.docs-body-con{
+	margin-left: 300px;
+	min-height: 100px;
+	background: var(--hover);
+	width: 100%;
+	text-align: right;
+}
+
+.docs-nav-con{
+	padding: 30px 0px;
+	padding-left: 50px;
+	padding-bottom: 200px;
+	width: 300px;
+	display: inline-block;
+	position: fixed;
+	top: 0;
+	background: var(--hover);
+	height: 100%;
+	z-index: 5;
+	margin-top: 60px;
+	box-shadow: 0px 0px 4px var(--shadow);
+	overflow-y: scroll;
+}
+
+.docs-nav-list{
+	line-height: 30px;
+}
+
+.docs-nav-list a, .docs-nav-list a:visited{
+	display: block;
+	width: 100%;
+	line-height: 40px;
+	color: var(--text);
+	text-decoration: none;
+}
+
+.docs-nav-list a:hover{
+	color: var(--pri);
 }
