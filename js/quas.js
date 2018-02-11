@@ -388,13 +388,17 @@ class Quas{
   }
 
   /**
-    Reloads the page and set or change variables in the url
+    Set or change variables in the url
     If the value === "" then the value is removed form the url
-    Values will be encoded so they are allowed to have spaces
+    By default the page won't reload the page unless the reload parameter is set to true
+
+    Note: values will be encoded so they are allowed to have spaces
+
 
     @param {JSON} values
+    @param {Boolean} reload - (optional)
   */
-  static setUrlValues(newVals){
+  static setUrlValues(newVals, reload){
     let data = Quas.getUrlValues();
     for(let key in newVals){
       data[key] = encodeURI(newVals[key]);
@@ -405,7 +409,16 @@ class Quas{
         str += key + "=" + data[key] + "&";
     }
     str = str.slice(0,-1);
-    window.location = window.origin + window.location.pathname + str;
+
+    if(reload){
+      window.location = window.origin + window.location.pathname + str;
+    }
+    else if(history.pushState){
+      let newurl = window.origin + window.location.pathname + str;
+      if(newurl !== window.location.href){
+        window.history.pushState(newVals,'',newurl);
+      }
+    }
   }
 
   /**

@@ -6,7 +6,6 @@ function startQuas(){
   Quas.renderRule(nav, "body", "prepend");
 
   let path = location.pathname.replace("/", "");
-  console.log(Quas.path);
   if(path === ""){
     pageHome();
   }
@@ -14,6 +13,25 @@ function startQuas(){
     pageDocs();
   }
 }
+
+function atest(){
+  Quas.setUrlValues({"key":"value"});
+}
+
+/*
+function processAjaxData(response, urlPath){
+  document.getElementById("content").innerHTML = response.html;
+  document.title = response.pageTitle;
+  window.history.pushState({"html":response.html,"pageTitle":response.pageTitle},"", urlPath);
+}
+
+window.onpopstate = function(e){
+    if(e.state){
+        document.getElementById("content").innerHTML = e.state.html;
+        document.title = e.state.pageTitle;
+    }
+}
+*/
 
 function pageHome(){
   let card1 = new Card("small-rocket-ship-silhouette.png", "Super Fast", "Some text");

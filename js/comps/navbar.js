@@ -4,6 +4,10 @@ class Navbar extends Component{
     this.navItems = items;
   }
 
+  static loadPage(path){
+    window.history.pushState('page2', 'Title', path);
+  }
+
   static genItems(items){
     let cls = "";
     if(items.text === "Docs" && Quas.path !== undefined){
@@ -24,7 +28,8 @@ class Navbar extends Component{
         <a class="nav-logo" href="/">
           <img src="/img/logo_sm.png">
           <span>Quas.js</span>
-        </div>
+        </a>
+        <button onclick=atest>set url</button>
         <div q-bind=[Navbar.genItems,this.navItems] class="nav-con">
         </div>
         <div class="search-bar-con">
