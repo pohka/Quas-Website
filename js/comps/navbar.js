@@ -4,16 +4,11 @@ class Navbar extends Component{
     this.navItems = items;
   }
 
-  static loadPage(path){
-    window.history.pushState('page2', 'Title', path);
-  }
-
   static genItems(items){
     let cls = "";
-    if(items.text === "Docs" && Quas.path !== undefined){
-      let path = Quas.path.split("/")[0];
-
-      if(path === "docs"){
+    let path = location.pathname.substr(1);
+    if(items.text === "Docs"){
+      if(path.indexOf("docs") == 0){
         cls = "active";
       }
     }
@@ -29,8 +24,7 @@ class Navbar extends Component{
           <img src="/img/logo_sm.png">
           <span>Quas.js</span>
         </a>
-        <button onclick=atest>set url</button>
-        <div q-bind=[Navbar.genItems,this.navItems] class="nav-con">
+        <div q-bind-for=[Navbar.genItems,this.navItems] class="nav-con">
         </div>
         <div class="search-bar-con">
           <input type="text" class="search-bar" autocomplete="off" spellcheck="false" placeholder="Search API">

@@ -1,6 +1,6 @@
 function startQuas(){
   let nav = new Navbar([
-    {text : "Docs", action:"/docs"},
+    {text : "Docs", action:"/docs/"},
     {text : "Download", action:"/"},
   ]);
   Quas.renderRule(nav, "body", "prepend");
@@ -9,29 +9,17 @@ function startQuas(){
   if(path === ""){
     pageHome();
   }
-  else if(path === "docs"){
+  else if(path.indexOf("docs") == 0){
     pageDocs();
   }
 }
 
 function atest(){
-  Quas.setUrlValues({"key":"value"});
+  //Quas.setUrlValues({"key":"value"});
+  let str = "/docs/set"
+  let newurl = window.origin + str;
+  window.history.pushState('','',newurl);
 }
-
-/*
-function processAjaxData(response, urlPath){
-  document.getElementById("content").innerHTML = response.html;
-  document.title = response.pageTitle;
-  window.history.pushState({"html":response.html,"pageTitle":response.pageTitle},"", urlPath);
-}
-
-window.onpopstate = function(e){
-    if(e.state){
-        document.getElementById("content").innerHTML = e.state.html;
-        document.title = e.state.pageTitle;
-    }
-}
-*/
 
 function pageHome(){
   let card1 = new Card("small-rocket-ship-silhouette.png", "Super Fast", "Some text");
@@ -82,6 +70,7 @@ function pageHome(){
 
 function pageDocs(){
   let nav = new DocsNav();
+  DocsNav.loadPath();
   Quas.render(nav, ".docs-con");
 }
 

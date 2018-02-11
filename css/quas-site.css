@@ -315,21 +315,25 @@ nav a:hover{
 	z-index: 5;
 	margin-top: 60px;
 	box-shadow: 0px 0px 4px var(--shadow);
-	overflow-y: scroll;
+	overflow-y: auto;
 }
 
 .docs-nav-list{
 	line-height: 30px;
 }
 
-.docs-nav-list a, .docs-nav-list a:visited{
-	display: block;
+.docs-nav-item{
 	width: 100%;
 	line-height: 40px;
 	color: var(--text);
 	text-decoration: none;
+	cursor: pointer;
 }
 
-.docs-nav-list a:hover{
+.docs-nav-item.active{
+	border-left: 4px solid var(--pri);
+}
+
+.docs-nav-item:hover{
 	color: var(--pri);
 }

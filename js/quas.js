@@ -294,11 +294,18 @@ class Quas{
       }
     }
     else if(command === "bind"){
+      if(params[0] ===undefined){
+        let domInfo = data[0](data[1]);
+        let newEl = Quas.createEl(domInfo, comp);
+        parent.appendChild(newEl);
+      }
+      else if(params[0] === "for"){
         for(let o in data[1]){
           let domInfo = data[0](data[1][o]);
           let newEl = Quas.createEl(domInfo, comp);
           parent.appendChild(newEl);
         }
+      }
     }
     else{
       return Quas.customAttrs[command](comp, parent, params, data);

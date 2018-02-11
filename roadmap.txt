@@ -1,3 +1,8 @@
 * css bundling for components
 * multiple elements in quas tags. instead of putting everything in 1 container
-* stop url values from reloading page
+* more single page support, without reloading page
+* commenting out html code for parser
+* custom html link class for handling default events
+  * middle mouse button
+  * ctrl + click
+  * shift + click
