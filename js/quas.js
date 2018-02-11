@@ -17,8 +17,10 @@ class Component{
     removes this component from the DOM tree
   */
   remove(){
-    this.el.parentNode.removeChild(this.el);
-    this.el = undefined;
+    if(this.el){
+      this.el.parentNode.removeChild(this.el);
+      this.el = undefined;
+    }
   }
 }
 
@@ -177,7 +179,7 @@ class Quas{
   /**
     Ajax request
 
-    @param {JSON} request - request data
+    @param {OBJECT} request - request data
     Layout of request:
     {
       url : "login.php",
@@ -350,7 +352,7 @@ class Quas{
     version - browser version,
     isMobile - true if a mobile browser
 
-    @return {JSON}
+    @return {OBJECT}
   */
   static browserInfo(){
     var ua=navigator.userAgent,tem,M=ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
@@ -376,7 +378,7 @@ class Quas{
     Example:
       www.mysite.com/home?key=val&foo=bar => {key : "val", foo : "bar"}
 
-    @return {JSON}
+    @return {OBJECT}
   */
   static getUrlValues(){
     let str = window.location.search;
@@ -402,7 +404,7 @@ class Quas{
     Note: values will be encoded so they are allowed to have spaces
 
 
-    @param {JSON} values
+    @param {OBJECT} values
     @param {Boolean} reload - (optional)
   */
   static setUrlValues(newVals, reload){
@@ -590,18 +592,48 @@ class Quas{
   static isRendered(comp){
     return comp.el !== undefined;
   }
+
+  /**
+    Makes the function listen to a custom event
+    The data will be sent to the listeners when broadcasted
+
+    @param {String} eventName
+    @param {Function} callback
+
+  */
+  static addCustomEventListener(eventName, callback){
+    if(Quas.customEvents[eventName] === undefined){
+      Quas.customEvents[eventName] = [];
+    }
+
+    Quas.customEvents[eventName].push(callback);
+  }
+
+  /**
+    Broadcast a custom event to all the listeners
+    data is passed as the first parameter
+
+    @param {String} eventName
+    @param {OBJECT} data - (optional)
+  */
+  static broadcastCustomEvent(e, data){
+    if(Quas.customEvents[e] !== undefined){
+      for(let i in Quas.customEvents[e]){
+        Quas.customEvents[e][i](data);
+      }
+    }
+  }
 }
 
+Quas.customEvents = [];
 Quas.trackingEls = {"enter" : [], "exit": []}; //all the scroll tracking events
 Quas.scrollKeys = {37: 1, 38: 1, 39: 1, 40: 1}; //Keys codes that can scroll
 Quas.scrollSafeZone = {"top": 0, "bottom" : 0}; //safezone padding for scroll listeners
 Quas.isScrollable = true; //true if scrolling is enabled
 Quas.customAttrs = {}; //custom attributes
 Quas.isDevBuild = false; //true if using development mode
-//Quas.path;  //current pathname
-window.onload = function(){
-  //Quas.path = location.pathname.replace("/", " ");
 
+window.onload = function(){
   if(typeof startQuas === "function" && !Quas.isDevBuild){
     startQuas();
   }

@@ -282,9 +282,6 @@ Quas.convertToRenderInfo = function(html){
           let parent = info[2];
           for(let d=0; d<depth; d++){
             if(d == depth-1){
-                //if(parent !== undefined){
-                //  parent = parent[2];
-                //}
                 parent.push([tagInfo[0], attrs, []]);
             }
             else{
@@ -321,7 +318,7 @@ Quas.parseProps = function(str){
     parsed = parsed.replace("}", '+"');
     let res = matches[i].substr(1,matches[i].length-2);
 
-    //ignore is using \} 
+    //ignore is using \}
     let char = matches[i].charAt(matches[i].length-2);
     if(char !== "\\"){
       //function
