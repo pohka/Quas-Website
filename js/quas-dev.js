@@ -145,7 +145,7 @@ Quas.jsArr = function(arr, tab){
         if(arr[i][key] === ""){
           arr[i][key] = "\"\"";
         }
-        str += "\"" + key + "\":" + arr[i][key] + ",";
+        str += "\"" + key + "\":" + Quas.parseProps(arr[i][key]) + ",";
       }
       //remove last comma, only if this element has attributes
       if(Object.keys(arr[i]).length>0){
