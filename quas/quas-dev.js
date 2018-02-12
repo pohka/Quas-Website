@@ -3,12 +3,14 @@ This script is used for transpiling and bundling development builds
 For production use a static build and remember to remove links to this script
 */
 
-Quas.filesToBundle = 0; //count of the number of files being bundled
-Quas.bundleData = []; //string data of each file
-Quas.bundle = ""; //the current bundle as a string
-Quas.cssFiles = [];
-Quas.cssBundle = [];
-Quas.cssFilesToBundle = 0;
+//Quas.jsFilesToBundle = 0; //count of the number of files being bundled
+//Quas.jsBundleFiles = []; //string data of each file
+Quas.jsBundle = ""; //the current bundle as a string
+//Quas.cssFiles = [];
+//Quas.cssBundleFiles = [];
+//Quas.cssFilesToBundle = 0;
+
+Quas.bundleInfo = {}
 
 //tags that require no closing tag
 Quas.noClosingTag = ["img", "source", "br", "hr", "area", "track", "link", "col", "meta", "base", "embed", "param", "input"];
@@ -25,67 +27,92 @@ Quas.devBuild = function(config){
     type : "GET",
     return: "json",
     success : function(data){
+      Quas.populateBundleInfo(data);
 
-      let cssFiles = [];
-      for(let i in data.css){
-        if(data.css[i].constructor != String){
-          for(let a in data.css[i]){
-            for(let b in data.css[i][a]){
-              Quas.cssFiles.push(a + data.css[i][a][b]);
-            }
-          }
-        }
-        else{
-          Quas.cssFiles.push(data.css[i]);
-        }
+      if(Quas.bundleInfo.css !== undefined){
+        Quas.dynamicLoadCSS(Quas.bundleInfo.css.files);
       }
 
-      for(let i in Quas.cssFiles){
-        var fileref = document.createElement("link");
-        fileref.rel = "stylesheet";
-        fileref.type = "text/css";
-        fileref.href = Quas.cssFiles[i]+".css";
-        document.getElementsByTagName("head")[0].appendChild(fileref)
-      }
-
-      //parse json to get javascript file names
-      let files = [];
-      for(let i in data.js){
-        if(data.js[i].constructor != String){
-          for(let a in data.js[i]){
-            for(let b in data.js[i][a]){
-              files.push(a + data.js[i][a][b]);
-            }
-          }
-        }
-        else{
-          files.push(data.js[i]);
-        }
-      }
-
-      //load javascript files
-      for(let i in files){
-        let file = files[i].trim();
-        if(file !== ""){
-          Quas.filesToBundle++;
-          Quas.ajax({
-            url : file+".js",
-            type : "GET",
-            success : function(res){
-              Quas.bundleData[i] = res;
-
-              if(Quas.filesToBundle == 1){
-                Quas.evalDevBundle();
-              }
-              else{
-                Quas.filesToBundle--;
-              }
-            }
-          });
-        }
+      if(Quas.bundleInfo.js !== undefined){
+        Quas.dynamicLoadJS(Quas.bundleInfo.js.files);
       }
     }
   });
+}
+
+/**
+  populate bundleInfo from the config data
+
+  @param {Object} data - config file format
+*/
+Quas.populateBundleInfo = function(data){
+  for(let ext in data){
+    Quas.bundleInfo[ext] = {
+      filesLeft : 0,
+      files : [],
+      content : []
+    };
+
+    for(let i in data[ext]){
+      //directory object
+      if(data[ext][i].constructor != String){
+        for(let a in data[ext][i]){
+          for(let b in data[ext][i][a]){
+            Quas.bundleInfo[ext].files.push(a + data[ext][i][a][b] + "." + ext);
+          }
+        }
+      }
+      //string directory
+      else{
+        Quas.bundleInfo[ext].files.push(data[ext][i] + "." + ext);
+      }
+    }
+  }
+}
+
+/**
+  Dynamically load css files at runtime
+  files is a string array of the paths to each file
+
+  @param {String[]} - files
+*/
+Quas.dynamicLoadCSS = function(files){
+  for(let i in files){
+    var fileref = document.createElement("link");
+    fileref.rel = "stylesheet";
+    fileref.type = "text/css";
+    fileref.href = Quas.bundleInfo.css.files[i];
+    document.getElementsByTagName("head")[0].appendChild(fileref)
+  }
+}
+
+/**
+  Dynamically load javascript files at runtime
+  Files is a string array of the paths to each file
+
+  @param {String[]} - files
+*/
+Quas.dynamicLoadJS = function(files){
+  for(let i in files){
+    let file = Quas.bundleInfo.js.files[i].trim();
+    if(file !== ""){
+      Quas.bundleInfo.js.filesLeft++;
+      Quas.ajax({
+        url : file,
+        type : "GET",
+        success : function(res){
+          Quas.bundleInfo.js.content[i] = res;
+
+          if(Quas.bundleInfo.js.filesLeft == 1){
+            Quas.evalDevBundle();
+          }
+          else{
+            Quas.bundleInfo.js.filesLeft--;
+          }
+        }
+      });
+    }
+  }
 }
 
 /**
@@ -93,17 +120,17 @@ Quas.devBuild = function(config){
 */
 Quas.evalDevBundle = function(){
   let bundle = "";
-  for(let i=0; i<Quas.bundleData.length; i++){
-    if(Quas.bundleData[i] !== undefined){
-      bundle += Quas.bundleData[i];
+  for(let i=0; i<Quas.bundleInfo.js.content.length; i++){
+    if(Quas.bundleInfo.js.content[i] !== undefined){
+      bundle += Quas.bundleInfo.js.content[i];
     }
     else{
-      console.log("One or more files in the config file were not recognize");
+      console.log("One or more JavaScript files in the config file were not recognize");
     }
   }
 
   bundle = Quas.parseBundle(bundle);
-  Quas.bundle = bundle;
+  Quas.jsBundle = bundle;
   bundle += "\nif(typeof startQuas==='function'){startQuas();}";
   eval(bundle);
 }
@@ -405,8 +432,8 @@ String.prototype.trimExcess = function(){
 /**
   Downloads the current bundle.
   You can call this from you browsers console examples:
-    Quas.bundle();
-    Quas.bundle(false, "my-bundle-name");
+    Quas.jsBundle();
+    Quas.jsBundle(false, "my-bundle-name");
 
   type will only export only the file types defined all,css or js
   the default value is all
@@ -427,55 +454,58 @@ Quas.build = function(filename, type, minify){
     type = "all";
   }
 
-  if(type === "all" || type === "js"){
-    var text = Quas.bundle;
-    let extention = "";
-    if(filename === undefined){
-      filename = "bundle";
+  for(let i in Quas.bundleInfo){
+    if(type === "all" || type === i){
+      let fileType = i;
+      let text = "";
+      let extention = "";
+
+      if(filename === undefined){
+        filename = "bundle";
+      }
+
+      //js file type
+      if(fileType === "js"){
+        Quas.bundleInfo.js.content[0] = Quas.jsBundle;
+
+        if(minify){
+          text = Quas.minify(text);
+          extention = ".min";
+        }
+
+        Quas.exportToFile(Quas.bundleInfo["js"].content, filename + extention + ".js");
+      }
+      //other file types
+      else{
+        Quas.bundleInfo[fileType].filesLeft = Quas.bundleInfo[fileType].files.length;
+        for(let a in Quas.bundleInfo[fileType].files){
+          Quas.ajax({
+            url : Quas.bundleInfo[fileType].files[a],
+            type : "GET",
+            success : function(text){
+              Quas.bundleInfo[fileType].content[a] = text;
+              Quas.bundleInfo[fileType].filesLeft--;
+              if(Quas.bundleInfo[fileType].filesLeft == 0){
+                Quas.exportToFile(Quas.bundleInfo[fileType].content, filename+"."+fileType);
+              }
+            }
+          });
+        }
+      }
     }
-    if(minify){
-      text = Quas.minify(text);
-      extention = ".min";
-    }
-
-   let element = document.createElement('a');
-   element.setAttribute('href', 'data:text/plain;charset=utf-8,' + text);
-   element.setAttribute('download', filename + extention+ ".js");
-   element.style.display = 'none';
-   document.body.appendChild(element);
-
-   element.click();
-
-   document.body.removeChild(element);
- }
- if(type === "all" || type === "css"){
-   Quas.cssFilesToBundle = Quas.cssFiles.length;
-   for(let i in Quas.cssFiles){
-     Quas.ajax({
-       url : Quas.cssFiles[i]+".css",
-       type : "GET",
-       success : function(text){
-         Quas.cssBundle[i] = text;
-         Quas.cssFilesToBundle--;
-         if(Quas.cssFilesToBundle == 0){
-           Quas.exportToFile(Quas.cssBundle, filename+".css");
-         }
-       }
-     });
-   }
- }
-
+  }
 }
 
 /**
+  Exports file(s) for a static build
 
-@param {String[]} content
-@param {String} filename
+  @param {String[]} content
+  @param {String} filename
 */
 Quas.exportToFile = function(content, filename){
   let text = "";
   for(let i in content){
-    text += content[i];
+    text += content[i] + "\n";
   }
 
   let element = document.createElement('a');
@@ -483,9 +513,7 @@ Quas.exportToFile = function(content, filename){
   element.setAttribute('download', filename);
   element.style.display = 'none';
   document.body.appendChild(element);
-
   element.click();
-
   document.body.removeChild(element);
 }
 
