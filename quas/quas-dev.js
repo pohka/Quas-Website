@@ -53,7 +53,12 @@ Quas.devBuild = function(config){
 Quas.evalDevBundle = function(){
   let bundle = "";
   for(let i=0; i<Quas.bundleData.length; i++){
-    bundle += Quas.bundleData[i];
+    if(Quas.bundleData[i] !== undefined){
+      bundle += Quas.bundleData[i];
+    }
+    else{
+      console.log("One or more files in the config file were not recognize");
+    }
   }
 
   bundle = Quas.parseBundle(bundle);
