@@ -625,7 +625,7 @@ class Quas{
   }
 }
 
-Quas.events = [];
+Quas.events = []; //all the custom events data
 Quas.trackingEls = {"enter" : [], "exit": []}; //all the scroll tracking events
 Quas.scrollKeys = {37: 1, 38: 1, 39: 1, 40: 1}; //Keys codes that can scroll
 Quas.scrollSafeZone = {"top": 0, "bottom" : 0}; //safezone padding for scroll listeners

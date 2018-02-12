@@ -1,6 +1,0 @@
-* css bundling for components
-* more single page support, without reloading page
-* custom html link class for handling default events
-  * middle mouse button
-  * ctrl + click
-  * shift + click
