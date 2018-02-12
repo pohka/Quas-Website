@@ -10,6 +10,12 @@
     "/js/quas-site"
   ],
   "css":[
-    "/css/quas-site"
+    "/css/quas-site",
+    {
+      "/css/comps/" : [
+        "navbar",
+        "card"
+      ]
+    }
   ]
 }

@@ -6,6 +6,9 @@ For production use a static build and remember to remove links to this script
 Quas.filesToBundle = 0; //count of the number of files being bundled
 Quas.bundleData = []; //string data of each file
 Quas.bundle = ""; //the current bundle as a string
+Quas.cssFiles = [];
+Quas.cssBundle = [];
+Quas.cssFilesToBundle = 0;
 
 //tags that require no closing tag
 Quas.noClosingTag = ["img", "source", "br", "hr", "area", "track", "link", "col", "meta", "base", "embed", "param", "input"];
@@ -28,20 +31,20 @@ Quas.devBuild = function(config){
         if(data.css[i].constructor != String){
           for(let a in data.css[i]){
             for(let b in data.css[i][a]){
-              cssFiles.push(a + data.css[i][a][b]);
+              Quas.cssFiles.push(a + data.css[i][a][b]);
             }
           }
         }
         else{
-          cssFiles.push(data.css[i]);
+          Quas.cssFiles.push(data.css[i]);
         }
       }
-      
-      for(let i in cssFiles){
+
+      for(let i in Quas.cssFiles){
         var fileref = document.createElement("link");
         fileref.rel = "stylesheet";
         fileref.type = "text/css";
-        fileref.href = cssFiles[i]+".css";
+        fileref.href = Quas.cssFiles[i]+".css";
         document.getElementsByTagName("head")[0].appendChild(fileref)
       }
 
@@ -405,35 +408,85 @@ String.prototype.trimExcess = function(){
     Quas.bundle();
     Quas.bundle(false, "my-bundle-name");
 
+  type will only export only the file types defined all,css or js
+  the default value is all
+
   set useMinfier to true to use minifier
   fileName will set the name of the file being downloaded
 
   Note: The minifier is experimental and it is recommented that
   you use something like UglifyJS, minfier.org or Closure
 
-  @param {Boolean} useMinifier - (optional)
+
   @param {String} fileName - (optional) default value is bundle
+  @param {String} type - (optional) all|css|js
+  @param {Boolean} useMinifier - (optional)
 */
-Quas.build = function(minify, filename){
-  var element = document.createElement('a');
-  var text = Quas.bundle;
-  if(filename === undefined){
-    filename = "bundle";
+Quas.build = function(filename, type, minify){
+  if(type === undefined){
+    type = "all";
   }
-  if(minify){
-    text = Quas.minify(text);
-    filename+=".min";
+
+  if(type === "all" || type === "js"){
+    var text = Quas.bundle;
+    let extention = "";
+    if(filename === undefined){
+      filename = "bundle";
+    }
+    if(minify){
+      text = Quas.minify(text);
+      extention = ".min";
+    }
+
+   let element = document.createElement('a');
+   element.setAttribute('href', 'data:text/plain;charset=utf-8,' + text);
+   element.setAttribute('download', filename + extention+ ".js");
+   element.style.display = 'none';
+   document.body.appendChild(element);
+
+   element.click();
+
+   document.body.removeChild(element);
+ }
+ if(type === "all" || type === "css"){
+   Quas.cssFilesToBundle = Quas.cssFiles.length;
+   for(let i in Quas.cssFiles){
+     Quas.ajax({
+       url : Quas.cssFiles[i]+".css",
+       type : "GET",
+       success : function(text){
+         Quas.cssBundle[i] = text;
+         Quas.cssFilesToBundle--;
+         if(Quas.cssFilesToBundle == 0){
+           Quas.exportToFile(Quas.cssBundle, filename+".css");
+         }
+       }
+     });
+   }
+ }
+
+}
+
+/**
+
+@param {String[]} content
+@param {String} filename
+*/
+Quas.exportToFile = function(content, filename){
+  let text = "";
+  for(let i in content){
+    text += content[i];
   }
-  filename += ".js";
 
- element.setAttribute('href', 'data:text/plain;charset=utf-8,' + text);
- element.setAttribute('download', filename);
- element.style.display = 'none';
- document.body.appendChild(element);
+  let element = document.createElement('a');
+  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + text);
+  element.setAttribute('download', filename);
+  element.style.display = 'none';
+  document.body.appendChild(element);
 
- element.click();
+  element.click();
 
- document.body.removeChild(element);
+  document.body.removeChild(element);
 }
 
 /**
