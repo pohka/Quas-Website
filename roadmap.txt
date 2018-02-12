@@ -1,8 +1,6 @@
 * css bundling for components
-* change config file so it is json valid text
 * multiple elements in quas tags. instead of putting everything in 1 container
 * more single page support, without reloading page
-* commenting out html code for parser
 * custom html link class for handling default events
   * middle mouse button
   * ctrl + click

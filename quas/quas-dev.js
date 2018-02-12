@@ -121,7 +121,7 @@ Quas.parseBundle = function(bundle){
       }
       //still currently open
       else{
-        html += lines[i];
+        html += lines[i].split("//")[0];
         lines.splice(i, 1);
         i--;
       }
