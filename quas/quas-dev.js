@@ -20,15 +20,31 @@ Quas.devBuild = function(config){
   Quas.ajax({
     url : config,
     type : "GET",
-    success : function(configRes){
-      var files = configRes.split("\n");
+    return: "json",
+    success : function(data){
 
+      //parse json to get javascript file names
+      let files = [];
+      for(let i in data.js){
+        if(data.js[i].constructor != String){
+          for(let a in data.js[i]){
+            for(let b in data.js[i][a]){
+              files.push(a + data.js[i][a][b]);
+            }
+          }
+        }
+        else{
+          files.push(data.js[i]);
+        }
+      }
+
+      //load javascript files
       for(let i in files){
         let file = files[i].trim();
         if(file !== ""){
           Quas.filesToBundle++;
           Quas.ajax({
-            url : file,
+            url : file+".js",
             type : "GET",
             success : function(res){
               Quas.bundleData[i] = res;

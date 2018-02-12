@@ -1,0 +1,12 @@
+{
+  "js":[
+    {
+      "/js/comps/" : [
+        "navbar",
+        "card",
+        "docs-nav"
+      ]
+    },
+    "/js/quas-site"
+  ]
+}
