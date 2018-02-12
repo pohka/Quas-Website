@@ -23,6 +23,28 @@ Quas.devBuild = function(config){
     return: "json",
     success : function(data){
 
+      let cssFiles = [];
+      for(let i in data.css){
+        if(data.css[i].constructor != String){
+          for(let a in data.css[i]){
+            for(let b in data.css[i][a]){
+              cssFiles.push(a + data.css[i][a][b]);
+            }
+          }
+        }
+        else{
+          cssFiles.push(data.css[i]);
+        }
+      }
+      
+      for(let i in cssFiles){
+        var fileref = document.createElement("link");
+        fileref.rel = "stylesheet";
+        fileref.type = "text/css";
+        fileref.href = cssFiles[i]+".css";
+        document.getElementsByTagName("head")[0].appendChild(fileref)
+      }
+
       //parse json to get javascript file names
       let files = [];
       for(let i in data.js){
@@ -121,7 +143,9 @@ Quas.parseBundle = function(bundle){
       }
       //still currently open
       else{
-        html += lines[i].split("//")[0];
+        //split by "//" out side of quotes
+        let match = lines[i].split(/(?=(?:[^"]*"[^"]*")*[^"]*$)\/\//g);
+        html += match[0];
         lines.splice(i, 1);
         i--;
       }

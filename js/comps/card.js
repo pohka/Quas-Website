@@ -9,7 +9,6 @@ class Card extends Component{
   render(){
     <quas>
       <div class="card">
-        //test
         <img src="/img/{this.img}">
         <h3>{this.title}</h3>
         <span>{this.text}</span>

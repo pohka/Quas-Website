@@ -8,5 +8,8 @@
       ]
     },
     "/js/quas-site"
+  ],
+  "css":[
+    "/css/quas-site"
   ]
 }
