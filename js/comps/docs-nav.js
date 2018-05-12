@@ -10,6 +10,7 @@ class DocsNav extends Component{
     let newurl = window.origin + "/docs/" + page;
     if(newurl !== window.location.href){
       window.history.pushState('','',newurl);
+      Quas.rerender(nav);
       DocsNav.loadPath();
     }
   }
@@ -32,9 +33,11 @@ class DocsNav extends Component{
 
   //list items
   genItem(item){
-    let url = DocsNav.getPageID(item);
+    let page = DocsNav.getPageID(item);
+    let currentURLPage = location.pathname.replace("/docs/", "");
+    let isActive = (page == currentURLPage);
     <quas>
-      <div class="docs-nav-item" onclick=DocsNav.setPath data-page="{url}">{item}</div>
+      <div class="docs-nav-item" onclick=DocsNav.setPath data-page="{page}" active="{isActive}">{item}</div>
     </quas>
   }
 

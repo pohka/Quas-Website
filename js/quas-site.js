@@ -42,7 +42,7 @@ function pageHome(){
   Quas.render(card6, "#card-row-2");
   card6.setProp("title", "hello");
   card6.remove();
-  
+
   playground(
     'class Example extends Component{\n'+
     'constructor(img, title, text){\n'+
@@ -68,8 +68,9 @@ function pageHome(){
   "#pg1");
 }
 
+var nav;
 function pageDocs(){
-  let nav = new DocsNav();
+  nav = new DocsNav();
   DocsNav.loadPath();
   Quas.render(nav, ".docs-con");
 }

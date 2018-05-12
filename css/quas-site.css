@@ -178,7 +178,7 @@ code{
 }
 
 .docs-nav-item{
-	padding-left: 50px;
+	padding-left: 30px;
 	width: 100%;
 	line-height: 40px;
 	color: var(--text);
@@ -186,15 +186,17 @@ code{
 	cursor: pointer;
 	border-left: 6px solid transparent;
 	user-select: none;
+	margin-left: 10px;
 }
 
-.docs-nav-item.active{
-	border-left: 6px solid var(--pri);
+.docs-nav-item[active="true"]{
+	border-left: 6px solid var(--pri) !important;
 }
 
 .docs-nav-item:hover{
 	color: var(--pri2);
 	background: var(--hover2);
+	border-left: 6px solid var(--shadow);
 }
 
 .docs-content{
