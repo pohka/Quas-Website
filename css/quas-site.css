@@ -1,11 +1,13 @@
 :root{
 	--text: #000;
 	--hover: #fafafa;
+	--hover2: #fff;
 	--border: #ccc;
 	--shadow: #ddd;
 	--placeholder: #bbb;
 	--bg: #fff;
 	--pri: #06b5e0;
+	--pri2: #0670e0;
 }
 html{
 	font-family: 'Roboto', sans-serif;
@@ -158,7 +160,6 @@ code{
 
 .docs-nav-con{
 	padding: 30px 0px;
-	padding-left: 50px;
 	padding-bottom: 200px;
 	width: 300px;
 	display: inline-block;
@@ -177,17 +178,26 @@ code{
 }
 
 .docs-nav-item{
+	padding-left: 50px;
 	width: 100%;
 	line-height: 40px;
 	color: var(--text);
 	text-decoration: none;
 	cursor: pointer;
+	border-left: 6px solid transparent;
+	user-select: none;
 }
 
 .docs-nav-item.active{
-	border-left: 4px solid var(--pri);
+	border-left: 6px solid var(--pri);
 }
 
 .docs-nav-item:hover{
-	color: var(--pri);
+	color: var(--pri2);
+	background: var(--hover2);
+}
+
+.docs-content{
+	text-align: left;
+	padding: 40px;
 }

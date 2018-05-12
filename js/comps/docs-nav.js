@@ -1,4 +1,9 @@
 class DocsNav extends Component{
+  constructor(){
+    super();
+    DocsNav.content = new DocsContent();
+    Quas.render(DocsNav.content, ".docs-content");
+  }
   //set the url
   static setPath(e, comp){
     let page = this["data-page"];
@@ -13,27 +18,23 @@ class DocsNav extends Component{
   static loadPath(){
     let page = location.pathname.replace("/docs/", "");
     for(let i in this.pages){
-      if(page === DocsNav.getPageURL(this.pages[i])){
-        this.pages[i].func();
+      let pageID = DocsNav.getPageID(this.pages[i]);
+      if(page === pageID){
+        DocsNav.content.set(pageID);
       }
     }
   }
 
-  //example function for loading a sub element
-  static sample(){
-    console.log("sample");
-  }
-
   //converts a DocsNav.pages object into a valid url page name
-  static getPageURL(page){
-    return page.text.toLowerCase().replace(/\s/g, "-");
+  static getPageID(page){
+    return page.toLowerCase().replace(/\s/g, "-");
   }
 
   //list items
   genItem(item){
-    let url = DocsNav.getPageURL(item);
+    let url = DocsNav.getPageID(item);
     <quas>
-      <div class="docs-nav-item" onclick=DocsNav.setPath data-page="{url}">{item.text}</div>
+      <div class="docs-nav-item" onclick=DocsNav.setPath data-page="{url}">{item}</div>
     </quas>
   }
 
@@ -48,19 +49,19 @@ class DocsNav extends Component{
 }
 
 DocsNav.pages = [
-  {text : "Setup", func : DocsNav.sample},
-  {text : "Props", func : DocsNav.sample},
-  {text : "Updating Props", func : DocsNav.sample},
-  {text : "Event Handling", func : DocsNav.sample},
-  {text : "Sub Elements", func : DocsNav.sample},
-  {text : "Conditional Rendering", func : DocsNav.sample},
-  {text : "Production Builds", func : DocsNav.sample},
-  {text : "Custom Attributes", func : DocsNav.sample},
-  {text : "Custom Events", func : DocsNav.sample},
-  {text : "AJAX Requests", func : DocsNav.sample},
-  {text : "URL Parameters", func : DocsNav.sample},
-  {text : "Cookies", func : DocsNav.sample},
-  {text : "Query Elements", func : DocsNav.sample},
-  {text : "Scrolling Breakpoints", func : DocsNav.sample},
-  {text : "API", func : DocsNav.sample},
+  "Setup",
+  "Props",
+  "Updating Props",
+  "Event Handling",
+  "Sub Elements",
+  "Conditional Rendering",
+  "Production Builds",
+  "Custom Attributes",
+  "Custom Events",
+  "AJAX Requests",
+  "URL Parameters",
+  "Cookies",
+  "Query Elements",
+  "Scrolling Breakpoints",
+  "API"
 ];

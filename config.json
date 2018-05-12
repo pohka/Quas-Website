@@ -4,7 +4,8 @@
       "/js/comps/" : [
         "navbar",
         "card",
-        "docs-nav"
+        "docs-nav",
+        "docs-content"
       ]
     },
     "/js/quas-site"
