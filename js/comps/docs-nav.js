@@ -12,6 +12,7 @@ class DocsNav extends Component{
       window.history.pushState('','',newurl);
       Quas.rerender(nav);
       DocsNav.loadPath();
+      window.scrollTo(0,0); //scroll to top
     }
   }
 

@@ -20,13 +20,19 @@ class DocsContent extends Component{
     }
 
     //decide starting page content based on the url
+
     DocsContent.currentPage = this.setup;
     let url = location.pathname.replace("/docs/", "");
-    let pageID = DocsNav.getPageID(url);
-    let startingPage = this.pages[pageID];
+    DocsContent.pageID = DocsNav.getPageID(url);
+    let startingPage = this.pages[DocsContent.pageID];
     if(startingPage !== undefined){
       DocsContent.currentPage = startingPage;
     }
+  }
+
+  static format(text){
+    let arr = text.split("\n")
+    return arr;
   }
 
   render(){
@@ -44,8 +50,49 @@ DocsContent.prototype.set = function(pageID){
 
 //setup - page content
 DocsContent.prototype.setup = function(){
+  let code1 =
+  '<!--Linking Quas-->\n'+
+  '<script src="quas/quas.js"></script>\n'+
+  '<script src="quas/quas-dev.js"></script>\n'+
+  '<script>Quas.devBuild("config.json");</script>';
+
+  let configCode =
+  '{\n'+
+  '\t"js":[\n'+
+  '\t\t"/js/main"\n'+
+  '\t]\n'+
+  '}';
+
   <quas>
-    <div>How to setup</div>
+    <div>
+      <h1>Setting Up a Project</h1>
+      <span class="centered">Download and extract the Quas boilerplate project</span>
+      <button class="download-btn">Download</button>
+      <hr>
+      <h2>Getting Started</h2>
+      <p>Quas uses a component based system to render elements. When a component is changed it can be rerendered to update the changes. But before we look at components and the rich features of Quas we will first have a quick look at the structure of the boilerplate project.</p>
+      <br>
+      index.html
+      <pre>
+      <code>
+        {code1}
+      </code>
+      </pre>
+      <ul>
+        <li>quas.js is the library</li>
+        <li>quas-dev.js is used for development builds which bundles at runtime based off a config file</li>
+        <li>Quas.devBuild assigns the config file to use for the runtime bundling</li>
+      </ul>
+      <hr>
+      <h2>The Config File</h2>
+      config.json is a JSON file which will decide which files will be bundled for the development build. It is often a good idea to have a seperate JavaScript and CSS files for each component.
+      <pre>
+      <code>
+        {configCode}
+      </code>
+      </pre>
+      You can read more about this in the <a href="production-builds">Production Build</a> section.
+    </div>
   </quas>
 }
 

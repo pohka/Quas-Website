@@ -8,6 +8,7 @@
 	--bg: #fff;
 	--pri: #06b5e0;
 	--pri2: #0670e0;
+	--pri_hover: #06b5e0aa;
 }
 html{
 	font-family: 'Roboto', sans-serif;
@@ -151,11 +152,10 @@ code{
 }
 
 .docs-body-con{
-	margin-left: 300px;
+	margin: 0px 300px;
 	min-height: 100px;
-	background: var(--hover);
+	background: var(--background);
 	width: 100%;
-	text-align: right;
 }
 
 .docs-nav-con{
@@ -200,6 +200,63 @@ code{
 }
 
 .docs-content{
-	text-align: left;
-	padding: 40px;
+	padding: 20px;
+	width: 800px;
+	margin: auto;
+	line-height: 1.6;
+}
+
+pre{
+	min-height: auto;
+}
+
+pre code{
+	font-size: 16px;
+	background: var(--hover);
+	display: block;
+	padding: 15px 50px;
+	margin: 10px 0px;
+	line-height: 1.6;
+	tab-size: 2;
+}
+
+.docs-content h1{
+	margin-bottom: 30px;
+	margin-top: 50px;
+	font-size: 36px;
+}
+
+.docs-content h2{
+	margin-top: 50px;
+	margin-bottom: 20px;
+}
+
+.download-btn{
+	display: block;
+	width: 300px;
+	text-align: center;
+	border : none;
+	cursor: pointer;
+	line-height: 60px;
+	font-size: 20px;
+	color: white;
+	background: var(--pri);
+	user-select: none;
+	margin: 50px auto;
+	margin-bottom: 120px;
+}
+
+.centered{
+	display: block;
+	width: 100%;
+	text-align: center;
+}
+
+.download-btn:hover{
+	background: var(--pri_hover);
+}
+
+hr{
+	margin-top: 80px;
+	border-color: var(--hover);
 }

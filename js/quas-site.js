@@ -1,6 +1,6 @@
 function startQuas(){
   let nav = new Navbar([
-    {text : "Docs", action:"/docs/"},
+    {text : "Docs", action:"/docs/setup"},
     {text : "Download", action:"/"},
   ]);
   Quas.renderRule(nav, "body", "prepend");
