@@ -64,6 +64,7 @@ DocsNav.set = function(pageID){
 
 DocsNav.pages = [
   "Setup",
+  "Components",
   "Props",
   "Updating Props",
   "Event Handling",

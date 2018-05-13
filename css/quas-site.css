@@ -192,6 +192,7 @@ code{
 
 .docs-nav-item[active="true"]{
 	border-left: 6px solid var(--pri) !important;
+	background: var(--hover2);
 }
 
 .docs-nav-item:hover{
@@ -223,13 +224,17 @@ pre code{
 
 .docs-content h1{
 	margin-bottom: 30px;
-	margin-top: 50px;
+	margin-top: 44px;
 	font-size: 36px;
 }
 
 .docs-content h2{
 	margin-top: 50px;
 	margin-bottom: 20px;
+}
+
+.docs-content p{
+	padding-bottom: 20px;
 }
 
 .download-btn{

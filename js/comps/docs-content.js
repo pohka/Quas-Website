@@ -3,6 +3,7 @@ class DocsContent extends Component{
     super();
     this.pages = {
       "setup" : this.setup,
+      "components" : this.components,
       "props" : this.props,
       "updating-props" : this.updatingProps,
       "event-handling" : this.eventHandling,
@@ -68,6 +69,14 @@ DocsContent.prototype.set = function(pageID){
   Quas.rerender(DocsNav.content);
 }
 
+DocsContent.nextBtn = function(){
+  <quas>
+    <div class="docs-footer-nav">
+      <div class="footer-nav-btn" onclick=DocsContent.handleNext>Next</div>
+    </div>
+  </quas>
+};
+
 //setup - page content
 DocsContent.prototype.setup = function(){
   let code1 =
@@ -105,18 +114,85 @@ DocsContent.prototype.setup = function(){
       </ul>
       <hr>
       <h2>The Config File</h2>
-      config.json is a JSON file which will decide which files will be bundled for the development build. It is often a good idea to have a seperate JavaScript and CSS files for each component.
+      <p>config.json is a JSON file which will decide which files will be bundled for the development build. It is often a good idea to have a seperate JavaScript and CSS files for each component.</p>
       <pre>
       <code>
         {configCode}
       </code>
       </pre>
       You can read more about this in the <a href="production-builds">Production Build</a> section.
+      <hr>
+      <h2>Starting Point</h2>
+      <p>Once quas has loaded it will starts its executing the startQuas function.</p>
+      <pre><code>
+        "function startQuas()\{\n"+
+        "\t//your code goes here\n"+
+        "\}"
+      </code></pre>
+      {DocsContent.nextBtn()}
 
-      <div class="docs-footer-nav">
-      <div class="footer-nav-btn" onclick=DocsContent.handleNext>Next</div>
-      </div>
     </div>
+  </quas>
+}
+
+//props - page content
+DocsContent.prototype.components = function(){
+  let basicVersion =
+    "class MyFirstComponent extends Component{\n"+
+    "\trender(){\n"+
+    "\t\t\<quas\>\n"+
+    "\t\t\t<div>Hello World</div>\n"+
+    "\t\t\</quas\>\n"+
+    "\t}\n"+
+    "}";
+
+  let func = "Quas.render( )";
+
+  let renderCode =
+    "// starting point\n"+
+    "function startQuas(){\n"+
+    "\tlet myComponent = new MyFirstComponent();\n"+
+    "\tQuas.render(myComponent, 'body'); //render to the body tag\n"+
+    "}";
+
+    let helloRes =
+    "\n//result\n<div>\n\tHello World\n"+
+    "\t<div>Hello World</div>\n"+
+    "</div>";
+
+  <quas>
+    <div>
+      <h1>Components</h1>
+      <p>Making your own component is as simple as making a new class which extends Component and giving it a render function. The render function should contain quas tags. The quas tags should be on seperate lines and everything between the opening and closing quas tag will use a html like syntax.</p>
+      <pre>
+        <code>{basicVersion}</code>
+      </pre>
+
+      <p>To make the content of the component appear on your page you must create an instance of it and call {func}. You can have multiple instances of a component at any time.</p>
+      <pre>
+        <code>{renderCode}</code>
+      </pre>
+      <hr>
+      <h2>Rendering</h2>
+      <p>"There is a few different ways you can render a component. The default way as shown above will append the content of the component as a child of the parent chosen using the query selector. The query selector works the same as JavaScript's document.querySelector( ) e.g. '#id' and '.class'."</p>
+      <pre><code>"Quas.render(myComponent, '#myID');"</code></pre>
+      <p>Once a component has been rendered to the page the DOM tree for this instance the DOM element will be accessable quickly though 'el' variable.</p>
+      <pre><code>"console.log(myComponent.el);"</code></pre>
+      <p>Instead of using the query selector you can pass a DOM element as the parent for the rendering. The example below shows how you can make another instance of MyFirstComponent and add the new instance as a child to myComponent</p>
+      <pre><code>
+        "let anotherComp = new MyFirstComponent();\n"+
+        "Quas.render(anotherComp, myComponent.el);\n{helloRes}"
+      </code></pre>
+      <hr>
+      <h2>Render Rules</h2>
+      <p>"You can use Quas.renderRule( ) to give extra options when rendering, such as prepend. Prepend will render the component as the first child to the parent rather than the last."</p>
+      <pre><code>
+        "Quas.renderRule(myComponent, 'body', 'prepend');"
+      </code></pre>
+      {DocsContent.nextBtn()}
+    </div>
+
+
   </quas>
 }
 
