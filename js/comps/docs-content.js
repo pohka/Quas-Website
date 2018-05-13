@@ -21,13 +21,17 @@ class DocsContent extends Component{
 
     //decide starting page content based on the url
 
-    DocsContent.currentPage = this.setup;
-    let url = location.pathname.replace("/docs/", "");
-    DocsContent.pageID = DocsNav.getPageID(url);
-    let startingPage = this.pages[DocsContent.pageID];
-    if(startingPage !== undefined){
-      DocsContent.currentPage = startingPage;
-    }
+  //  DocsContent.currentPage = this.setup;
+  //  let url = location.pathname.replace("/docs/", "");
+  //  DocsContent.pageID = DocsNav.getPageID(url);
+//    let startingPage = this.pages[DocsContent.pageID];
+//    if(startingPage !== undefined){
+//      DocsContent.currentPage = startingPage;
+//    }
+  }
+
+  static getCurrentPageID(){
+    return location.pathname.replace("/docs/", "");
   }
 
   static format(text){
@@ -35,8 +39,24 @@ class DocsContent extends Component{
     return arr;
   }
 
+  //next section in the navigiation
+  static handleNext(e,comp){
+    var found=false;
+    let currentPageID = DocsContent.getCurrentPageID();
+    for(let key in comp.pages){
+      if(found){
+        DocsNav.set(key);
+        break;
+      }
+      else if(currentPageID == key){
+        found = true;
+      }
+    }
+  }
+
   render(){
-    return DocsContent.currentPage();
+    let pageID = DocsContent.getCurrentPageID();
+    return this.pages[pageID]();
   }
 }
 
@@ -65,7 +85,7 @@ DocsContent.prototype.setup = function(){
 
   <quas>
     <div>
-      <h1>Setting Up a Project</h1>
+      <h1>Setting up a Project</h1>
       <span class="centered">Download and extract the Quas boilerplate project</span>
       <button class="download-btn">Download</button>
       <hr>
@@ -92,6 +112,10 @@ DocsContent.prototype.setup = function(){
       </code>
       </pre>
       You can read more about this in the <a href="production-builds">Production Build</a> section.
+
+      <div class="docs-footer-nav">
+      <div class="footer-nav-btn" onclick=DocsContent.handleNext>Next</div>
+      </div>
     </div>
   </quas>
 }

@@ -14,6 +14,9 @@ class DocsNav extends Component{
       DocsNav.loadPath();
       window.scrollTo(0,0); //scroll to top
     }
+    else{ //same page
+      window.scrollTo(0,0); //scroll to top
+    }
   }
 
   //loads the path in the url
@@ -50,6 +53,13 @@ class DocsNav extends Component{
         </div>
     </quas>
   }
+}
+
+DocsNav.set = function(pageID){
+  window.history.pushState('','',"/docs/"+pageID);
+  Quas.rerender(nav);
+  DocsNav.loadPath();
+  window.scrollTo(0,0); //scroll to top
 }
 
 DocsNav.pages = [

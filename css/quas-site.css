@@ -8,7 +8,8 @@
 	--bg: #fff;
 	--pri: #06b5e0;
 	--pri2: #0670e0;
-	--pri_hover: #06b5e0aa;
+	--pri_hover: #06b5e0bb;
+	--pri_dark: #059abe;
 }
 html{
 	font-family: 'Roboto', sans-serif;
@@ -244,6 +245,8 @@ pre code{
 	user-select: none;
 	margin: 50px auto;
 	margin-bottom: 120px;
+	border-bottom: 0px solid transparent;
+	outline: none;
 }
 
 .centered{
@@ -254,9 +257,44 @@ pre code{
 
 .download-btn:hover{
 	background: var(--pri_hover);
+	transition: 0.1s;
+
 }
 
 hr{
 	margin-top: 80px;
 	border-color: var(--hover);
+}
+
+.docs-footer-nav{
+	margin-top: 90px;
+	width: 100%;
+}
+
+.footer-nav-btn{
+	float: right;
+	width: 200px;
+	line-height: 50px;
+	text-align: center;
+	cursor: pointer;
+	background: #fafafa;
+	border: 2px solid var(--pri_dark);
+}
+
+.footer-nav-btn:hover{
+	border-color: var(--pri_hover);
+}
+
+.footer-nav-btn:hover::after{
+	margin-left: 36px;
+
+}
+
+.footer-nav-btn::after{
+	content: '\00bb';
+	font-size: 30px;
+	margin-left: 30px;
+	margin-top: -2px;
+	position: absolute;
+	transition: 0.3s;
 }
