@@ -1,13 +1,9 @@
 {
   "js":[
-    {
-      "/js/comps/" : [
-        "navbar",
-        "card",
-        "docs-nav",
-        "docs-content"
-      ]
-    },
+    "/js/comps/navbar",
+    "/js/comps/card",
+    "/js/comps/docs-nav",
+    "/js/comps/docs-content",
     "/js/quas-site"
   ],
   "css":[

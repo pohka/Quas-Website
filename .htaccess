@@ -1,12 +1,8 @@
 Options +ExecCGI +FollowSymLinks -MultiViews
 
-RewriteEngine on
+RewriteEngine On
 RewriteBase /
-
-# .html
+RewriteRule ^index.html$ - [L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{REQUEST_FILENAME}.html -f
-RewriteRule ^(.*)$ /$1.html [L]
-
-RewriteRule ^docs/(.*)$ /docs.html?p=$1
+RewriteRule . /index.html [L]

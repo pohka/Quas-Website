@@ -1,10 +1,15 @@
-function startQuas(){
-  let nav = new Navbar([
-    {text : "Docs", action:"/docs/setup"},
-    {text : "Download", action:"/"},
-  ]);
-  Quas.renderRule(nav, "body", "prepend");
+function te(){
+  console.log("heereee");
+}
 
+function te2(){
+  console.log("h2");
+}
+
+function startQuas(){
+
+
+  /*
   let path = location.pathname.replace("/", "");
   if(path === ""){
     pageHome();
@@ -12,7 +17,18 @@ function startQuas(){
   else if(path.indexOf("docs") == 0){
     pageDocs();
   }
+  */
+
+  Quas.map("index", "/", "Quas", te);
+  Quas.map("docs", "/docs", "Docs", te2);
+  Quas.map("download", "/download", "Download", te);
+
+//  console.log(Quas.paths);
+
+  let nav = new Navbar(["docs", "download"]);
+  Quas.renderRule(nav, "body", "prepend");
 }
+
 
 function atest(){
   //Quas.setUrlValues({"key":"value"});

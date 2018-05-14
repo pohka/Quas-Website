@@ -1,10 +1,11 @@
 class Navbar extends Component{
   constructor(items){
     super();
-    this.navItems = items;
+    this.pathIDs = items;
   }
 
-  static genItems(items){
+  static createOption(pathID){
+    /*
     let cls = "";
     let path = location.pathname.substr(1);
     if(items.text === "Docs"){
@@ -12,19 +13,26 @@ class Navbar extends Component{
         cls = "active";
       }
     }
+    */
+    let cls="";
+    console.log(Quas.getCurrentPathID());
+    if(pathID == Quas.getCurrentPathID()){
+      cls = "active";
+    }
+    let pathInfo = Quas.paths[pathID];
     <quas>
-      <a class="nav-item {cls}" href="{items.action}">{items.text}</div>
+      <div><a class="nav-item {cls}" href="{pathInfo.path}" target="within">{pathInfo.title}</a></div>
     </quas>
   }
 
   render(){
     <quas>
       <nav>
-        <a class="nav-logo" href="/">
+        <a class="nav-logo" href="/" target="within">
           <img src="/img/logo_sm.png">
           <span>Quas.js</span>
         </a>
-        <div q-bind-for=[Navbar.genItems,this.navItems] class="nav-con">
+        <div q-bind-for=[Navbar.createOption,this.pathIDs] class="nav-con">
         </div>
         <div class="search-bar-con">
           <input type="text" class="search-bar" autocomplete="off" spellcheck="false" placeholder="Search API">

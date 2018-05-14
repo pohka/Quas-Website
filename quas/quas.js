@@ -50,6 +50,7 @@ class Quas{
 
     rule options:
       prepend     - insert as the first child to the parent
+      replace     - removes all the children and appends the element to the parent
       #id         - insert after a child with this id. You can also use any value query selector
       #id before  - insert before a child with this id
 
@@ -69,6 +70,12 @@ class Quas{
       }
       else if(target === "prepend"){
         parent.insertBefore(el, parent.childNodes[0]);
+      }
+      else if(target === "replace"){
+        while(parent.hasChildNodes()){
+          parent.removeChild(parent.childNodes[0]);
+        }
+        parent.appendChild(el);
       }
       else{
         let arr = target.split(" ");
@@ -147,8 +154,12 @@ class Quas{
       }
     }
 
+
+
+
     //attributes
     for(let a in attrs){
+
       let prefix = a.substr(0,2);
       //custom attribute
       if(prefix === "q-"){
@@ -171,6 +182,16 @@ class Quas{
       else{
         el.setAttribute(a, attrs[a]);
       }
+    }
+
+    //link target within
+    if(tag == "a" && attrs.target == "within"){
+      console.log("here");
+      //add on click eventlistener
+      el.addEventListener("click", function(e){
+        e.preventDefault();
+        Quas.loadByPath(this.href);
+      });
     }
 
     return el;
@@ -296,7 +317,7 @@ class Quas{
       }
     }
     else if(command === "bind"){
-      if(params[0] ===undefined){
+      if(params[0] === undefined){
         let domInfo = data[0](data[1]);
         let newEl = Quas.createEl(domInfo, comp);
         parent.appendChild(newEl);
@@ -623,8 +644,51 @@ class Quas{
       }
     }
   }
+
+  //map a path
+  static map(id, path, title, func){
+    Quas.paths[id] = {
+        "path": path,
+        "title":title,
+        "loader":func
+    };
+  }
+
+//returns the path id of the current page
+ static getCurrentPathID(){
+   let url = location.pathname;
+   for(let key in Quas.paths){
+     if(Quas.paths[key].path == url){
+       return key;
+     }
+   }
+ }
+
+ //load a page by the href path link
+ static loadByPath(href){
+   //remove origin form href
+   let path = href.replace(window.origin,"");
+
+   //load this path
+   for(let key in Quas.paths){
+     if(Quas.paths[key].path == path){
+       Quas.load(key);
+       return;
+     }
+   }
+ }
+
+ //call the loader function and change url
+ static load(key){
+   let finLoading = Quas.paths[key].loader();
+   if(finLoading === undefined || finLoading != false){
+     let newUrl = window.origin + Quas.paths[key].path;
+     window.history.pushState('','',newUrl);
+   }
+ }
 }
 
+Quas.paths = {};
 Quas.events = []; //all the custom events data
 Quas.trackingEls = {"enter" : [], "exit": []}; //all the scroll tracking events
 Quas.scrollKeys = {37: 1, 38: 1, 39: 1, 40: 1}; //Keys codes that can scroll
