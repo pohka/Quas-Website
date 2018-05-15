@@ -19,9 +19,9 @@ function startQuas(){
   }
   */
 
-  Quas.map("index", "/", "Quas", te);
-  Quas.map("docs", "/docs", "Docs", te2);
-  Quas.map("download", "/download", "Download", te);
+  Atlas.map("index", "/", "Quas", te);
+  Atlas.map("docs", "/docs", "Docs", te2);
+  Atlas.map("download", "/download", "Download", te);
 
 //  console.log(Quas.paths);
 

@@ -2,25 +2,15 @@ class Navbar extends Component{
   constructor(items){
     super();
     this.pathIDs = items;
-    Quas.rerenderOnLoad.push(this);
+    Atlas.rerenderOnSet.push(this);
   }
 
   static createOption(pathID){
-    /*
-    let cls = "";
-    let path = location.pathname.substr(1);
-    if(items.text === "Docs"){
-      if(path.indexOf("docs") == 0){
-        cls = "active";
-      }
-    }
-    */
     let cls="";
-    console.log(Quas.getCurrentPathID());
-    if(pathID == Quas.getCurrentPathID()){
+    if(pathID == Atlas.getCurrentPathID()){
       cls = "active";
     }
-    let pathInfo = Quas.paths[pathID];
+    let pathInfo = Atlas.paths[pathID];
     <quas>
       <div><a class="nav-item {cls}" href="{pathInfo.path}" target="within">{pathInfo.title}</a></div>
     </quas>

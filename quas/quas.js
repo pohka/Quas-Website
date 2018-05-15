@@ -186,11 +186,11 @@ class Quas{
 
     //link target within
     if(tag == "a" && attrs.target == "within"){
-      console.log("here");
       //add on click eventlistener
       el.addEventListener("click", function(e){
         e.preventDefault();
-        Quas.loadByPath(this.href);
+        let id = Atlas.getIDByPath(this.href);
+        Atlas.set(id);
       });
     }
 
@@ -645,54 +645,9 @@ class Quas{
     }
   }
 
-  //map a path
-  static map(id, path, title, func){
-    Quas.paths[id] = {
-        "path": path,
-        "title":title,
-        "loader":func
-    };
-  }
 
-//returns the path id of the current page
- static getCurrentPathID(){
-   let url = location.pathname;
-   for(let key in Quas.paths){
-     if(Quas.paths[key].path == url){
-       return key;
-     }
-   }
- }
-
- //load a page by the href path link
- static loadByPath(href){
-   //remove origin form href
-   let path = href.replace(window.origin,"");
-
-   //load this path
-   for(let key in Quas.paths){
-     if(Quas.paths[key].path == path){
-       Quas.load(key);
-       return;
-     }
-   }
- }
-
- //call the loader function and change url
- static load(key){
-   let finLoading = Quas.paths[key].loader();
-   if(finLoading === undefined || finLoading != false){
-     let newUrl = window.origin + Quas.paths[key].path;
-     window.history.pushState('','',newUrl);
-     for(let i in Quas.rerenderOnLoad){
-       Quas.rerender(Quas.rerenderOnLoad[i]);
-     }
-   }
- }
 }
 
-Quas.rerenderOnLoad = []; //all components in this array wll always be rerendered when loading a new page
-Quas.paths = {};
 Quas.events = []; //all the custom events data
 Quas.trackingEls = {"enter" : [], "exit": []}; //all the scroll tracking events
 Quas.scrollKeys = {37: 1, 38: 1, 39: 1, 40: 1}; //Keys codes that can scroll
@@ -700,6 +655,60 @@ Quas.scrollSafeZone = {"top": 0, "bottom" : 0}; //safezone padding for scroll li
 Quas.isScrollable = true; //true if scrolling is enabled
 Quas.customAttrs = {}; //custom attributes
 Quas.isDevBuild = false; //true if using development mode
+
+
+
+//handling of the mapping and changing the page
+class Atlas{
+  //map a path
+  static map(id, path, title, func){
+    Atlas.paths[id] = {
+        "path": path,
+        "title":title,
+        "set":func
+    };
+  }
+
+//returns the path id of the current page using the URl
+ static getCurrentPathID(){
+   let url = location.pathname;
+   for(let id in Atlas.paths){
+     if(Atlas.paths[id].path == url){
+       return id;
+     }
+   }
+ }
+
+ //returns a id of a matching path to a href
+ static getIDByPath(href){
+   //remove origin form href
+   let path = href.replace(window.origin,"");
+   for(let id in Atlas.paths){
+     if(Atlas.paths[id].path == path){
+        return id;
+      }
+   }
+ }
+
+ //call the set function and push the new url
+ static set(id){
+   let succuss = Atlas.paths[id].set();
+   if(succuss === undefined || succuss){
+     let newUrl = window.origin + Atlas.paths[id].path;
+     window.history.pushState('','',newUrl);
+
+     //rerender components in this list
+     for(let i in Atlas.rerenderOnSet){
+       Quas.rerender(Atlas.rerenderOnSet[i]);
+     }
+   }
+ }
+}
+
+Atlas.paths = {}; //all the paths mapped to the atlas
+Atlas.rerenderOnSet = []; //all components in this array wll always be rerendered when loading a new page
+
+
 
 window.onload = function(){
   if(typeof startQuas === "function" && !Quas.isDevBuild){
