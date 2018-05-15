@@ -57,6 +57,7 @@ nav a:hover{
 
 .nav-item.active{
 	border-bottom: 3px solid var(--pri);
+	padding-top: 3px;
 }
 
 .search-bar-con{

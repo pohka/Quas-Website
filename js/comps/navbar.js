@@ -2,6 +2,7 @@ class Navbar extends Component{
   constructor(items){
     super();
     this.pathIDs = items;
+    Quas.rerenderOnLoad.push(this);
   }
 
   static createOption(pathID){

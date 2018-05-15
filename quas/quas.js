@@ -684,10 +684,14 @@ class Quas{
    if(finLoading === undefined || finLoading != false){
      let newUrl = window.origin + Quas.paths[key].path;
      window.history.pushState('','',newUrl);
+     for(let i in Quas.rerenderOnLoad){
+       Quas.rerender(Quas.rerenderOnLoad[i]);
+     }
    }
  }
 }
 
+Quas.rerenderOnLoad = []; //all components in this array wll always be rerendered when loading a new page
 Quas.paths = {};
 Quas.events = []; //all the custom events data
 Quas.trackingEls = {"enter" : [], "exit": []}; //all the scroll tracking events
