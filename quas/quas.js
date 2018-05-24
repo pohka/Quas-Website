@@ -184,8 +184,8 @@ class Quas{
       }
     }
 
-    //link target within
-    if(tag == "a" && attrs.target == "within"){
+    //link target = push
+    if(tag == "a" && attrs.target == "push"){
       //add on click eventlistener
       el.addEventListener("click", function(e){
         e.preventDefault();

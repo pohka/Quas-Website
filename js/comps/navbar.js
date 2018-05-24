@@ -12,14 +12,14 @@ class Navbar extends Component{
     }
     let pathInfo = Atlas.paths[pathID];
     <quas>
-      <div><a class="nav-item {cls}" href="{pathInfo.path}" target="within">{pathInfo.title}</a></div>
+      <div><a class="nav-item {cls}" href="{pathInfo.path}" target="push">{pathInfo.title}</a></div>
     </quas>
   }
 
   render(){
     <quas>
       <nav>
-        <a class="nav-logo" href="/" target="within">
+        <a class="nav-logo" href="/" target="push">
           <img src="/img/logo_sm.png">
           <span>Quas.js</span>
         </a>
