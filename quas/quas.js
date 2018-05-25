@@ -678,6 +678,10 @@ class Atlas{
    }
  }
 
+ static currentPathStartsWith(str){
+   return (location.pathname.indexOf(str) > -1);
+ }
+
  //returns a id of a matching path to a href
  static getIDByPath(href){
    //remove origin form href

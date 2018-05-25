@@ -4,6 +4,7 @@
     "/js/comps/card",
     "/js/comps/docs-nav",
     "/js/comps/docs-content",
+    "/js/comps/body",
     "/js/quas-site"
   ],
   "css":[

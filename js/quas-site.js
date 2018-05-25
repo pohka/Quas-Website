@@ -19,6 +19,9 @@ function startQuas(){
 
   let nav = new Navbar(["docs", "download"]);
   Quas.renderRule(nav, "body", "prepend");
+
+  let body = new Body();
+  Quas.render(body, "body");
 }
 
 
