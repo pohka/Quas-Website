@@ -1,11 +1,3 @@
-function te(){
-  console.log("heereee");
-}
-
-function te2(){
-  console.log("h2");
-}
-
 function startQuas(){
 
 
@@ -19,9 +11,9 @@ function startQuas(){
   }
   */
 
-  Atlas.map("index", "/", "Quas", te);
-  Atlas.map("docs", "/docs", "Docs", te2);
-  Atlas.map("download", "/download", "Download", te);
+  Atlas.map("index", "/", "Quas");
+  Atlas.map("docs", "/docs", "Docs");
+  Atlas.map("download", "/download", "Download");
 
 //  console.log(Quas.paths);
 

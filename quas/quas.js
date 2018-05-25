@@ -664,8 +664,7 @@ class Atlas{
   static map(id, path, title, func){
     Atlas.paths[id] = {
         "path": path,
-        "title":title,
-        "set":func
+        "title":title
     };
   }
 
@@ -692,16 +691,13 @@ class Atlas{
 
  //push a new page by the id in Atlas.paths
  static push(id){
-   let succuss = Atlas.paths[id].set();
-   if(succuss === undefined || succuss){
-     let newUrl = window.origin + Atlas.paths[id].path;
-     window.history.pushState('','',newUrl);
+   let newUrl = window.origin + Atlas.paths[id].path;
+   window.history.pushState('','',newUrl);
 
-    //notify event listeners
-    for(let i in Atlas.pushListeners){
-      Atlas.pushListeners[i].onPush(Atlas.paths[id].path);
-    }
-   }
+  //notify event listeners
+  for(let i in Atlas.pushListeners){
+    Atlas.pushListeners[i].onPush(Atlas.paths[id].path);
+  }
  }
 
  //add a component to listen to an atlas event
