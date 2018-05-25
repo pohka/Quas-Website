@@ -1,34 +1,6 @@
 class DocsContent extends Component{
   constructor(){
     super();
-    this.pages = {
-      "setup" : this.setup,
-      "components" : this.components,
-      "props" : this.props,
-      "updating-props" : this.updatingProps,
-      "event-handling" : this.eventHandling,
-      "sub-elements" : this.subElements,
-      "conditional-rendering" : this.conditionalRendering,
-      "production-builds" : this.productionBuilds,
-      "custom-attributes" : this.customAttributes,
-      "custom-events" : this.customEvents,
-      "ajax-requests" : this.ajaxRequests,
-      "url-parameters" : this.urlParameters,
-      "cookies" : this.cookies,
-      "query-elements" : this.queryElements,
-      "scrolling-breakpoints" : this.scrollingBreakpoints,
-      "api" : this.api
-    }
-
-    //decide starting page content based on the url
-
-  //  DocsContent.currentPage = this.setup;
-  //  let url = location.pathname.replace("/docs/", "");
-  //  DocsContent.pageID = DocsNav.getPageID(url);
-//    let startingPage = this.pages[DocsContent.pageID];
-//    if(startingPage !== undefined){
-//      DocsContent.currentPage = startingPage;
-//    }
   }
 
   static getCurrentPageID(){
@@ -44,9 +16,11 @@ class DocsContent extends Component{
   static handleNext(e,comp){
     var found=false;
     let currentPageID = DocsContent.getCurrentPageID();
-    for(let key in comp.pages){
+  //  console.log(comp);
+    for(let key in DocsContent.pages){
       if(found){
-        DocsNav.set(key);
+        Atlas.pushByPath("/docs/" + key);
+        window.scrollTo(0,0);
         break;
       }
       else if(currentPageID == key){
@@ -57,16 +31,8 @@ class DocsContent extends Component{
 
   render(){
     let pageID = DocsContent.getCurrentPageID();
-    return this.pages[pageID]();
+    return DocsContent.pages[pageID].func();
   }
-}
-
-//change the content on the page, using the pageID
-DocsContent.prototype.set = function(pageID){
-  if(this.pages[pageID] != this.currentPage){
-    DocsContent.currentPage = this.pages[pageID];
-  }
-  Quas.rerender(DocsNav.content);
 }
 
 DocsContent.nextBtn = function(){
@@ -78,7 +44,7 @@ DocsContent.nextBtn = function(){
 };
 
 //setup - page content
-DocsContent.prototype.setup = function(){
+DocsContent.setup = function(){
   let code1 =
   '<!--Linking Quas-->\n'+
   '<script src="quas/quas.js"></script>\n'+
@@ -136,7 +102,7 @@ DocsContent.prototype.setup = function(){
 }
 
 //props - page content
-DocsContent.prototype.components = function(){
+DocsContent.components = function(){
   let basicVersion =
     "class MyFirstComponent extends Component{\n"+
     "\trender(){\n"+
@@ -180,8 +146,7 @@ DocsContent.prototype.components = function(){
       <pre><code>"console.log(myComponent.el);"</code></pre>
       <p>Instead of using the query selector you can pass a DOM element as the parent for the rendering. The example below shows how you can make another instance of MyFirstComponent and add the new instance as a child to myComponent</p>
       <pre><code>
-        "let anotherComp = new MyFirstComponent();\n"+
-        "Quas.render(anotherComp, myComponent.el);\n{helloRes}"
+        "let anotherComp = new MyFirstComponent();\nQuas.render(anotherComp, myComponent.el);\n{helloRes}" //"
       </code></pre>
       <hr>
       <h2>Render Rules</h2>
@@ -197,99 +162,166 @@ DocsContent.prototype.components = function(){
 }
 
 //props - page content
-DocsContent.prototype.props = function(){
+DocsContent.props = function(){
   <quas>
     <div>Props</div>
   </quas>
 }
 
 //updating props - page content
-DocsContent.prototype.updatingProps = function(){
+DocsContent.updatingProps = function(){
   <quas>
     <div>Updating Props</div>
   </quas>
 }
 
 //event handling - page content
-DocsContent.prototype.eventHandling = function(){
+DocsContent.eventHandling = function(){
   <quas>
     <div>Event Handling</div>
   </quas>
 }
 
 //sub elements - page content
-DocsContent.prototype.subElements = function(){
+DocsContent.subElements = function(){
   <quas>
     <div>Sub Elements</div>
   </quas>
 }
 
 //conditional rendering - page content
-DocsContent.prototype.conditionalRendering = function(){
+DocsContent.conditionalRendering = function(){
   <quas>
     <div>conditional rendering</div>
   </quas>
 }
 
 //production builds - page content
-DocsContent.prototype.productionBuilds = function(){
+DocsContent.productionBuilds = function(){
   <quas>
     <div>production builds</div>
   </quas>
 }
 
 //custom attributes - page content
-DocsContent.prototype.customAttributes = function(){
+DocsContent.customAttributes = function(){
   <quas>
     <div>custom attrs</div>
   </quas>
 }
 
 //custom events - page content
-DocsContent.prototype.customEvents = function(){
+DocsContent.customEvents = function(){
   <quas>
     <div>custom events</div>
   </quas>
 }
 
 //ajax requests - page content
-DocsContent.prototype.ajaxRequests = function(){
+DocsContent.ajaxRequests = function(){
   <quas>
     <div>ajax</div>
   </quas>
 }
 
 //url params - page content
-DocsContent.prototype.urlParameters = function(){
+DocsContent.urlParameters = function(){
   <quas>
     <div>url params</div>
   </quas>
 }
 
 //cookies - page content
-DocsContent.prototype.cookies = function(){
+DocsContent.cookies = function(){
   <quas>
     <div>Cookies</div>
   </quas>
 }
 
 //query elements - page content
-DocsContent.prototype.queryElements = function(){
+DocsContent.queryElements = function(){
   <quas>
     <div>Query DOM tree</div>
   </quas>
 }
 
 //scrolling breakpoints - page content
-DocsContent.prototype.scrollingBreakpoints = function(){
+DocsContent.scrollingBreakpoints = function(){
   <quas>
     <div>Scrolling breakpoints</div>
   </quas>
 }
 
 //api - page content
-DocsContent.prototype.api = function(){
+DocsContent.api = function(){
   <quas>
     <div>api</div>
   </quas>
+}
+
+DocsContent.pages = {
+  "setup" : {
+    name : "Setup",
+    func : DocsContent.setup
+  },
+  "components" : {
+    name : "Components",
+    func : DocsContent.components
+  },
+  "props" : {
+    name : "Props",
+    func : DocsContent.props
+  },
+  "updating-props" : {
+    name : "Updating Props",
+    func : DocsContent.updatingProps
+  },
+  "event-handling" : {
+    name : "Event Handling",
+    func: DocsContent.eventHandling
+  },
+  "sub-elements" : {
+    name : "Sub Elements",
+    func : DocsContent.subElements
+  },
+  "conditional-rendering" : {
+    name : "Conditional Rendering",
+    func : DocsContent.conditionalRendering
+  },
+  "production-builds" :  {
+    name : "Production Builds",
+    func : DocsContent.productionBuilds
+  },
+  "custom-attributes" : {
+    name : "Custom Attributes",
+    func : DocsContent.customAttributes
+  },
+  "custom-events" : {
+    name : "Custom Events",
+    func : DocsContent.customEvents
+  },
+  "ajax-requests" : {
+    name : "AJAX Requests",
+    func : DocsContent.ajaxRequests
+  },
+  "url-parameters" : {
+    name : "URL Parameters",
+    func : DocsContent.urlParameters
+  },
+  "cookies" : {
+    name : "Cookies",
+    func : DocsContent.cookies
+  },
+  "query-elements" : {
+    name : "Query Elements",
+    func : DocsContent.queryElements
+  },
+  "scrolling-breakpoints" : {
+    name : "Scrolling Breakpoints",
+    func : DocsContent.scrollingBreakpoints
+  },
+  "api" : {
+    name : "API",
+    func : DocsContent.api
+  }
 }
