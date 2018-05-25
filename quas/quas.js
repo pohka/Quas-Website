@@ -190,7 +190,7 @@ class Quas{
       el.addEventListener("click", function(e){
         e.preventDefault();
         let id = Atlas.getIDByPath(this.href);
-        Atlas.set(id);
+        Atlas.push(id);
       });
     }
 
@@ -690,24 +690,30 @@ class Atlas{
    }
  }
 
- //call the set function and push the new url
- static set(id){
+ //push a new page by the id in Atlas.paths
+ static push(id){
    let succuss = Atlas.paths[id].set();
    if(succuss === undefined || succuss){
      let newUrl = window.origin + Atlas.paths[id].path;
      window.history.pushState('','',newUrl);
 
-     //rerender components in this list
-     for(let i in Atlas.rerenderOnSet){
-       Quas.rerender(Atlas.rerenderOnSet[i]);
-     }
+    //notify event listeners
+    for(let i in Atlas.pushListeners){
+      Atlas.pushListeners[i].onPush(Atlas.paths[id].path);
+    }
    }
+ }
+
+ //add a component to listen to an atlas event
+ static addPushListener(comp){
+   Atlas.pushListeners.push(comp);
  }
 }
 
-Atlas.paths = {}; //all the paths mapped to the atlas
-Atlas.rerenderOnSet = []; //all components in this array wll always be rerendered when loading a new page
-
+//all the paths mapped to the atlas
+Atlas.paths = {};
+//listeners to events
+Atlas.pushListeners = [];
 
 
 window.onload = function(){

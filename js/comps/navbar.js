@@ -2,7 +2,7 @@ class Navbar extends Component{
   constructor(items){
     super();
     this.pathIDs = items;
-    Atlas.rerenderOnSet.push(this);
+    Atlas.addPushListener(this);
   }
 
   static createOption(pathID){
@@ -14,6 +14,11 @@ class Navbar extends Component{
     <quas>
       <div><a class="nav-item {cls}" href="{pathInfo.path}" target="push">{pathInfo.title}</a></div>
     </quas>
+  }
+
+  onPush(path){
+    console.log(path);
+    Quas.rerender(this);
   }
 
   render(){

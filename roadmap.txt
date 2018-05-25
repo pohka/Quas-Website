@@ -1,14 +1,1 @@
-pushing states for href links, rather than reloading page
 
-
-cases
-first time visit, load the components for this page
-click and link or an event happens which changes the page and decides what to do with existing components
-
-global components (navbar and/or side menus)
-body component - parent to all other components, this should manage them too
-
-rather than using Atlas.rerenderOnSet, instead create a listener function for all global components when a new page is pushed
-e.g. onPush(){Quas.rerender(this);}
-
-add Altas.push(pageID) so you can push to pages from events rather than just form a link click
