@@ -14,9 +14,7 @@ class Body extends Component{
       return Body.renderIndex();
     }
     else if(Atlas.currentPathStartsWith("/docs")){
-      <quas>
-        <div>docs</div>
-      </quas>
+      return Body.renderDocs();
     }
     else if(currentPathID == "download"){
       <quas>
@@ -55,6 +53,18 @@ class Body extends Component{
         <div class="card-con" id="card-row-2">
           {card4.render(), card5.render(), card6.render()} //must put them in array for multiple components
         </div>
+      </div>
+    </quas>
+  }
+
+  static renderDocs(){
+    if(Body.docsNav === undefined){
+      Body.docsNav = new DocsNav();
+    }
+    
+    <quas>
+      <div>
+        {Body.docsNav.render()}
       </div>
     </quas>
   }

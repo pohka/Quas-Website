@@ -1,12 +1,13 @@
 class DocsNav extends Component{
   constructor(){
     super();
-    DocsNav.content = new DocsContent();
-    Quas.render(DocsNav.content, ".docs-content");
+//    DocsNav.content = new DocsContent();
+  //  Quas.render(DocsNav.content, ".docs-content");
   }
   //set the url
   static setPath(e, comp){
     let page = this["data-page"];
+    /*
     let newurl = window.origin + "/docs/" + page;
     if(newurl !== window.location.href){
       window.history.pushState('','',newurl);
@@ -17,6 +18,10 @@ class DocsNav extends Component{
     else{ //same page
       window.scrollTo(0,0); //scroll to top
     }
+    */
+
+    Atlas.pushByPath("/docs/" + page);
+    window.scrollTo(0,0); //scroll to top
   }
 
   //loads the path in the url

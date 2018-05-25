@@ -704,6 +704,14 @@ class Atlas{
   }
  }
 
+ static pushByPath(path){
+    let newUrl = window.origin + path;
+    window.history.pushState('','',newUrl);
+    for(let i in Atlas.pushListeners){
+      Atlas.pushListeners[i].onPush(path);
+    }
+ }
+
  //add a component to listen to an atlas event
  static addPushListener(comp){
    Atlas.pushListeners.push(comp);

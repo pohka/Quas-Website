@@ -7,7 +7,7 @@ class Navbar extends Component{
 
   static createOption(pathID){
     let cls="";
-    if(pathID == Atlas.getCurrentPathID()){
+    if(pathID == Atlas.getCurrentPathID() || Atlas.currentPathStartsWith(Atlas.paths[pathID].path)){
       cls = "active";
     }
     let pathInfo = Atlas.paths[pathID];
