@@ -61,10 +61,16 @@ class Body extends Component{
     if(Body.docsNav === undefined){
       Body.docsNav = new DocsNav();
     }
-    
+    if(Body.docsContent === undefined){
+      Body.docsContent = new DocsContent();
+    }
+
     <quas>
       <div>
         {Body.docsNav.render()}
+        <div class="docs-content">
+          {Body.docsContent.render()}
+        </div>
       </div>
     </quas>
   }

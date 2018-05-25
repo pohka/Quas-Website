@@ -1,7 +1,7 @@
 class DocsNav extends Component{
   constructor(){
     super();
-//    DocsNav.content = new DocsContent();
+  //  DocsNav.content = new DocsContent();
   //  Quas.render(DocsNav.content, ".docs-content");
   }
   //set the url
@@ -25,6 +25,7 @@ class DocsNav extends Component{
   }
 
   //loads the path in the url
+  /*
   static loadPath(){
     let page = location.pathname.replace("/docs/", "");
     for(let i in this.pages){
@@ -34,6 +35,7 @@ class DocsNav extends Component{
       }
     }
   }
+  */
 
   //converts a DocsNav.pages object into a valid url page name
   static getPageID(page){
@@ -60,12 +62,12 @@ class DocsNav extends Component{
   }
 }
 
-DocsNav.set = function(pageID){
-  window.history.pushState('','',"/docs/"+pageID);
-  Quas.rerender(nav);
-  DocsNav.loadPath();
-  window.scrollTo(0,0); //scroll to top
-}
+//DocsNav.set = function(pageID){
+//  window.history.pushState('','',"/docs/"+pageID);
+//  Quas.rerender(nav);
+//  DocsNav.loadPath();
+//  window.scrollTo(0,0); //scroll to top
+//}
 
 DocsNav.pages = [
   "Setup",

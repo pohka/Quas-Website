@@ -12,7 +12,7 @@ function startQuas(){
   */
 
   Atlas.map("index", "/", "Quas");
-  Atlas.map("docs", "/docs", "Docs");
+  Atlas.map("docs", "/docs/setup", "Docs");
   Atlas.map("download", "/download", "Download");
 
 //  console.log(Quas.paths);
