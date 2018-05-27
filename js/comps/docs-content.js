@@ -163,15 +163,91 @@ DocsContent.components = function(){
 
 //props - page content
 DocsContent.props = function(){
+  let code1 = "class MyComponent extends Component{\n"+
+  "\tconstructor(){\n"+
+  "\t\tsuper();\n"+
+  "\t\tthis.name = 'john doe';\n"+
+  "\t}\n\n"+
+  "\t//Hello john doe\n"+
+  "\trender(){\n"+
+  "\t\t\<quas\>\n"+
+  "\t\t\t<div>Hello {this.name}</div>\n"+
+  "\t\t\</quas\>\n"+
+  "\t}\n"+
+  "}";
+
+  let code2 = "class MyComponent extends Component{\n"+
+  "\tconstructor(name){\n"+
+  "\t\tsuper();\n"+
+  "\t\tthis.name = name;\n"+
+  "\t\tthis.surname = 'doe';\n"+
+  "\t}\n\n"+
+  "\trender(){\n"+
+  "\t\t\<quas\>\n"+
+  "\t\t\t<div>\n"+
+  "\t\t\t\t{this.name, ' ', this.surname}, is your name really {this.name}?\n"+
+  "\t\t\t</div>\n"+
+  "\t\t\</quas\>\n"+
+  "\t}\n"+
+  "}\n"+
+  "\n...\n\n"+
+  "//render 'john doe, is your name really john?' to the body tag\n"+
+  "Quas.render(new MyComponent('john'), 'body');"
+  ;
+
   <quas>
-    <div>Props</div>
+    <div>
+      <h1>Props</h1>
+      <p>"A prop (property) allows you to pass a value as input. Just surround the value in curly brackets"</p>
+      <pre>
+        <code>
+          {code1}
+        </code>
+      </pre>
+      <hr>
+      <h2>Multiple Props</h2>
+      <p>If you need to use multiple props together you must put commas between each value. You can also pass arguments to the constructor.</p>
+      <pre>
+        <code>
+          {code2}
+        </code>
+      </pre>
+
+      {DocsContent.nextBtn()}
+    </div>
   </quas>
 }
 
 //updating props - page content
 DocsContent.updatingProps = function(){
+  let code1 =
+    "//comp.name = john\n"+
+    "let comp = new MyComponent('john');\n"+
+    "Quas.render(comp, 'body');\n"+
+    "comp.name = doe;\n\n"+
+    "//comp has not updated on the page, so you must rerender it\n"+
+    "Quas.rerender(comp);"
+  ;
+
+  let code2 =
+  "let comp = new MyComponent('john');\n"+
+  "Quas.render(comp, 'body');\n"+
+  "comp.setProp('name', 'doe'); //sets and rerenders the component";
+
   <quas>
-    <div>Updating Props</div>
+    <div>
+      <h1>Updating Props</h1>
+      <p>If the value of a a prop changes the component must be rerendered to update the value on the DOM tree.</p>
+      <pre><code>
+        {code1}
+      </code></pre>
+      <p>"Alternatively if you are only changing one prop you can use setProp( ) which will rerender the component after setting the new value"</p>
+      <pre><code>
+        {code2}
+      </code></pre>
+
+      {DocsContent.nextBtn()}
+    </div>
   </quas>
 }
 
