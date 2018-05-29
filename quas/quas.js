@@ -723,6 +723,12 @@ Atlas.paths = {};
 //listeners to events
 Atlas.pushListeners = [];
 
+//listen to back and forward button in browser
+window.addEventListener("popstate", function(e) {
+  for(let i in Atlas.pushListeners){
+    Atlas.pushListeners[i].onPush(e.target.location.href);
+  }
+});
 
 window.onload = function(){
   if(typeof startQuas === "function" && !Quas.isDevBuild){

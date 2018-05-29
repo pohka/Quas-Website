@@ -1,3 +1,2 @@
 Atlas.pathMatches("/docs/*")
-load page when using back and forward browser history
 bug: using round brackets () between quas tags keeps calling a function
