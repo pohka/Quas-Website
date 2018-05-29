@@ -253,50 +253,237 @@ DocsContent.updatingProps = function(){
 
 //event handling - page content
 DocsContent.eventHandling = function(){
+  let code1 =
+    "class MyComponent extends Component{\n\n"+
+    "\tstatic handleClick(event, component){\n"+
+    "\t\tconsole.log('clicked');\n"+
+    "\t}\n\n"+
+    "\trender(){\n"+
+    "\t\t\<quas\>\n"+
+    "\t\t\t<button onclick={MyComponent.handleClick}>Click Me</button>\n"+
+    "\t\t\</quas\>\n"+
+    "\t}\n"+
+    "}";
+
   <quas>
-    <div>Event Handling</div>
+    <div>
+      <h1>Event Handling</h1>
+      <p>You can creat a function to which will handle the event. All of the HTML DOM Events are supported.</p>
+      <pre><code>
+        {code1}
+      </code></pre>
+
+      {DocsContent.nextBtn()}
+    </div>
   </quas>
 }
 
 //sub elements - page content
 DocsContent.subElements = function(){
+  let code1 =
+    "class MyComponent extends Component{\n\n"+
+    "\tstatic genItem(name){\n"+
+    "\t\t\<quas\>\n"+
+    "\t\t\t<div>Hello {name}<div>\n"+
+    "\t\t\</quas\>\n"+
+    "\t}\n\n"+
+    "\trender(){\n"+
+    "\t\t\<quas\>\n"+
+    "\t\t\t{MyComponent.genItem('john')}\n"+
+    "\t\t\</quas\>\n"+
+    "\t}\n"+
+    "}";
+
   <quas>
-    <div>Sub Elements</div>
+    <div>
+      <h1>Sub Elements</h1>
+      <p>You can create sub elements like so:</p>
+      <pre><code>
+        {code1}
+      </code></pre>
+
+      {DocsContent.nextBtn()}
+    </div>
   </quas>
 }
 
 //conditional rendering - page content
 DocsContent.conditionalRendering = function(){
+  let code1 =
+    "class MyComponent extends Component{\n"+
+    "\tconstructor(name, age){\n"+
+    "\t\tsuper();\n"+
+    "\t\tthis.name = name;\n"+
+    "\t\tthis.age = age;\n"+
+    "\t}\n\n"+
+    "\tstatic genItem(name, age){\n"+
+    "\t\tif(age > 12){\n"+
+    "\t\t\t\<quas\>\n"+
+    "\t\t\t\t<div>Welcome {name}<div>\n"+
+    "\t\t\t\</quas\>\n"+
+    "\t\t}\n"+
+    "\t\telse{\n"+
+    "\t\t\t\<quas\>\n"+
+    "\t\t\t\t<div>You are too young to use this website<div>\n"+
+    "\t\t\t\</quas\>\n"+
+    "\t\t}\n"+
+    "\t}\n\n"+
+    "\trender(){\n"+
+    "\t\t\<quas\>\n"+
+    "\t\t\t{MyComponent.genItem(this.name, this.age)}\n"+
+    "\t\t\</quas\>\n"+
+    "\t}\n"+
+    "}";
+
   <quas>
-    <div>conditional rendering</div>
+    <div>
+      <h1>Conditional Rendering</h1>
+      <p>You can decide what the render with conditional statements. It is typically best practice to do this within sub elements rather than in the render function. This is becasue the brackets for the if statement should surround the quas blocks.</p>
+      <pre><code>
+        {code1}
+      </code></pre>
+
+      {DocsContent.nextBtn()}
+    </div>
   </quas>
 }
 
 //production builds - page content
 DocsContent.productionBuilds = function(){
+  let code1 =
+    '<script src="/quas/quas.js"></script>\n'+
+    '<script src="/quas/mybundle.js"></script>\n'+
+    '<!--\n\t<script src="/quas/quas-dev.js"></script>\n'+
+    '\t<script>Quas.devBuild("/config.json");</script>\n-->';
+
   <quas>
-    <div>production builds</div>
+    <div>
+      <h1>Production Builds</h1>
+      <p>When using a development build the process of bundling will be done when the page loads, however you can export a production build which means you can remove the need of quas-dev.js
+        <br><br>
+        You can do this by opening your browsers console and using one of the following commands
+      </p>
+      <pre><code>
+        "// this will create mybundle.js with the bundled javascript\n"+
+        "Quas.build('mybundle', 'js');\n\n\n"+
+        "// If using css in the config file \n"+
+        "// this command will create 2 files one for the \n"+
+        "// javascript and another for the css\n"+
+        "Quas.build();"
+      </code></pre>
+
+      <p>Once you have the bundled file you must link it in your html and then remove the code which links quas-dev.js and also remember to remove the call to Quas.devBuild</p>
+      <pre><code>
+        {code1}
+      </code></pre>
+
+      {DocsContent.nextBtn()}
+    </div>
   </quas>
 }
 
 //custom attributes - page content
 DocsContent.customAttributes = function(){
+  let code1 =
+  "class Todo extends Component{\n"+
+    "\tconstructor(listItems){\n"+
+    "\t\tsuper();\n"+
+    "\t\tthis.listItems = listItems;\n"+
+    "\t}\n\n"+
+    "\trender(){\n"+
+    "\t\t\<quas\>\n"+
+    "\t\t\t<div>\n"+
+    "\t\t\t\t<ul q-foreach-li={this.listItems}></ul>\n"+
+    "\t\t\t<div>\n"+
+    "\t\t\</quas\>\n"+
+    "\t}\n"+
+    "}\n\n"+
+    "Quas.render(new Todo([\n"+
+    "\t'item 1',\n"+
+    "\t'item 2',\n"+
+    "\t'item 3'\n"+
+    "]), 'body');";
+
+  let code2 =
+    "<!-- format: q-CommandName-Param1-Param2=value -->\n"+
+    "<div q-log-foo=10>example</div>\n\n"+
+    "Quas.customAttrs['log'] = function(component, \n\tparentDOMElement, params, value){\n"+
+    "\t// prints the first param a number of times\n"+
+    "\tfor(let i=0; i<value; i++){\n"+
+    "\t\tconsole.log(params[2]);\n"+
+    "}";
+
+  ;
   <quas>
-    <div>custom attrs</div>
+    <div>
+      <h1>Custom Attributes</h1>
+      <p>Quas comes with some custom html attributes which allow you to define components easier. You can also add your own custom attributes and define how they should be handled</p>
+
+      <pre><code>
+        {code1}
+      </code></pre>
+
+      <p>To create your own custom attributes you must set add a function to Quas.customAttrs. All custom attribute will have the prefix 'q-' in the html code and the command will come next. Here is an example which will print out a parameter a given number of times</p>
+      <pre><code>
+        {code2}
+      </code></pre>
+
+      <p>Params will be the key of the attribute split by '-' so in the example it will be [ 'q', 'log', 'foo' ]</p>
+
+      {DocsContent.nextBtn()}
+    </div>
   </quas>
 }
 
 //custom events - page content
 DocsContent.customEvents = function(){
+  let code1 =
+    "Quas.addEventListener('myEvent', function(data){\n"+
+    "\tconsole.log('i am listening to' + data);\n"+
+    "});\n\n"+
+    "...\n\n"+
+    "Quas.broadcastEvent('myEvent', 'music');";
+
   <quas>
-    <div>custom events</div>
+    <div>
+      <h1>Custom Events</h1>
+      <p>This will allow you to broadcast data to all the existing listeners</p>
+      <pre><code>
+        {code1}
+      </code></pro>
+
+      {DocsContent.nextBtn()}
+    </div>
   </quas>
 }
 
 //ajax requests - page content
 DocsContent.ajaxRequests = function(){
+  let code1 =
+    "Quas.ajax({\n"+
+    "\turl : 'login.php',\n"+
+    "\ttype : 'POST',\n"+
+    "\tdata : {\n"+
+    "\t\tusername : 'john doe',\n"+
+    "\t\tpass : '123AA',\n"+
+    "\t}\n"+
+    "\treturn : 'json',\n"+
+    "\tsuccess : function(result){\n"+
+    "\t\t...\n"+
+    "\t},\n"+
+    "\terror : function(errorMsg, errorCode){}\n"+
+    "});";
+
   <quas>
-    <div>ajax</div>
+    <div>
+      <h1>AJAX Requests</h1>
+      <p>Request data from a server</p>
+      <pre><code>
+        {code1}
+      </code></pro>
+
+      {DocsContent.nextBtn()}
+    </div>
   </quas>
 }
 
