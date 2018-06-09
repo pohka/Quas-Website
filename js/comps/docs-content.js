@@ -475,7 +475,13 @@ DocsContent.ajaxRequests = function(){
     "});";
 
 
-  let testCode = "let i = 0;\nvar j=1;";
+  let testCode =
+    "let i = 0;\n"+
+    "while(i < 10){\n"+
+    "  console.log('hi');\n"+
+    "  i++;\n"+
+    "}";
+
 
   <quas>
     <div>

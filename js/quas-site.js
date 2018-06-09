@@ -49,33 +49,123 @@ const jsKeyWords = [
   "yield"
 ];
 
-let jsNewLine = [
-  ";",
+let jsKeyWordEnd = [
+  " ",
   "{",
   "}",
-  ")"
+  "(",
+  ")",
+  ";",
+  ":",
+  "."
 ];
 
+
 Quas.customAttrs["code"] = function(comp, parent, params, data){
-  let arr = data.split();
-  for(let i in arr){
-    let span = document.createElement("span");
-    if(jsKeyWords.indexOf(arr[i]) > -1){
-      span.setAttribute("class", "code-keyword");
+//  let matches = data.indexOf(/"|'|`/g);
+  let lastCharWasSpace = false;
+  let quoteException = false;
+  let word = "";
+  let char = "";
+  let isSpace = false;
+  let isNewLine = false;
+  let isQuote = false;
+  let quoteOpen = false;
+  let quoteType; // ' or " or `
+  let tabCount = 0;
+  let isKeyWordEnd = false;
+  for(let i=0; i<data.length; i++){
+    quoteException = false;
+    char = data.charAt(i);
+    isSpace = char.match(/ +s?/);
+    isNewLine = char.match("\n");
+    isQuote = char.match(/"|'|`/);
+    isKeyWordEnd = (jsKeyWordEnd.indexOf(char) > -1);
+
+
+
+    if(isQuote && !quoteOpen){
+      quoteOpen = true;
+      quoteType = char;
+      highlightWord(parent, word, tabCount, ""); //handle current word
+      tabCount += updateTabCount(word);
+      word = char;
     }
-    span.textContent = arr[i];
-    parent.appendChild(span);
-    let lastChar = arr[i].charAt(arr[i].length-1);
-    if(jsNewLine.indexOf(lastChar) > -1){
-      let t = document.createTextNode("\n");
-      parent.appendChild(t);
+
+    //end of quote
+    else if(isQuote && quoteOpen && char == quoteType){
+      word += char;
+      quoteOpen = false;
+
+      let span = document.createElement("span");
+      span.setAttribute("class", "code-quote");
+      span.textContent = word;
+      parent.appendChild(span);
+      quoteException = true;
+
+      word = "";
     }
-    else{
-      let t = document.createTextNode(" ");
-      parent.appendChild(t);
+    //inside quote
+    else if(quoteOpen){
+      word += char;
+    }
+
+    //end of word
+    if(!quoteOpen && !quoteException){
+      if(!lastCharWasSpace && (isNewLine || isSpace)){
+        highlightWord(parent, word, tabCount, char);
+        tabCount += updateTabCount(word);
+        word = "";
+        lastCharWasSpace = true;
+      }
+      else if(!isSpace){
+        word += char;
+        lastCharWasSpace = false;
+      }
+      else if(lastCharWasSpace && isSpace){
+        word += "\t";
+        lastCharWasSpace = false;
+      }
+    }
+
+    //add last word
+    if(i == data.length-1){
+      highlightWord(parent, word, tabCount, "");
+      tabCount += updateTabCount(word);
     }
   }
 };
+
+//highlights a word, if its a keyword it will have the keyword class
+function highlightWord(parent, word, tabCount, char){
+  let span = document.createElement("span");
+  if(jsKeyWords.indexOf(word) > -1){
+    span.setAttribute("class", "code-keyword");
+  }
+
+  //handle tabs
+  if(false){
+    if(word.indexOf("}") > -1){
+      tabCount -= 1;
+    }
+    for(let i=0; i<tabCount; i++){
+      word = "\t" + word;
+    }
+  }
+
+  span.textContent = word + char;
+  parent.appendChild(span);
+}
+
+function updateTabCount(word){
+    if(word.indexOf("{") > -1){
+      return 1;
+    }
+    else if(word.indexOf("}") > -1){
+      return -1;
+    }
+    return 0;
+}
 
 
 function startQuas(){

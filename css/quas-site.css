@@ -60,7 +60,11 @@ code{
 }
 
 .code-keyword{
-	color: green;
+	color: #00FFFF;
+}
+
+.code-quote{
+	color: #cccc00;
 }
 
 /*----------- BODY ---------*/
@@ -218,7 +222,8 @@ pre{
 
 pre code{
 	font-size: 16px;
-	background: #fdfdfd;
+	background: #444;
+	color : white;
 	display: block;
 	padding: 15px 50px;
 	margin: 10px 0px;
