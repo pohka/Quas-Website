@@ -58,6 +58,11 @@ DocsContent.setup = function(){
   '\t]\n'+
   '}';
 
+  let codeStart =
+  "function startQuas()\{\n"+
+  "\t//your code goes here\n"+
+  "\}";
+
   <quas>
     <div>
       <h1>Setting up a Project</h1>
@@ -69,9 +74,7 @@ DocsContent.setup = function(){
       <br>
       index.html
       <pre>
-      <code>
-        {code1}
-      </code>
+        <code q-code="{code1}"></code>
       </pre>
       <ul>
         <li>quas.js is the library</li>
@@ -82,19 +85,15 @@ DocsContent.setup = function(){
       <h2>The Config File</h2>
       <p>config.json is a JSON file which will decide which files will be bundled for the development build. It is often a good idea to have a seperate JavaScript and CSS files for each component.</p>
       <pre>
-      <code>
-        {configCode}
-      </code>
+        <code q-code="{configCode}"></code>
       </pre>
       You can read more about this in the <a href="production-builds">Production Build</a> section.
       <hr>
       <h2>Starting Point</h2>
       <p>Once quas has loaded it will starts its executing the startQuas function.</p>
-      <pre><code>
-        "function startQuas()\{\n"+
-        "\t//your code goes here\n"+
-        "\}"
-      </code></pre>
+      <pre>
+        <code q-code="{codeStart}"></code>
+      </pre>
       {DocsContent.nextBtn()}
 
     </div>
@@ -121,39 +120,52 @@ DocsContent.components = function(){
     "\tQuas.render(myComponent, 'body'); //render to the body tag\n"+
     "}";
 
-    let helloRes =
+    let code3 =
+    "let anotherComp = new MyFirstComponent();\n"+
+    "Quas.render(anotherComp, myComponent.el);\n"+
     "\n//result\n<div>\n\tHello World\n"+
     "\t<div>Hello World</div>\n"+
     "</div>";
+
+  let code4 = "Quas.renderRule(myComponent, 'body', 'prepend');";
+  let code5 = "console.log(myComponent.el);";
+  let code6 = "Quas.render(myComponent, '#myID');";
 
   <quas>
     <div>
       <h1>Components</h1>
       <p>Making your own component is as simple as making a new class which extends Component and giving it a render function. The render function should contain quas tags. The quas tags should be on seperate lines and everything between the opening and closing quas tag will use a html like syntax.</p>
       <pre>
-        <code>{basicVersion}</code>
+        <code q-code="{basicVersion}"></code>
       </pre>
 
       <p>To make the content of the component appear on your page you must create an instance of it and call {func}. You can have multiple instances of a component at any time.</p>
       <pre>
-        <code>{renderCode}</code>
+        <code q-code="{renderCode}"></code>
       </pre>
       <hr>
       <h2>Rendering</h2>
       <p>"There is a few different ways you can render a component. The default way as shown above will append the content of the component as a child of the parent chosen using the query selector. The query selector works the same as JavaScript's document.querySelector( ) e.g. '#id' and '.class'."</p>
-      <pre><code>"Quas.render(myComponent, '#myID');"</code></pre>
+      <pre>
+        <code q-code="{code6}"></code>//\""
+      </pre>
       <p>Once a component has been rendered to the page the DOM tree for this instance the DOM element will be accessable quickly though 'el' variable.</p>
-      <pre><code>"console.log(myComponent.el);"</code></pre>
+      <pre>
+        <code q-code="{code5}"></code> //\""
+      </pre>
+
       <p>Instead of using the query selector you can pass a DOM element as the parent for the rendering. The example below shows how you can make another instance of MyFirstComponent and add the new instance as a child to myComponent</p>
-      <pre><code>
-        "let anotherComp = new MyFirstComponent();\nQuas.render(anotherComp, myComponent.el);\n{helloRes}" //"
-      </code></pre>
+
+      <pre>
+        <code q-code="{code3}"></code> //\""
+      </pre>
+
       <hr>
       <h2>Render Rules</h2>
       <p>"You can use Quas.renderRule( ) to give extra options when rendering, such as prepend. Prepend will render the component as the first child to the parent rather than the last."</p>
-      <pre><code>
-        "Quas.renderRule(myComponent, 'body', 'prepend');"
-      </code></pre>
+      <pre>
+        <code q-code="{code4}"></code>
+      </pre>
       {DocsContent.nextBtn()}
     </div>
 
@@ -200,17 +212,13 @@ DocsContent.props = function(){
       <h1>Props</h1>
       <p>"A prop (property) allows you to pass a value as input. Just surround the value in curly brackets"</p>
       <pre>
-        <code>
-          {code1}
-        </code>
+        <code q-code="{code1}"></code>
       </pre>
       <hr>
       <h2>Multiple Props</h2>
       <p>If you need to use multiple props together you must put commas between each value. You can also pass arguments to the constructor.</p>
       <pre>
-        <code>
-          {code2}
-        </code>
+        <code q-code="{code2}"></code>
       </pre>
 
       {DocsContent.nextBtn()}
@@ -238,13 +246,13 @@ DocsContent.updatingProps = function(){
     <div>
       <h1>Updating Props</h1>
       <p>If the value of a a prop changes the component must be rerendered to update the value on the DOM tree.</p>
-      <pre><code>
-        {code1}
-      </code></pre>
+      <pre>
+        <code q-code="{code1}"></code>
+      </pre>
       <p>"Alternatively if you are only changing one prop you can use setProp( ) which will rerender the component after setting the new value"</p>
-      <pre><code>
-        {code2}
-      </code></pre>
+      <pre>
+        <code q-code="{code2}"></code>
+      </pre>
 
       {DocsContent.nextBtn()}
     </div>
@@ -254,7 +262,7 @@ DocsContent.updatingProps = function(){
 //event handling - page content
 DocsContent.eventHandling = function(){
   let code1 =
-    "class MyComponent extends Component{\n\n"+
+    "class MyComponent extends Component{\n"+
     "\tstatic handleClick(event, component){\n"+
     "\t\tconsole.log('clicked');\n"+
     "\t}\n\n"+
@@ -269,9 +277,9 @@ DocsContent.eventHandling = function(){
     <div>
       <h1>Event Handling</h1>
       <p>You can creat a function to which will handle the event. All of the HTML DOM Events are supported.</p>
-      <pre><code>
-        {code1}
-      </code></pre>
+      <pre>
+        <code q-code="{code1}"></code>
+      </pre>
 
       {DocsContent.nextBtn()}
     </div>
@@ -281,7 +289,7 @@ DocsContent.eventHandling = function(){
 //sub elements - page content
 DocsContent.subElements = function(){
   let code1 =
-    "class MyComponent extends Component{\n\n"+
+    "class MyComponent extends Component{\n"+
     "\tstatic genItem(name){\n"+
     "\t\t\<quas\>\n"+
     "\t\t\t<div>Hello {name}<div>\n"+
@@ -298,9 +306,9 @@ DocsContent.subElements = function(){
     <div>
       <h1>Sub Elements</h1>
       <p>You can create sub elements like so:</p>
-      <pre><code>
-        {code1}
-      </code></pre>
+      <pre>
+        <code q-code="{code1}"></code>
+      </pre>
 
       {DocsContent.nextBtn()}
     </div>
@@ -339,9 +347,9 @@ DocsContent.conditionalRendering = function(){
     <div>
       <h1>Conditional Rendering</h1>
       <p>You can decide what the render with conditional statements. It is typically best practice to do this within sub elements rather than in the render function. This is becasue the brackets for the if statement should surround the quas blocks.</p>
-      <pre><code>
-        {code1}
-      </code></pre>
+      <pre>
+        <code q-code="{code1}"></code>
+      </pre>
 
       {DocsContent.nextBtn()}
     </div>
@@ -353,8 +361,16 @@ DocsContent.productionBuilds = function(){
   let code1 =
     '<script src="/quas/quas.js"></script>\n'+
     '<script src="/quas/mybundle.js"></script>\n'+
-    '<!--\n\t<script src="/quas/quas-dev.js"></script>\n'+
-    '\t<script>Quas.devBuild("/config.json");</script>\n-->';
+    '<!--\n  <script src="/quas/quas-dev.js"></script>\n'+
+    '  <script>Quas.devBuild("/config.json");</script>\n-->';
+
+  let code2 =
+    "// this will create mybundle.js with the bundled javascript\n"+
+    "Quas.build('mybundle', 'js');\n\n\n"+
+    "// If using css in the config file \n"+
+    "// this command will create 2 files one for the \n"+
+    "// javascript and another for the css\n"+
+    "Quas.build();";
 
   <quas>
     <div>
@@ -363,19 +379,14 @@ DocsContent.productionBuilds = function(){
         <br><br>
         You can do this by opening your browsers console and using one of the following commands
       </p>
-      <pre><code>
-        "// this will create mybundle.js with the bundled javascript\n"+
-        "Quas.build('mybundle', 'js');\n\n\n"+
-        "// If using css in the config file \n"+
-        "// this command will create 2 files one for the \n"+
-        "// javascript and another for the css\n"+
-        "Quas.build();"
-      </code></pre>
+      <pre>
+        <code q-code="{code2}"></code>
+      </pre>
 
       <p>Once you have the bundled file you must link it in your html and then remove the code which links quas-dev.js and also remember to remove the call to Quas.devBuild</p>
-      <pre><code>
-        {code1}
-      </code></pre>
+      <pre>
+        <code q-code="{code1}"></code>
+      </pre>
 
       {DocsContent.nextBtn()}
     </div>
@@ -386,31 +397,31 @@ DocsContent.productionBuilds = function(){
 DocsContent.customAttributes = function(){
   let code1 =
   "class Todo extends Component{\n"+
-    "\tconstructor(listItems){\n"+
-    "\t\tsuper();\n"+
-    "\t\tthis.listItems = listItems;\n"+
-    "\t}\n\n"+
-    "\trender(){\n"+
-    "\t\t\<quas\>\n"+
-    "\t\t\t<div>\n"+
-    "\t\t\t\t<ul q-foreach-li={this.listItems}></ul>\n"+
-    "\t\t\t<div>\n"+
-    "\t\t\</quas\>\n"+
-    "\t}\n"+
+    "  constructor(listItems){\n"+
+    "    super();\n"+
+    "    this.listItems = listItems;\n"+
+    "  }\n\n"+
+    "   render(){\n"+
+    "    <quas\>\n"+
+    "       <div>\n"+
+    "         <ul q-foreach-li={this.listItems}></ul>\n"+
+    "       <div>\n"+
+    "     \</quas\>\n"+
+    "  }\n"+
     "}\n\n"+
     "Quas.render(new Todo([\n"+
-    "\t'item 1',\n"+
-    "\t'item 2',\n"+
-    "\t'item 3'\n"+
+    "  'item 1',\n"+
+    "  'item 2',\n"+
+    "  'item 3'\n"+
     "]), 'body');";
 
   let code2 =
     "<!-- format: q-CommandName-Param1-Param2=value -->\n"+
     "<div q-log-foo=10>example</div>\n\n"+
     "Quas.customAttrs['log'] = function(component, \n\tparentDOMElement, params, value){\n"+
-    "\t// prints the first param a number of times\n"+
-    "\tfor(let i=0; i<value; i++){\n"+
-    "\t\tconsole.log(params[2]);\n"+
+    "  // prints the first param a number of times\n"+
+    "  for(let i=0; i<value; i++){\n"+
+    "    console.log(params[2]);\n"+
     "}";
 
   ;
@@ -419,14 +430,14 @@ DocsContent.customAttributes = function(){
       <h1>Custom Attributes</h1>
       <p>Quas comes with some custom html attributes which allow you to define components easier. You can also add your own custom attributes and define how they should be handled</p>
 
-      <pre><code>
-        {code1}
-      </code></pre>
+      <pre>
+        <code q-code="{code1}"></code>
+      </pre>
 
       <p>To create your own custom attributes you must set add a function to Quas.customAttrs. All custom attribute will have the prefix 'q-' in the html code and the command will come next. Here is an example which will print out a parameter a given number of times</p>
-      <pre><code>
-        {code2}
-      </code></pre>
+      <pre>
+        <code q-code="{code2}"></code>
+      </pre>
 
       <p>Params will be the key of the attribute split by '-' so in the example it will be [ 'q', 'log', 'foo' ]</p>
 
@@ -439,7 +450,7 @@ DocsContent.customAttributes = function(){
 DocsContent.customEvents = function(){
   let code1 =
     "Quas.addEventListener('myEvent', function(data){\n"+
-    "\tconsole.log('i am listening to' + data);\n"+
+    "  console.log('i am listening to' + data);\n"+
     "});\n\n"+
     "...\n\n"+
     "Quas.broadcastEvent('myEvent', 'music');";
@@ -448,9 +459,9 @@ DocsContent.customEvents = function(){
     <div>
       <h1>Custom Events</h1>
       <p>This will allow you to broadcast data to all the existing listeners</p>
-      <pre><code>
-        {code1}
-      </code></pro>
+      <pre>
+        <code q-code="{code1}"></code>
+      </pre>
 
       {DocsContent.nextBtn()}
     </div>
@@ -461,17 +472,17 @@ DocsContent.customEvents = function(){
 DocsContent.ajaxRequests = function(){
   let code1 =
     "Quas.ajax({\n"+
-    "\turl : 'login.php',\n"+
-    "\ttype : 'POST',\n"+
-    "\tdata : {\n"+
-    "\t\tusername : 'john doe',\n"+
-    "\t\tpass : '123AA',\n"+
-    "\t}\n"+
-    "\treturn : 'json',\n"+
-    "\tsuccess : function(result){\n"+
-    "\t\t...\n"+
-    "\t},\n"+
-    "\terror : function(errorMsg, errorCode){}\n"+
+    "  url : 'login.php',\n"+
+    "  type : 'POST',\n"+
+    "  data : {\n"+
+    "    username : 'john doe',\n"+
+    "    pass : '123AA',\n"+
+    "  }\n"+
+    "  return : 'json',\n"+
+    "  success : function(result){\n"+
+    "    ...\n"+
+    "  },\n"+
+    "  error : function(errorMsg, errorCode){}\n"+
     "});";
 
 
@@ -493,7 +504,7 @@ DocsContent.ajaxRequests = function(){
       <h1>AJAX Requests</h1>
       <p>Request data from a server</p>
       <pre>
-        <code q-code="{testCode}"></code>
+        <code q-code="{code1}"></code>
       </pre>
 
       {DocsContent.nextBtn()}
