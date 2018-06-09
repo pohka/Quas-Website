@@ -75,6 +75,8 @@ Quas.customAttrs["code"] = function(comp, parent, params, data){
   let lastChar = "";
   let isKeyWordEnd = false;
   let isComment = false;
+  let isMultilineComment = false;
+  let last2Chars;
 
   for(let i=0; i<data.length; i++){
     quoteException = false;
@@ -86,18 +88,25 @@ Quas.customAttrs["code"] = function(comp, parent, params, data){
     //matches a quote but not an escaped quote
     isQuote = char.match(/"|'|`/) && !lastChar.match(/\\"|'|`/);
 
-
+    last2Chars = lastChar + char;
 
     if(isComment){
-      console.log(char);
-      if(isNewLine){
-        console.log("isComment");
+      if((isNewLine && !isMultilineComment) || (last2Chars == "*/" && isMultilineComment)){
         let span = document.createElement("span");
         span.setAttribute("class", "code-comment");
-        span.textContent = word;
-        word = char;
+
+        if(isMultilineComment){
+          span.textContent = word + char;
+          word = "";
+        }
+        else{
+          span.textContent = word;
+          word = char;
+        }
         parent.appendChild(span);
         isComment = false;
+        isMultilineComment = false;
+
       }
       else{
         word += char;
@@ -107,14 +116,17 @@ Quas.customAttrs["code"] = function(comp, parent, params, data){
     else{
       //detect comment
       if(!quoteOpen){
-        if(lastChar+char == "//"){
+        if(last2Chars == "//" || last2Chars == "/*"){
           word = word.substr(0,word.length-1); //remove /
           highlightWord(parent, word, tabCount, ""); //handle current word
           tabCount += updateTabCount(word);
           word = "/";
           isComment = true;
+          if(last2Chars == "/*"){
+            isMultilineComment = true;
+          }
         }
-        else if(isNewLine){
+        else if((isNewLine && !isMultilineComment) || (last2Chars == "*/" && isMultilineComment)){
           isComment = false;
         }
       }
