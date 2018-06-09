@@ -72,65 +72,104 @@ Quas.customAttrs["code"] = function(comp, parent, params, data){
   let quoteOpen = false;
   let quoteType; // ' or " or `
   let tabCount = 0;
+  let lastChar = "";
   let isKeyWordEnd = false;
+  let isComment = false;
+
   for(let i=0; i<data.length; i++){
     quoteException = false;
     char = data.charAt(i);
     isSpace = char.match(/ +s?/);
     isNewLine = char.match("\n");
-    isQuote = char.match(/"|'|`/);
     isKeyWordEnd = (jsKeyWordEnd.indexOf(char) > -1);
 
+    //matches a quote but not an escaped quote
+    isQuote = char.match(/"|'|`/) && !lastChar.match(/\\"|'|`/);
 
 
-    if(isQuote && !quoteOpen){
-      quoteOpen = true;
-      quoteType = char;
-      highlightWord(parent, word, tabCount, ""); //handle current word
-      tabCount += updateTabCount(word);
-      word = char;
-    }
 
-    //end of quote
-    else if(isQuote && quoteOpen && char == quoteType){
-      word += char;
-      quoteOpen = false;
-
-      let span = document.createElement("span");
-      span.setAttribute("class", "code-quote");
-      span.textContent = word;
-      parent.appendChild(span);
-      quoteException = true;
-
-      word = "";
-    }
-    //inside quote
-    else if(quoteOpen){
-      word += char;
-    }
-
-    //end of word
-    if(!quoteOpen && !quoteException){
-      if(!lastCharWasSpace && (isNewLine || isSpace)){
-        highlightWord(parent, word, tabCount, char);
-        tabCount += updateTabCount(word);
-        word = "";
-        lastCharWasSpace = true;
-      }
-      //ending a keyword with a symbol
-      else if(isKeyWordEnd && jsKeyWords.indexOf(word) > -1){
-        highlightWord(parent, word, tabCount, "");
+    if(isComment){
+      console.log(char);
+      if(isNewLine){
+        console.log("isComment");
+        let span = document.createElement("span");
+        span.setAttribute("class", "code-comment");
+        span.textContent = word;
         word = char;
-        lastCharWasSpace = false;
+        parent.appendChild(span);
+        isComment = false;
       }
-      else if(!isSpace){
+      else{
         word += char;
-        lastCharWasSpace = false;
       }
-      //convert double spaces to tabs
-      else if(lastCharWasSpace && isSpace){
-        word += "\t";
-        lastCharWasSpace = false;
+    }
+    //not in comment
+    else{
+      //detect comment
+      if(!quoteOpen){
+        if(lastChar+char == "//"){
+          word = word.substr(0,word.length-1); //remove /
+          highlightWord(parent, word, tabCount, ""); //handle current word
+          tabCount += updateTabCount(word);
+          word = "/";
+          isComment = true;
+        }
+        else if(isNewLine){
+          isComment = false;
+        }
+      }
+
+      //opening quote
+      if(isQuote && !quoteOpen){
+        quoteOpen = true;
+        quoteType = char;
+        highlightWord(parent, word, tabCount, ""); //handle current word
+        tabCount += updateTabCount(word);
+        word = char;
+      }
+
+      //end of quote
+      else if(isQuote && quoteOpen && char == quoteType){
+        word += char;
+        quoteOpen = false;
+
+        let span = document.createElement("span");
+        span.setAttribute("class", "code-quote");
+        span.textContent = word;
+        parent.appendChild(span);
+        quoteException = true;
+
+        word = "";
+      }
+      //inside quote
+      else if(quoteOpen){
+        word += char;
+      }
+
+      //end of word
+      if(!quoteOpen && !quoteException){
+        if(!lastCharWasSpace && (isNewLine || isSpace)){
+          highlightWord(parent, word, tabCount, char);
+          tabCount += updateTabCount(word);
+          word = "";
+          lastCharWasSpace = true;
+        }
+        //ending a keyword with a symbol
+        else if(isKeyWordEnd && jsKeyWords.indexOf(word) > -1){
+          highlightWord(parent, word, tabCount, "");
+          word = char;
+          lastCharWasSpace = false;
+        }
+        //append character to word
+        else if(!isSpace){
+          word += char;
+          lastCharWasSpace = false;
+        }
+        //convert double spaces to tabs
+        else if(lastCharWasSpace && isSpace){
+          word += "\t";
+          lastCharWasSpace = false;
+        }
       }
     }
 
@@ -138,6 +177,9 @@ Quas.customAttrs["code"] = function(comp, parent, params, data){
     if(i == data.length-1){
       highlightWord(parent, word, tabCount, "");
       tabCount += updateTabCount(word);
+    }
+    else{
+      lastChar = char;
     }
   }
 };
@@ -159,7 +201,9 @@ function highlightWord(parent, word, tabCount, char){
     }
   }
 
-  span.textContent = word + char;
+  let text = word + char;
+
+  span.textContent = text;
   parent.appendChild(span);
 }
 

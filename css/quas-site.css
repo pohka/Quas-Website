@@ -67,6 +67,10 @@ code{
 	color: #cccc00;
 }
 
+.code-comment{
+	color: #9a9a9a;
+}
+
 /*----------- BODY ---------*/
 
 .container{

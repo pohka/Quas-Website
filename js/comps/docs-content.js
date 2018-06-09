@@ -477,10 +477,14 @@ DocsContent.ajaxRequests = function(){
 
   let testCode =
     "let i = 0;\n"+
-    "while(i < 10){\n"+
-    "  console.log('hi');\n"+
+    "while(i < 10){ //comment\n"+
+    "  //another comment heere\n"+
+    "  console.log('\'hi');\n"+
     "  i++;\n"+
-    "}";
+    "}\n\n" +
+    "\<quas\>\n"+
+    "  <div class='test'></div>\n"+
+    "\</quas\>";
 
 
   <quas>
