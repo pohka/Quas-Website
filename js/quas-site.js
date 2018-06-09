@@ -1,3 +1,83 @@
+const jsKeyWords = [
+  "arguments",
+  "await",
+  "break",
+  "case",
+  "catch",
+  "class",
+  "const",
+  "continue",
+  "debugger",
+  "default",
+  "delete",
+  "do",
+  "else",
+  "enum",
+  "eval",
+  "export",
+  "extends",
+  "false",
+  "finally",
+  "for",
+  "function",
+  "if",
+  "implements",
+  "import",
+  "in",
+  "instanceof",
+  "interface",
+  "let",
+  "new",
+  "null",
+  "package",
+  "private",
+  "protected",
+  "public",
+  "return",
+  "static",
+  "super",
+  "switch",
+  "this",
+  "throw",
+  "true",
+  "try",
+  "typeof",
+  "var",
+  "void",
+  "while",
+  "with",
+  "yield"
+];
+
+let jsNewLine = [
+  ";",
+  "{",
+  "}",
+  ")"
+];
+
+Quas.customAttrs["code"] = function(comp, parent, params, data){
+  let arr = data.split();
+  for(let i in arr){
+    let span = document.createElement("span");
+    if(jsKeyWords.indexOf(arr[i]) > -1){
+      span.setAttribute("class", "code-keyword");
+    }
+    span.textContent = arr[i];
+    parent.appendChild(span);
+    let lastChar = arr[i].charAt(arr[i].length-1);
+    if(jsNewLine.indexOf(lastChar) > -1){
+      let t = document.createTextNode("\n");
+      parent.appendChild(t);
+    }
+    else{
+      let t = document.createTextNode(" ");
+      parent.appendChild(t);
+    }
+  }
+};
+
+
 function startQuas(){
 
 
@@ -10,6 +90,8 @@ function startQuas(){
     pageDocs();
   }
   */
+
+
 
   Atlas.map("index", "/", "Quas");
   Atlas.map("docs", "/docs/setup", "Docs");

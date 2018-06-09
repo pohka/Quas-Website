@@ -474,13 +474,16 @@ DocsContent.ajaxRequests = function(){
     "\terror : function(errorMsg, errorCode){}\n"+
     "});";
 
+
+  let testCode = "let i = 0;\nvar j=1;";
+
   <quas>
     <div>
       <h1>AJAX Requests</h1>
       <p>Request data from a server</p>
-      <pre><code>
-        {code1}
-      </code></pro>
+      <pre>
+        <code q-code="{testCode}"></code>
+      </pre>
 
       {DocsContent.nextBtn()}
     </div>

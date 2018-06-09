@@ -59,6 +59,10 @@ code{
 
 }
 
+.code-keyword{
+	color: green;
+}
+
 /*----------- BODY ---------*/
 
 .container{
@@ -214,7 +218,7 @@ pre{
 
 pre code{
 	font-size: 16px;
-	background: var(--hover);
+	background: #fdfdfd;
 	display: block;
 	padding: 15px 50px;
 	margin: 10px 0px;
