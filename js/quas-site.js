@@ -114,7 +114,7 @@ Quas.customAttrs["code"] = function(comp, parent, params, data){
           word += char;
         }
       }
-      //not in comment
+      //html not in comment
       else{
         //detect comment
         if(!quoteOpen){
@@ -160,13 +160,15 @@ Quas.customAttrs["code"] = function(comp, parent, params, data){
 
         //end of word
         if(!quoteOpen && !quoteException){
+          console.log(word + ":" + isKeyWordEnd + ":" + jsKeyWords.indexOf(word.trim()));
           if(!lastCharWasSpace && (isNewLine || isSpace)){
             highlightWord(parent, word, char);
             word = "";
             lastCharWasSpace = true;
           }
           //ending a keyword with a symbol
-          else if(isKeyWordEnd && jsKeyWords.indexOf(word) > -1){
+          else if(isKeyWordEnd && jsKeyWords.indexOf(word.trim()) > -1){
+            console.log("here");
             highlightWord(parent, word, "");
             word = char;
             lastCharWasSpace = false;
@@ -208,14 +210,9 @@ Quas.customAttrs["code"] = function(comp, parent, params, data){
 //highlights a word, if its a keyword it will have the keyword class
 function highlightWord(parent, word, char){
   let text = word + char;
-
   let isChange = false;
   if(!isHTML && text.indexOf("\<quas\>") > -1){
     isHTML = true;
-    isChange = true;
-  }
-  else if(isHTML && text.indexOf("\</quas\>") > -1){
-    isHTML = false;
     isChange = true;
   }
 
@@ -243,18 +240,14 @@ function highlightWord(parent, word, char){
   else{
     //javascript
     if(!isHTML){
-        let span = document.createElement("span");
-        if(jsKeyWords.indexOf(word) > -1){
-          span.setAttribute("class", "code-keyword");
-        }
-
-        span.textContent = text;
-        parent.appendChild(span);
+      let span = document.createElement("span");
+      if(jsKeyWords.indexOf(word.trim()) > -1){
+        span.setAttribute("class", "code-keyword");
       }
-      //html
-      else{
 
-      }
+      span.textContent = text;
+      parent.appendChild(span);
+    }
   }
 }
 
@@ -281,8 +274,6 @@ function highlightHTMLLine(parent, word){
           attrs[i] = " " + attrs[i];
         }
 
-
-
         //html tag
         if(i == 0){
           let span = document.createElement("span");
@@ -292,8 +283,6 @@ function highlightHTMLLine(parent, word){
         }
         //html attribute
         else{
-
-        //  span.setAttribute("class", "code-htmltag");
           let kv = attrs[i].split("=");
           let key = document.createElement("span");
           key.textContent = kv[0];
@@ -328,7 +317,11 @@ function highlightHTMLLine(parent, word){
 
     isTag = !isTag;
   }
-  //console.log(strs);
+
+
+  if(word.indexOf("\</quas\>") > -1){
+    isHTML = false;
+  }
 }
 
 
