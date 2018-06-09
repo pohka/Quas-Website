@@ -483,8 +483,8 @@ DocsContent.ajaxRequests = function(){
     "  i++;\n"+
     "}\n\n" +
     "\<quas\>\n"+
-    "  <div class='test'></div>\n"+
-    "\</quas\>";
+    "  <div class='{test}'></div>\n"+
+    "\</quas\>\n\nif(i==0)";
 
 
   <quas>

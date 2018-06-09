@@ -71,6 +71,18 @@ code{
 	color: #9a9a9a;
 }
 
+.code-htmltag{
+	color: #0af;
+}
+
+.code-htmlkey{
+	color: #f0a;
+}
+
+.code-htmlval{
+	color: #cccc00;
+}
+
 /*----------- BODY ---------*/
 
 .container{

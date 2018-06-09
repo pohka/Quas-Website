@@ -59,7 +59,7 @@ let jsKeyWordEnd = [
   "."
 ];
 
-
+var isHTML = false;
 Quas.customAttrs["code"] = function(comp, parent, params, data){
 //  let matches = data.indexOf(/"|'|`/g);
   let lastCharWasSpace = false;
@@ -71,12 +71,12 @@ Quas.customAttrs["code"] = function(comp, parent, params, data){
   let isQuote = false;
   let quoteOpen = false;
   let quoteType; // ' or " or `
-  let tabCount = 0;
   let lastChar = "";
   let isKeyWordEnd = false;
   let isComment = false;
   let isMultilineComment = false;
   let last2Chars;
+  isHTML = false;
 
   for(let i=0; i<data.length; i++){
     quoteException = false;
@@ -90,143 +90,245 @@ Quas.customAttrs["code"] = function(comp, parent, params, data){
 
     last2Chars = lastChar + char;
 
-    if(isComment){
-      if((isNewLine && !isMultilineComment) || (last2Chars == "*/" && isMultilineComment)){
-        let span = document.createElement("span");
-        span.setAttribute("class", "code-comment");
+    //javascript
+    if(!isHTML){
+      if(isComment){
+        if((isNewLine && !isMultilineComment) || (last2Chars == "*/" && isMultilineComment)){
+          let span = document.createElement("span");
+          span.setAttribute("class", "code-comment");
 
-        if(isMultilineComment){
-          span.textContent = word + char;
-          word = "";
+          if(isMultilineComment){
+            span.textContent = word + char;
+            word = "";
+          }
+          else{
+            span.textContent = word;
+            word = char;
+          }
+          parent.appendChild(span);
+          isComment = false;
+          isMultilineComment = false;
+
         }
         else{
-          span.textContent = word;
-          word = char;
+          word += char;
         }
-        parent.appendChild(span);
-        isComment = false;
-        isMultilineComment = false;
-
       }
+      //not in comment
       else{
-        word += char;
-      }
-    }
-    //not in comment
-    else{
-      //detect comment
-      if(!quoteOpen){
-        if(last2Chars == "//" || last2Chars == "/*"){
-          word = word.substr(0,word.length-1); //remove /
-          highlightWord(parent, word, tabCount, ""); //handle current word
-          tabCount += updateTabCount(word);
-          word = "/";
-          isComment = true;
-          if(last2Chars == "/*"){
-            isMultilineComment = true;
+        //detect comment
+        if(!quoteOpen){
+          if(last2Chars == "//" || last2Chars == "/*"){
+            word = word.substr(0,word.length-1); //remove /
+            highlightWord(parent, word, ""); //handle current word
+            word = "/";
+            isComment = true;
+            if(last2Chars == "/*"){
+              isMultilineComment = true;
+            }
+          }
+          else if((isNewLine && !isMultilineComment) || (last2Chars == "*/" && isMultilineComment)){
+            isComment = false;
           }
         }
-        else if((isNewLine && !isMultilineComment) || (last2Chars == "*/" && isMultilineComment)){
-          isComment = false;
+
+        //opening quote
+        if(isQuote && !quoteOpen){
+          quoteOpen = true;
+          quoteType = char;
+          highlightWord(parent, word, ""); //handle current word
+          word = char;
+        }
+
+        //end of quote
+        else if(isQuote && quoteOpen && char == quoteType){
+          word += char;
+          quoteOpen = false;
+
+          let span = document.createElement("span");
+          span.setAttribute("class", "code-quote");
+          span.textContent = word;
+          parent.appendChild(span);
+          quoteException = true;
+
+          word = "";
+        }
+        //inside quote
+        else if(quoteOpen){
+          word += char;
+        }
+
+        //end of word
+        if(!quoteOpen && !quoteException){
+          if(!lastCharWasSpace && (isNewLine || isSpace)){
+            highlightWord(parent, word, char);
+            word = "";
+            lastCharWasSpace = true;
+          }
+          //ending a keyword with a symbol
+          else if(isKeyWordEnd && jsKeyWords.indexOf(word) > -1){
+            highlightWord(parent, word, "");
+            word = char;
+            lastCharWasSpace = false;
+          }
+          //append character to word
+          else if(!isSpace){
+            word += char;
+            lastCharWasSpace = false;
+          }
+          //convert double spaces to tabs
+          else if(lastCharWasSpace && isSpace){
+            word += "\t";
+            lastCharWasSpace = false;
+          }
         }
       }
 
-      //opening quote
-      if(isQuote && !quoteOpen){
-        quoteOpen = true;
-        quoteType = char;
-        highlightWord(parent, word, tabCount, ""); //handle current word
-        tabCount += updateTabCount(word);
-        word = char;
+      //add last word
+      if(i == data.length-1){
+        highlightWord(parent, word, "");
       }
+      else{
+        lastChar = char;
+      }
+    }
 
-      //end of quote
-      else if(isQuote && quoteOpen && char == quoteType){
-        word += char;
-        quoteOpen = false;
+    //html
+    else{
+      word += char;
 
-        let span = document.createElement("span");
-        span.setAttribute("class", "code-quote");
-        span.textContent = word;
-        parent.appendChild(span);
-        quoteException = true;
-
+      if(isNewLine || i == data.length-1){
+        highlightHTMLLine(parent, word);
         word = "";
       }
-      //inside quote
-      else if(quoteOpen){
-        word += char;
-      }
-
-      //end of word
-      if(!quoteOpen && !quoteException){
-        if(!lastCharWasSpace && (isNewLine || isSpace)){
-          highlightWord(parent, word, tabCount, char);
-          tabCount += updateTabCount(word);
-          word = "";
-          lastCharWasSpace = true;
-        }
-        //ending a keyword with a symbol
-        else if(isKeyWordEnd && jsKeyWords.indexOf(word) > -1){
-          highlightWord(parent, word, tabCount, "");
-          word = char;
-          lastCharWasSpace = false;
-        }
-        //append character to word
-        else if(!isSpace){
-          word += char;
-          lastCharWasSpace = false;
-        }
-        //convert double spaces to tabs
-        else if(lastCharWasSpace && isSpace){
-          word += "\t";
-          lastCharWasSpace = false;
-        }
-      }
-    }
-
-    //add last word
-    if(i == data.length-1){
-      highlightWord(parent, word, tabCount, "");
-      tabCount += updateTabCount(word);
-    }
-    else{
-      lastChar = char;
     }
   }
 };
 
 //highlights a word, if its a keyword it will have the keyword class
-function highlightWord(parent, word, tabCount, char){
-  let span = document.createElement("span");
-  if(jsKeyWords.indexOf(word) > -1){
-    span.setAttribute("class", "code-keyword");
-  }
-
-  //handle tabs
-  if(false){
-    if(word.indexOf("}") > -1){
-      tabCount -= 1;
-    }
-    for(let i=0; i<tabCount; i++){
-      word = "\t" + word;
-    }
-  }
-
+function highlightWord(parent, word, char){
   let text = word + char;
 
-  span.textContent = text;
-  parent.appendChild(span);
+  let isChange = false;
+  if(!isHTML && text.indexOf("\<quas\>") > -1){
+    isHTML = true;
+    isChange = true;
+  }
+  else if(isHTML && text.indexOf("\</quas\>") > -1){
+    isHTML = false;
+    isChange = true;
+  }
+
+  if(isChange){
+    let arr = text.split("<");
+    let pre = arr[0] + "<";
+    let next = arr[1];
+    arr = next.split(">");
+    let mid = arr[0];
+    let after = ">" + arr[1];
+
+    let span1 = document.createElement("span");
+    span1.textContent = pre;
+    parent.appendChild(span1);
+
+    let span2 = document.createElement("span");
+    span2.textContent = mid;
+    span2.setAttribute("class", "code-htmltag");
+    parent.appendChild(span2);
+
+    let span3 = document.createElement("span");
+    span3.textContent = after;
+    parent.appendChild(span3);
+  }
+  else{
+    //javascript
+    if(!isHTML){
+        let span = document.createElement("span");
+        if(jsKeyWords.indexOf(word) > -1){
+          span.setAttribute("class", "code-keyword");
+        }
+
+        span.textContent = text;
+        parent.appendChild(span);
+      }
+      //html
+      else{
+
+      }
+  }
 }
 
-function updateTabCount(word){
-    if(word.indexOf("{") > -1){
-      return 1;
+function highlightHTMLLine(parent, word){
+  let strs = word.split(/<(.*?)>/g);
+  let tags = word.match(/<(.*?)>/g);
+
+//  console.log(strs);
+  let isTag = false;
+  for(let i=0; i<strs.length; i++){
+
+    if(isTag){
+      let open = document.createElement("span");
+      open.textContent = "<";
+      let close = document.createElement("span");
+      close.textContent = ">";
+
+      let midSpans = [];
+
+      let attrs = strs[i].match(/"[^"]*"|\S+/g);
+
+      for(let i=0; i<attrs.length; i++){
+        if(i != 0){
+          attrs[i] = " " + attrs[i];
+        }
+
+
+
+        //html tag
+        if(i == 0){
+          let span = document.createElement("span");
+          span.setAttribute("class", "code-htmltag");
+          span.textContent = attrs[i];
+          midSpans.push(span);
+        }
+        //html attribute
+        else{
+
+        //  span.setAttribute("class", "code-htmltag");
+          let kv = attrs[i].split("=");
+          let key = document.createElement("span");
+          key.textContent = kv[0];
+          key.setAttribute("class", "code-htmlkey");
+          midSpans.push(key);
+
+          if(kv.length > 1){
+            let equals = document.createElement("span");
+            equals.textContent = "=";
+            midSpans.push(equals);
+
+            let val = document.createElement("span");
+            val.setAttribute("class", "code-htmlval");
+            val.textContent = kv[1];
+            midSpans.push(val);
+          }
+        }
+      }
+
+
+      parent.appendChild(open);
+      for(let i in midSpans){
+        parent.appendChild(midSpans[i]);
+      }
+      parent.appendChild(close);
     }
-    else if(word.indexOf("}") > -1){
-      return -1;
+    else{
+      let span = document.createElement("span");
+      span.textContent = strs[i];
+      parent.appendChild(span);
     }
-    return 0;
+
+    isTag = !isTag;
+  }
+  //console.log(strs);
 }
 
 
