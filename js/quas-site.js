@@ -50,7 +50,6 @@ const jsKeyWords = [
 ];
 
 let jsKeyWordEnd = [
-  " ",
   "{",
   "}",
   "(",
@@ -118,10 +117,17 @@ Quas.customAttrs["code"] = function(comp, parent, params, data){
         word = "";
         lastCharWasSpace = true;
       }
+      //ending a keyword with a symbol
+      else if(isKeyWordEnd && jsKeyWords.indexOf(word) > -1){
+        highlightWord(parent, word, tabCount, "");
+        word = char;
+        lastCharWasSpace = false;
+      }
       else if(!isSpace){
         word += char;
         lastCharWasSpace = false;
       }
+      //convert double spaces to tabs
       else if(lastCharWasSpace && isSpace){
         word += "\t";
         lastCharWasSpace = false;
