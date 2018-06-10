@@ -513,30 +513,187 @@ DocsContent.ajaxRequests = function(){
 }
 
 //url params - page content
-DocsContent.urlParameters = function(){
+DocsContent.urlVariables = function(){
+  let code1 =
+    "//returns json object with the key values\n"+
+    "let data = Quas.getUrlValues(); \n\n"+
+    "//example: site.com/watch?video=abc&hd=true\n"+
+    "console.log(data['hd']); //true\n" +
+    "data['video'] = 'xyz';\n\n"+
+    "Quas.setUrlValues(data); \n"+
+    "//result: site.com/watch?video=xyz&hd=true\n";
+
+  let code2 =
+    "//example: site.com/watch?video=abc&hd=true\n"+
+    "let data = Quas.getUrlValues(); \n"+
+    "delete data['hd'];\n"+
+    "Quas.setUrlValues(data);\n" +
+    "//result: site.com/watch?video=abc\n";
+
   <quas>
-    <div>url params</div>
+    <div>
+      <h1>URL Variables</h1>
+      <p>You can easily get and set url variables with quas<p>
+      <pre>
+        <code q-code="{code1}"></code>
+      </pre>
+
+      <p>If you want to remove a variable simply get the current url variables and delete the key</p>
+      <pre>
+        <code q-code="{code2}"></code>
+      </pre>
+
+      <p>There is no need to encode or decord the uri because these 2 functions will do that for you</p>
+
+      {DocsContent.nextBtn()}
+    </div>
   </quas>
 }
 
 //cookies - page content
 DocsContent.cookies = function(){
+  let code1 =
+    "//get the expire date in 1 year time\n"+
+    "let date = new Date();\n"+
+    "date.setYear(date.getFullYear() + 1);\n\n"+
+    "Quas.setCookie('loginID', 'abc', date);\n"+
+    "let myLoginID = Quas.getCookie('loginID');\n"+
+    "console.log(myLoginID); //abc\n\n"+
+    "//remove the cookie\n" +
+    "Quas.clearCookie('loginID');";
+
   <quas>
-    <div>Cookies</div>
+    <div>
+      <h1>Cookies</h1>
+      <p>You can easily get and set cookies with quas</p>
+      <pre>
+        <code q-code="{code1}"></code>
+      </pre>
+
+      {DocsContent.nextBtn()}
+    </div>
   </quas>
 }
 
 //query elements - page content
 DocsContent.queryElements = function(){
+let code1 =
+  "let c = new MyComponent();\n"+
+  "Quas.render(c, 'body');\n\n"+
+
+  "//this will return a HTMLDOMElement using the query selector\n"+
+  "let element = Quas.findChild(c, '#nameInput');\n"+
+  "element.value = 'hello';";
+
   <quas>
-    <div>Query DOM tree</div>
+    <div>
+      <h1>Query DOM tree</h1>
+      <p>If you want to find a DOM element within your component after it is rendered you can use this function</p>
+      <pre>
+        <code q-code="{code1}"></code>
+      </pre>
+
+      {DocsContent.nextBtn()}
+    </div>
   </quas>
 }
 
 //scrolling breakpoints - page content
 DocsContent.scrollingBreakpoints = function(){
+  let code1 =
+    "class MyComponent extends Component{\n"+
+    "  static enteredViewPort(el){\n"+
+    "    console.log('entered');\n"+
+    "  }\n\n"+
+    "   static exitViewPort(el){\n"+
+    "    console.log('exit');\n"+
+    "  }\n\n"+
+    " ...\n\n"+
+    "}\n\n"+
+    "//Enable listening to the scroll event\n"+
+    "Quas.enableScrollTracker();\n"+
+    "let c = new MyComponent();\n\n"+
+    "//set the callback functions which listen to the scroll events\n"+
+    "Quas.onScroll('enter', c, c.enteredViewPort);\n"+
+    "Quas.onScroll('exit', c, c.exitViewPort);";
+
   <quas>
-    <div>Scrolling breakpoints</div>
+    <div>
+      <h1>Scrolling breakpoints</h1>
+      <p>You can easily tell when a component enters or exits the viewport of the user</p>
+      <pre>
+        <code q-code="{code1}"></code>
+      </pre>
+
+      {DocsContent.nextBtn()}
+    </div>
+  </quas>
+}
+
+//api - page content
+DocsContent.spwa = function(){
+  let code1 =
+    '//map( PathID , path, pageTitle )\n'+
+    'Atlas.map("index", "/", "Home");\n'+
+    'Atlas.map("about", "/about", "About");\n'+
+    'Atlas.map("news", "/news/new", "Recent News");';
+
+  let code2 =
+    "class Navbar extends Component{\n"+
+    "  constructor(){\n"+
+    "    this.super();\n"+
+    "    this.items = ['home', 'about' 'news'];\n"+
+    "    //now this component listens to new page state pushes\n"+
+    "     Atlas.addPushListener(this);\n"+
+    "  }\n\n"+
+    "  //called when a new page loads\n"+
+    "  onPush(newPath){\n"+
+    "   Quas.rerender(this);\n"+
+    " }\n\n"+
+    "  static genItem(item){\n"+
+    "   let pageName = Atlas.paths[item];\n"+
+    "   let isActive = 'false';\n"+
+    "    //check if the current pathID matches the item\n"+
+    "    if(item == Atlas.getCurrentPathID()){\n"+
+    "      isActive = 'true';\n"+
+    "    }\n"+
+    "    \<quas\>\n"+
+    "      <div class='navItem' active='{isActive}'>{pageName}</div>\n"+
+    "     \<quas\>\n"+
+    "  }\n\n"+
+    "  render(){\n"+
+    "     \<quas\>\n"+
+    "       <nav q-bind-for=[this.genItem,this.items]></nav>\n"+
+    "     \</quas\>\n"+
+    "  }\n"+
+    "}\n\n"+
+    "//this component will always exist\n"+
+    "Quas.render(new Navbar(), 'body');\n\n"+
+    "switch(Atlas.getCurrentPathID()){\n"+
+    "  case 'index' : renderIndex(); break;\n"+
+    "  case 'about' : renderAbout(); break;\n"+
+    "  case 'news' : renderNews(); break;\n"+
+    "}";
+
+
+  let text = "(SWPA)";
+
+  <quas>
+    <div>
+      <h1>Single Page Web Application</h1>
+      <p>Creating a single page web application {text} is completely optional with Quas. The first problem with SPWA is handling the url. You must make also rewrite or redict rules to your main html file i.e. index.html for this to work.</p>
+      <p>Map all the uique pages that you will need to have for your web app using the Atlas</p>
+
+      <pre>
+        <code q-code="{code1}"></code>
+      </pre>
+
+      <pre>
+        <code q-code="{code2}"></code>
+      </pre>
+
+      {DocsContent.nextBtn()}
+    </div>
   </quas>
 }
 
@@ -592,9 +749,9 @@ DocsContent.pages = {
     name : "AJAX Requests",
     func : DocsContent.ajaxRequests
   },
-  "url-parameters" : {
-    name : "URL Parameters",
-    func : DocsContent.urlParameters
+  "url-variables" : {
+    name : "URL Variables",
+    func : DocsContent.urlVariables
   },
   "cookies" : {
     name : "Cookies",
@@ -607,6 +764,10 @@ DocsContent.pages = {
   "scrolling-breakpoints" : {
     name : "Scrolling Breakpoints",
     func : DocsContent.scrollingBreakpoints
+  },
+  "spwa" : {
+    name : "SPWA",
+    func : DocsContent.spwa
   },
   "api" : {
     name : "API",
