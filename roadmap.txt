@@ -1,4 +1,0 @@
-Atlas.pathMatches("/docs/*")
-bug: using round brackets () between quas tags keeps calling a function
-custom attribute loader and package
-new bundling system
