@@ -651,14 +651,17 @@ DocsContent.spwa = function(){
     "   Quas.rerender(this);\n"+
     " }\n\n"+
     "  static genItem(item){\n"+
-    "   let pageName = Atlas.paths[item];\n"+
+    "   let pageName = Atlas.paths[item].title;\n"+
+    "   let path  = Atlas.paths[item].path;\n"+
     "   let isActive = 'false';\n"+
     "    //check if the current pathID matches the item\n"+
     "    if(item == Atlas.getCurrentPathID()){\n"+
     "      isActive = 'true';\n"+
     "    }\n"+
     "    \<quas\>\n"+
-    "      <div class='navItem' active='{isActive}'>{pageName}</div>\n"+
+    "      <a href='{path}' class='navItem' active='{isActive}'>\n"+
+    "        {pageName}\n"+
+    "      </a>\n"+
     "     \<quas\>\n"+
     "  }\n\n"+
     "  render(){\n"+
@@ -675,13 +678,10 @@ DocsContent.spwa = function(){
     "  case 'news' : renderNews(); break;\n"+
     "}";
 
-
-  let text = "(SWPA)";
-
   <quas>
     <div>
       <h1>Single Page Web Application</h1>
-      <p>Creating a single page web application {text} is completely optional with Quas. The first problem with SPWA is handling the url. You must make also rewrite or redict rules to your main html file i.e. index.html for this to work.</p>
+      <p>Creating a single page web application (SPWA\) is completely optional with Quas. The first problem with SPWA is handling the url. You must make also rewrite or redict rules to your main html file i.e. index.html for this to work.</p>
       <p>Map all the uique pages that you will need to have for your web app using the Atlas</p>
 
       <pre>

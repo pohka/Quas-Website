@@ -160,7 +160,7 @@ Quas.customAttrs["code"] = function(comp, parent, params, data){
 
         //end of word
         if(!quoteOpen && !quoteException){
-          console.log(word + ":" + isKeyWordEnd + ":" + jsKeyWords.indexOf(word.trim()));
+          //console.log(word + ":" + isKeyWordEnd + ":" + jsKeyWords.indexOf(word.trim()));
           if(!lastCharWasSpace && (isNewLine || isSpace)){
             highlightWord(parent, word, char);
             word = "";

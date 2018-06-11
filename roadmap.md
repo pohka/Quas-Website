@@ -13,5 +13,3 @@
  * removes space character after a comment
  * doesn't highlight keyword with different delimiters
    * e.g. func(this) 'this' key word is never highlighted
-* Quas:
-  * using round brackets () between quas tags keeps calling a function

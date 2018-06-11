@@ -135,6 +135,8 @@ class Quas{
   static createEl(info, comp, parent){
     //appending the text context
     if(info.constructor === String){
+      console.log();
+      info = info.replace(/--\/\(/g, ")"); //escape brakcet, must do a better solution
       parent.appendChild(document.createTextNode(info));
       return;
     }

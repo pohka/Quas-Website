@@ -305,8 +305,30 @@ Quas.convertToRenderInfo = function(html){
         }
 
         if(parent !== undefined){
+          console.log(text);
           let trimmedText = text.trimExcess();
+          let matches =  trimmedText.match(/\\\)/g);
+          for(let i in matches){
+            let newStr = "--/(";
+            trimmedText = trimmedText.replace(matches[i], newStr);
+          }
+        //    console.log("match:");
+        //    console.log(m);
+
+          /*
+          if(trimmedText.charAt(0) !== '\"'){
+            trimmedText = '"' + trimmedText;
+          }
+          if(trimmedText.charAt(trimmedText.length-1) !== '\"'){
+            trimmedText = trimmedText + '"';
+          }
+          */
+        //  let m = trimmedText.match(/\(.*?\)/g);
+      //    console.log("match:");
+        //  console.log(m);
+
           let parseProps = Quas.parseProps(trimmedText);
+          console.log(parseProps);
           parent.push(parseProps);
         }
         text = "";
