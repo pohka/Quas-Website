@@ -307,28 +307,15 @@ Quas.convertToRenderInfo = function(html){
         if(parent !== undefined){
           console.log(text);
           let trimmedText = text.trimExcess();
+
+          //escaping round brackets
           let matches =  trimmedText.match(/\\\)/g);
           for(let i in matches){
             let newStr = "--/(";
             trimmedText = trimmedText.replace(matches[i], newStr);
           }
-        //    console.log("match:");
-        //    console.log(m);
-
-          /*
-          if(trimmedText.charAt(0) !== '\"'){
-            trimmedText = '"' + trimmedText;
-          }
-          if(trimmedText.charAt(trimmedText.length-1) !== '\"'){
-            trimmedText = trimmedText + '"';
-          }
-          */
-        //  let m = trimmedText.match(/\(.*?\)/g);
-      //    console.log("match:");
-        //  console.log(m);
 
           let parseProps = Quas.parseProps(trimmedText);
-          console.log(parseProps);
           parent.push(parseProps);
         }
         text = "";
@@ -598,4 +585,85 @@ Quas.minify = function(str){
   str+="\nif(typeof startQuas==='function'){startQuas();}";
 
   return str;
+}
+
+Quas.requiresLeft = 0;
+Quas.requires = {}; //all he required files
+
+Quas.require = function(path){
+  Quas.requiresLeft += 1;
+  Quas.ajax({
+    url : path,
+    type : "GET",
+    success : (file) => {
+      Quas.requires[path] = file;
+      Quas.requiresLeft -= 1;
+      if(Quas.requiresLeft == 0){
+        Quas.evalRequires();
+      }
+    },
+    error : (e) => {
+      Quas.requiresLeft -= 1;
+    }
+  });
+}
+
+//eval the current requires
+Quas.evalRequires = function(){
+  let bundle = "";
+  for(let i in Quas.requires){
+    bundle +=
+      "/*---------- " + i + " ----------*/\n\n" +
+      Quas.requires[i].trim() + "\n\n";
+  }
+  bundle = Quas.parseBundle(bundle);
+  bundle += "\nif(typeof ready==='function'){ready();}";
+  Quas.devBundle = bundle;
+  eval(bundle);
+}
+
+//testing new dev build
+Quas.test = function(rootFile){
+  Quas.isDevBuild = true;
+  Quas.ajax({
+    url : rootFile,
+    type : "GET",
+    success : (file) => {
+      let requires = file.match(/require\("[^"\\]*(?:\\[\s\S][^"\\]*)*"\);|require\('[^'\\]*(?:\\[\s\S][^'\\]*)*'\);|require\(`[^`\\]*(?:\\[\s\S][^`\\]*)*`\);/g);
+      let preStrLen = "require(\"".length;
+      for(let i=0; i<requires.length; i++){
+        file = file.replace(requires[i], "");
+        let path = requires[i].substr(preStrLen, requires[i].length-preStrLen-3);
+        Quas.require(path);
+      }
+      Quas.requires[rootFile] = file;
+    },
+    error : (e) => {
+      console.log(e);
+    }
+  });
+}
+
+//new exporter
+Quas.bundle2 = function(filename){
+  if(!filename){
+    var filename = "bundle.js";
+  }
+
+  for(let i in Quas.requires){
+    let bundle = "";
+    for(let i in Quas.requires){
+      bundle +=
+        "/*---------- " + i + " ----------*/\n\n" +
+        Quas.requires[i].trim() + "\n\n";
+    }
+
+    let element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + bundle);
+    element.setAttribute('download', filename);
+    element.style.display = 'none';
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+  }
 }

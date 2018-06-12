@@ -13,3 +13,8 @@
  * removes space character after a comment
  * doesn't highlight keyword with different delimiters
    * e.g. func(this) 'this' key word is never highlighted
+
+
+## bundling
+* find all the requires in root js file
+* return file as a class
