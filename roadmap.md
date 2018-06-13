@@ -16,5 +16,6 @@
 
 
 ## bundling
-* find all the requires in root js file
-* return file as a class
+* ignore commented out imports
+* export js or css only
+* warning when import doesn't find the file
