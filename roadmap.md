@@ -17,5 +17,4 @@
 
 ## bundling
 * ignore commented out imports
-* export js or css only
 * warning when import doesn't find the file

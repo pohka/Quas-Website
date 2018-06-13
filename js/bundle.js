@@ -504,45 +504,6 @@ function formatCode(code){
   return "\n" + lines.join("\n");
 }
 
-/*---------- /comps/card.js ----------*/
-
-class Card extends Component{
-  constructor(img, title, text){
-    super();
-    this.img = img;
-    this.title = title;
-    this.text = text;
-  }
-
-  render(){
-	return   [
-    "div",
-    {"class":"card"}, 
-    [
-      [
-        "img",
-        {"src":"/img/"+this.img+""}, 
-        []
-      ],
-      [
-        "h3",
-        {}, 
-        [
-          ""+this.title+""
-        ]
-      ],
-      [
-        "span",
-        {}, 
-        [
-          ""+this.text+""
-        ]
-      ]
-    ]
-  ];
-  }
-}
-
 /*---------- /comps/navbar.js ----------*/
 
 class Navbar extends Component{
@@ -699,6 +660,45 @@ class DocsNav extends Component{
         "div",
         {"class":"docs-nav-list","q-bind-for":[this.genItem,DocsContent.pages]}, 
         []
+      ]
+    ]
+  ];
+  }
+}
+
+/*---------- /comps/card.js ----------*/
+
+class Card extends Component{
+  constructor(img, title, text){
+    super();
+    this.img = img;
+    this.title = title;
+    this.text = text;
+  }
+
+  render(){
+	return   [
+    "div",
+    {"class":"card"}, 
+    [
+      [
+        "img",
+        {"src":"/img/"+this.img+""}, 
+        []
+      ],
+      [
+        "h3",
+        {}, 
+        [
+          ""+this.title+""
+        ]
+      ],
+      [
+        "span",
+        {}, 
+        [
+          ""+this.text+""
+        ]
       ]
     ]
   ];
@@ -2265,6 +2265,3 @@ class Body extends Component{
   ];
   }
 }
-
-
-if(typeof ready==='function'){ready();}

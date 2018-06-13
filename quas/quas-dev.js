@@ -381,8 +381,9 @@ Quas.evalImports = function(type){
         Quas.imports.js.content[i].trim() + "\n\n";
     }
     bundle = Quas.parseBundle(bundle);
-    bundle += "\nif(typeof ready==='function'){ready();}";
     Quas.devBundle.js = bundle;
+    bundle += "\nif(typeof ready==='function'){ready();}";
+
     console.log(bundle);
     eval(bundle);
   }
@@ -441,15 +442,19 @@ Quas.bundle = function(rootFile){
 }
 
 //export the bundle
-Quas.export = function(filename){
+Quas.export = function(filename, extention){
   if(!filename){
     var filename = "bundle";
   }
+  let types = Quas.devBundle;
+  if(extention !== undefined){
+    types = [extention];
+  }
 
-  for(let i in Quas.devBundle){
+  for(let i in types){
     let element = document.createElement('a');
-    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + Quas.devBundle[i]);
-    element.setAttribute('download', filename+"."+i);
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + Quas.devBundle[types[i]]);
+    element.setAttribute('download', filename+"."+types[i]);
     element.style.display = 'none';
     document.body.appendChild(element);
     element.click();
