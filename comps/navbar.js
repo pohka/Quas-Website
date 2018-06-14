@@ -11,8 +11,15 @@ class Navbar extends Component{
       cls = "active";
     }
     let pathInfo = Atlas.paths[pathID];
+    let title = pathID;
+    let link = "";
+    if(pathInfo){
+      link = pathInfo.path;
+      title = pathInfo.title
+    }
+
     <quas>
-      <div><a class="nav-item {cls}" href="{pathInfo.path}" target="push">{pathInfo.title}</a></div>
+      <div><a class="nav-item {cls}" href="{link}" target="push">{title}</a></div>
     </quas>
   }
 

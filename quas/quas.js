@@ -212,7 +212,7 @@ class Quas{
       },
       return : "json|xml",
       success : function(result){},
-      error : function(errorMsg, errorCode){}
+      error : function(Error){}
     }
   */
   static ajax(req){
@@ -249,7 +249,7 @@ class Quas{
         }
         else if(this.readyState == 4){
           if(req.error !== undefined){
-            req.error(this.statusText, this.status);
+            req.error(this);
           }
         }
     };
@@ -733,7 +733,7 @@ window.addEventListener("popstate", function(e) {
 });
 
 window.onload = function(){
-  if(typeof startQuas === "function" && !Quas.isDevBuild){
-    startQuas();
+  if(typeof ready === "function" && !Quas.isDevBuild){
+    ready();
   }
 }
