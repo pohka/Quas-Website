@@ -17,10 +17,17 @@ class Component{
     removes this component from the DOM tree
   */
   remove(){
-    if(this.el){
-      this.el.parentNode.removeChild(this.el);
-      this.el = undefined;
+    if(this.dom){
+      this.dom.parentNode.removeChild(this.dom);
+      this.dom = undefined;
     }
+  }
+
+  /*
+    returns true if this component has been rendered
+  */
+  isRendered(){
+    return this.dom !== undefined;
   }
 }
 
@@ -38,10 +45,9 @@ class Quas{
       parent = document.querySelector(parent);
     }
     if(parent !== null){
-      let info = comp.render();
-      let el = Quas.createEl(info, comp);
-      parent.appendChild(el);
-      comp.el = el;
+      comp.vdom = comp.render();
+      comp.dom = Quas.createDOM(comp.vdom, comp);
+      parent.appendChild(comp.dom);
     }
   }
 
@@ -63,19 +69,19 @@ class Quas{
       parent = document.querySelector(parent);
     }
     if(parent !== null){
-      let info = comp.render();
-      let el = Quas.createEl(info, comp);
+      comp.vdom = comp.render();
+      comp.dom = Quas.createDOM(comp.vdom, comp);
       if(target === undefined){
-        parent.appendChild(el);
+        parent.appendChild(comp.dom);
       }
       else if(target === "prepend"){
-        parent.insertBefore(el, parent.childNodes[0]);
+        parent.insertBefore(comp.dom, parent.childNodes[0]);
       }
       else if(target === "replace"){
         while(parent.hasChildNodes()){
           parent.removeChild(parent.childNodes[0]);
         }
-        parent.appendChild(el);
+        parent.appendChild(comp.dom);
       }
       else{
         let arr = target.split(" ");
@@ -89,14 +95,12 @@ class Quas{
         }
 
         if(t !== null){
-          parent.insertBefore(el, t);
+          parent.insertBefore(comp.dom, t);
         }
         else{
-          parent.appendChild(el);
+          parent.appendChild(comp.dom);
         }
       }
-
-      comp.el = el;
     }
   }
 
@@ -107,12 +111,12 @@ class Quas{
     @param {Component} component
   */
   static rerender(comp){
-    let info = comp.render();
-    let newEl = Quas.createEl(info, comp);
-    let parent = comp.el.parentNode;
+    comp.vdom = comp.render();
+    let newDOM = Quas.createDOM(comp.vdom, comp);
+    let parent = comp.dom.parentNode;
 
-    parent.replaceChild(newEl, comp.el);
-    comp.el = newEl;
+    parent.replaceChild(newDOM, comp.dom);
+    comp.dom = newDOM;
   }
 
   /**
@@ -132,10 +136,9 @@ class Quas{
 
     @return {HTMLDOMElement}
   */
-  static createEl(info, comp, parent){
+  static createDOM(info, comp, parent){
     //appending the text context
     if(info.constructor === String){
-      console.log();
       info = info.replace(/--\/\(/g, ")"); //escape brakcet, must do a better solution
       parent.appendChild(document.createTextNode(info));
       return;
@@ -149,15 +152,12 @@ class Quas{
     //children
     if(children !== undefined){
       for(let i in children){
-        let child = Quas.createEl(children[i], comp, el);
+        let child = Quas.createDOM(children[i], comp, el);
         if(child !== undefined){
           el.appendChild(child);
         }
       }
     }
-
-
-
 
     //attributes
     for(let a in attrs){
@@ -321,13 +321,13 @@ class Quas{
     else if(command === "bind"){
       if(params[0] === undefined){
         let domInfo = data[0](data[1]);
-        let newEl = Quas.createEl(domInfo, comp);
+        let newEl = Quas.createDOM(domInfo, comp);
         parent.appendChild(newEl);
       }
       else if(params[0] === "for"){
         for(let o in data[1]){
           let domInfo = data[0](data[1][o]);
-          let newEl = Quas.createEl(domInfo, comp);
+          let newEl = Quas.createDOM(domInfo, comp);
           parent.appendChild(newEl);
         }
       }
@@ -343,7 +343,7 @@ class Quas{
     @param {Component} component
   */
   static remove(comp){
-    comp.el.parentNode.removeChild(comp.el);
+    comp.dom.parentNode.removeChild(comp.dom);
   }
 
   /**
@@ -355,7 +355,7 @@ class Quas{
     @return {HTMLDOMElement}
   */
   static findChild(comp, s){
-    return comp.el.querySelector(s);
+    return comp.dom.querySelector(s);
   }
 
   /**
@@ -366,7 +366,7 @@ class Quas{
     @param {Function} callback
   */
   static eachChild(comp, s, func){
-    [].forEach.call(comp.el.querySelectorAll(s), func);
+    [].forEach.call(comp.dom.querySelectorAll(s), func);
   }
 
   /**
@@ -521,15 +521,15 @@ class Quas{
       for(let type in Quas.trackingEls){
         for(let i in Quas.trackingEls[type]){
           let e = Quas.trackingEls[type][i];
-          let elTop = e.comp.el.offsetTop;
-          let elBot = elTop + e.comp.el.offsetHeight;
+          let elTop = e.comp.dom.offsetTop;
+          let elBot = elTop + e.comp.dom.offsetHeight;
           let currentlyVisible = viewport.bottom - Quas.scrollSafeZone.top > elTop && viewport.top + Quas.scrollSafeZone.bottom < elBot;
           if(e.comp !== undefined){
             if(type === "enter" && !e.visible && currentlyVisible){
-              e.func(e.comp.el);
+              e.func(e.comp.dom);
             }
             else if(type === "exit" && e.visible && !currentlyVisible){
-              e.func(e.comp.el);
+              e.func(e.comp.dom);
             }
           }
           e.visible = currentlyVisible;
@@ -613,7 +613,7 @@ class Quas{
     @return {Boolean}
   */
   static isRendered(comp){
-    return comp.el !== undefined;
+    return comp.dom !== undefined;
   }
 
   /**

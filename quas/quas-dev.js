@@ -31,6 +31,7 @@ Quas.parseBundle = function(bundle){
   let open = -1;
   let html = "";
   let tagName = "quas";
+  let inRender = false;
   for(let i=0; i<lines.length; i++){
     //open tag
     let openIndex = lines[i].indexOf("<"+tagName+">");
@@ -452,27 +453,6 @@ Quas.bundle = function(rootFile){
           finalFile += lines[i] + "\n";
         }
       }
-/*
-      let imports = file.match(/import+\s".*"|import+\s'.*'|import+\s`.*`/g);
-      if(imports){
-        for(let i=0; i<imports.length; i++){
-          file = file.replace(imports[i], "");
-          let path = imports[i].match(/".*?"/)[0];
-          path = path.substr(1,path.length-2);
-
-          let arr = path.split(".");
-          let extention = arr[arr.length-1];
-
-          if(extention == "js" || extention == "css"){
-            Quas.import(path, extention);
-          }
-          else{ //both
-            Quas.import(path+".js", "js");
-            Quas.import(path+".css", "css");
-          }
-        }
-      }
-      */
 
       //add root file
       Quas.imports.js.content[rootFile] = finalFile;
