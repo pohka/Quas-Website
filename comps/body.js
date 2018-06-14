@@ -1,7 +1,6 @@
 class Body extends Component{
   constructor(){
     super();
-    Atlas.addPushListener(this);
   }
 
   onPush(path){

@@ -53,9 +53,11 @@ class Quas{
     @param {String|HTMLDOMElement} parent
   */
   static render(comp, parent){
+    //if parent passed is a query selector string
     if(parent && parent.constructor === String){
       parent = document.querySelector(parent);
     }
+    //first time rendering
     if(!comp.isRendered() && parent !== null){
       comp.vdom = comp.render();
       comp.dom = Quas.createDOM(comp.vdom, comp);
@@ -64,12 +66,70 @@ class Quas{
         Atlas.addPushListener(comp);
       }
     }
+    //diff the dom
     else if(comp.isRendered()){
-      comp.vdom = comp.render();
+      let newVDOM = comp.render();
+      Quas.diffVDOM(comp.dom, comp.vdom, newVDOM);
+      comp.vdom = newVDOM;
+
       parent = comp.dom.parentNode;
       let newDOM = Quas.createDOM(comp.vdom, comp);
       parent.replaceChild(newDOM, comp.dom);
       comp.dom = newDOM;
+    }
+  }
+
+  static diffVDOM(dom, vdom, newVDOM){
+
+    if(vdom.length == 0){
+      return;
+    }
+
+    //text node
+    if(vdom.constructor == String){
+      return;
+    }
+
+    else{
+
+    //  console.log(vdom);
+    //  console.log(newVDOM);
+
+      //diff tags
+      if(vdom[0] !== newVDOM[0]){
+        console.log("changed tag: " + newVDOM[0]);
+      }
+
+      //clone attrs
+      let newAttrs = {};
+      for(let a in vdom[1]){
+        newAttrs[a] = vdom[1][a];
+      }
+
+      for(let a in vdom[1]){
+        //removed attribute a
+        if(newVDOM[1][a] === undefined){
+          console.log("removed attr: " + a);
+        }
+        else{
+          //diff attribute value
+          if(vdom[1][a] !== newVDOM[1][a]){
+            console.log("changed attr:" + a);
+          }
+            delete newAttrs[a];
+        }
+      }
+      //all the newly added attributes
+      for(let a in newAttrs){
+        if(a != 0){
+          console.log("added attr: " + a + "=" + newAttrs[a]);
+        }
+      }
+
+      //children
+      for(let c=0; c<vdom[2].length; c++){
+        Quas.diffVDOM(dom, vdom[2][c], newVDOM[2][c]);
+      }
     }
   }
 
