@@ -365,7 +365,6 @@ Quas.import = function(path, type){
       }
     },
     error : (e) => {
-      console.error("File not loaded: " + path);
       Quas.imports[type].importsLeft -= 1;
     }
   });
