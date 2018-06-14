@@ -5,7 +5,7 @@ class Body extends Component{
   }
 
   onPush(path){
-    Quas.rerender(this);
+    Quas.render(this);
   }
 
   render(){

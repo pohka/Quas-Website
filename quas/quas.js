@@ -41,16 +41,23 @@ class Quas{
     @param {String|HTMLDOMElement} parent
   */
   static render(comp, parent){
-    if(parent.constructor === String){
+    if(parent && parent.constructor === String){
       parent = document.querySelector(parent);
     }
-    if(parent !== null){
+    if(!comp.isRendered() && parent !== null){
       comp.vdom = comp.render();
       comp.dom = Quas.createDOM(comp.vdom, comp);
       parent.appendChild(comp.dom);
       if(comp.onPush){
         Atlas.addPushListener(comp);
       }
+    }
+    else if(comp.isRendered()){
+      comp.vdom = comp.render();
+      parent = comp.dom.parentNode;
+      let newDOM = Quas.createDOM(comp.vdom, comp);
+      parent.replaceChild(newDOM, comp.dom);
+      comp.dom = newDOM;
     }
   }
 
@@ -108,21 +115,6 @@ class Quas{
     if(comp.onPush){
       Atlas.addPushListener(comp);
     }
-  }
-
-  /**
-    Rerenders a component
-    This will update changes made to props
-
-    @param {Component} component
-  */
-  static rerender(comp){
-    comp.vdom = comp.render();
-    let newDOM = Quas.createDOM(comp.vdom, comp);
-    let parent = comp.dom.parentNode;
-
-    parent.replaceChild(newDOM, comp.dom);
-    comp.dom = newDOM;
   }
 
   /**

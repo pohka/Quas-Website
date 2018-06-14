@@ -16,7 +16,7 @@ class Navbar extends Component{
       link = pathInfo.path;
       title = pathInfo.title
     }
-    
+
     return (
       <quas>
         <div><a class="nav-item {cls}" href="{link}" target="push">{title}</a></div>
@@ -26,7 +26,7 @@ class Navbar extends Component{
 
   onPush(path){
     console.log(path);
-    Quas.rerender(this);
+    Quas.render(this);
   }
 
   render(){
