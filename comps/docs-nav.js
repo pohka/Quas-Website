@@ -19,17 +19,22 @@ class DocsNav extends Component{
     let page = DocsNav.getPageID(item.name);
     let currentURLPage = location.pathname.replace("/docs/", "");
     let isActive = (page == currentURLPage);
-    <quas>
-      <div class="docs-nav-item" onclick=DocsNav.setPath data-page="{page}" active="{isActive}">{item.name}</div>
-    </quas>
+
+    return (
+      <quas>
+        <div class="docs-nav-item" onclick=DocsNav.setPath data-page="{page}" active="{isActive}">{item.name}</div>
+      </quas>
+    );
   }
 
 
   render(){
-    <quas>
-        <div class="docs-nav-con">
-          <div class="docs-nav-list" q-bind-for=[this.genItem,DocsContent.pages]></div>
-        </div>
-    </quas>
+    return (
+      <quas>
+          <div class="docs-nav-con">
+            <div class="docs-nav-list" q-bind-for=[this.genItem,DocsContent.pages]></div>
+          </div>
+      </quas>
+    );
   }
 }

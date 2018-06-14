@@ -7,12 +7,14 @@ class Card extends Component{
   }
 
   render(){
-    <quas>
-      <div class="card">
-        <img src="/img/{this.img}">
-        <h3>{this.title}</h3>
-        <span>{this.text}</span>
-      </div>
-    </quas>
+    return (
+      <quas>
+        <div class="card">
+          <img src="/img/{this.img}">
+          <h3>{this.title}</h3>
+          <span>{this.text}</span>
+        </div>
+      </quas>
+    );
   }
 }

@@ -36,11 +36,13 @@ class DocsContent extends Component{
 }
 
 DocsContent.nextBtn = function(){
-  <quas>
-    <div class="docs-footer-nav">
-      <div class="footer-nav-btn" onclick=DocsContent.handleNext>Next</div>
-    </div>
-  </quas>
+  return (
+    <quas>
+      <div class="docs-footer-nav">
+        <div class="footer-nav-btn" onclick=DocsContent.handleNext>Next</div>
+      </div>
+    </quas>
+  );
 };
 
 //setup - page content
@@ -63,41 +65,43 @@ DocsContent.setup = function(){
   "\t//your code goes here\n"+
   "\}";
 
-  <quas>
-    <div>
-      <h1>Setting up a Project</h1>
-      <span class="centered">Download and extract the Quas boilerplate project</span>
-      <button class="download-btn">Download</button>
-      <hr>
-      <h2>Getting Started</h2>
-      <p>Quas uses a component based system to render elements. When a component is changed it can be rerendered to update the changes. But before we look at components and the rich features of Quas we will first have a quick look at the structure of the boilerplate project.</p>
-      <br>
-      index.html
-      <pre>
-        <code q-code="{code1}"></code>
-      </pre>
-      <ul>
-        <li>quas.js is the library</li>
-        <li>quas-dev.js is used for development builds which bundles at runtime based off a config file</li>
-        <li>Quas.devBuild assigns the config file to use for the runtime bundling</li>
-      </ul>
-      <hr>
-      <h2>The Config File</h2>
-      <p>config.json is a JSON file which will decide which files will be bundled for the development build. It is often a good idea to have a seperate JavaScript and CSS files for each component.</p>
-      <pre>
-        <code q-code="{configCode}"></code>
-      </pre>
-      You can read more about this in the <a href="production-builds">Production Build</a> section.
-      <hr>
-      <h2>Starting Point</h2>
-      <p>Once quas has loaded it will starts its executing the startQuas function.</p>
-      <pre>
-        <code q-code="{codeStart}"></code>
-      </pre>
-      {DocsContent.nextBtn()}
+  return (
+    <quas>
+      <div>
+        <h1>Setting up a Project</h1>
+        <span class="centered">Download and extract the Quas boilerplate project</span>
+        <button class="download-btn">Download</button>
+        <hr>
+        <h2>Getting Started</h2>
+        <p>Quas uses a component based system to render elements. When a component is changed it can be rerendered to update the changes. But before we look at components and the rich features of Quas we will first have a quick look at the structure of the boilerplate project.</p>
+        <br>
+        index.html
+        <pre>
+          <code q-code="{code1}"></code>
+        </pre>
+        <ul>
+          <li>quas.js is the library</li>
+          <li>quas-dev.js is used for development builds which bundles at runtime based off a config file</li>
+          <li>Quas.devBuild assigns the config file to use for the runtime bundling</li>
+        </ul>
+        <hr>
+        <h2>The Config File</h2>
+        <p>config.json is a JSON file which will decide which files will be bundled for the development build. It is often a good idea to have a seperate JavaScript and CSS files for each component.</p>
+        <pre>
+          <code q-code="{configCode}"></code>
+        </pre>
+        You can read more about this in the <a href="production-builds">Production Build</a> section.
+        <hr>
+        <h2>Starting Point</h2>
+        <p>Once quas has loaded it will starts its executing the startQuas function.</p>
+        <pre>
+          <code q-code="{codeStart}"></code>
+        </pre>
+        {DocsContent.nextBtn()}
 
-    </div>
-  </quas>
+      </div>
+    </quas>
+  );
 }
 
 //props - page content
@@ -131,46 +135,48 @@ DocsContent.components = function(){
   let code5 = "console.log(myComponent.el);";
   let code6 = "Quas.render(myComponent, '#myID');";
 
-  <quas>
-    <div>
-      <h1>Components</h1>
-      <p>Making your own component is as simple as making a new class which extends Component and giving it a render function. The render function should contain quas tags. The quas tags should be on seperate lines and everything between the opening and closing quas tag will use a html like syntax.</p>
-      <pre>
-        <code q-code="{basicVersion}"></code>
-      </pre>
+  return (
+    <quas>
+      <div>
+        <h1>Components</h1>
+        <p>Making your own component is as simple as making a new class which extends Component and giving it a render function. The render function should contain quas tags. The quas tags should be on seperate lines and everything between the opening and closing quas tag will use a html like syntax.</p>
+        <pre>
+          <code q-code="{basicVersion}"></code>
+        </pre>
 
-      <p>To make the content of the component appear on your page you must create an instance of it and call {func}. You can have multiple instances of a component at any time.</p>
-      <pre>
-        <code q-code="{renderCode}"></code>
-      </pre>
-      <hr>
-      <h2>Rendering</h2>
-      <p>"There is a few different ways you can render a component. The default way as shown above will append the content of the component as a child of the parent chosen using the query selector. The query selector works the same as JavaScript's document.querySelector( ) e.g. '#id' and '.class'."</p>
-      <pre>
-        <code q-code="{code6}"></code>//\""
-      </pre>
-      <p>Once a component has been rendered to the page the DOM tree for this instance the DOM element will be accessable quickly though 'el' variable.</p>
-      <pre>
-        <code q-code="{code5}"></code> //\""
-      </pre>
+        <p>To make the content of the component appear on your page you must create an instance of it and call {func}. You can have multiple instances of a component at any time.</p>
+        <pre>
+          <code q-code="{renderCode}"></code>
+        </pre>
+        <hr>
+        <h2>Rendering</h2>
+        <p>"There is a few different ways you can render a component. The default way as shown above will append the content of the component as a child of the parent chosen using the query selector. The query selector works the same as JavaScript's document.querySelector( ) e.g. '#id' and '.class'."</p>
+        <pre>
+          <code q-code="{code6}"></code>//\""
+        </pre>
+        <p>Once a component has been rendered to the page the DOM tree for this instance the DOM element will be accessable quickly though 'el' variable.</p>
+        <pre>
+          <code q-code="{code5}"></code> //\""
+        </pre>
 
-      <p>Instead of using the query selector you can pass a DOM element as the parent for the rendering. The example below shows how you can make another instance of MyFirstComponent and add the new instance as a child to myComponent</p>
+        <p>Instead of using the query selector you can pass a DOM element as the parent for the rendering. The example below shows how you can make another instance of MyFirstComponent and add the new instance as a child to myComponent</p>
 
-      <pre>
-        <code q-code="{code3}"></code> //\""
-      </pre>
+        <pre>
+          <code q-code="{code3}"></code> //\""
+        </pre>
 
-      <hr>
-      <h2>Render Rules</h2>
-      <p>"You can use Quas.renderRule( ) to give extra options when rendering, such as prepend. Prepend will render the component as the first child to the parent rather than the last."</p>
-      <pre>
-        <code q-code="{code4}"></code>
-      </pre>
-      {DocsContent.nextBtn()}
-    </div>
+        <hr>
+        <h2>Render Rules</h2>
+        <p>"You can use Quas.renderRule( ) to give extra options when rendering, such as prepend. Prepend will render the component as the first child to the parent rather than the last."</p>
+        <pre>
+          <code q-code="{code4}"></code>
+        </pre>
+        {DocsContent.nextBtn()}
+      </div>
 
 
-  </quas>
+    </quas>
+  );
 }
 
 //props - page content
@@ -207,23 +213,25 @@ DocsContent.props = function(){
   "Quas.render(new MyComponent('john'), 'body');"
   ;
 
-  <quas>
-    <div>
-      <h1>Props</h1>
-      <p>"A prop (property) allows you to pass a value as input. Just surround the value in curly brackets"</p>
-      <pre>
-        <code q-code="{code1}"></code>
-      </pre>
-      <hr>
-      <h2>Multiple Props</h2>
-      <p>If you need to use multiple props together you must put commas between each value. You can also pass arguments to the constructor.</p>
-      <pre>
-        <code q-code="{code2}"></code>
-      </pre>
+  return (
+    <quas>
+      <div>
+        <h1>Props</h1>
+        <p>"A prop (property) allows you to pass a value as input. Just surround the value in curly brackets"</p>
+        <pre>
+          <code q-code="{code1}"></code>
+        </pre>
+        <hr>
+        <h2>Multiple Props</h2>
+        <p>If you need to use multiple props together you must put commas between each value. You can also pass arguments to the constructor.</p>
+        <pre>
+          <code q-code="{code2}"></code>
+        </pre>
 
-      {DocsContent.nextBtn()}
-    </div>
-  </quas>
+        {DocsContent.nextBtn()}
+      </div>
+    </quas>
+  );
 }
 
 //updating props - page content
@@ -242,21 +250,23 @@ DocsContent.updatingProps = function(){
   "Quas.render(comp, 'body');\n"+
   "comp.setProp('name', 'doe'); //sets and rerenders the component";
 
-  <quas>
-    <div>
-      <h1>Updating Props</h1>
-      <p>If the value of a a prop changes the component must be rerendered to update the value on the DOM tree.</p>
-      <pre>
-        <code q-code="{code1}"></code>
-      </pre>
-      <p>"Alternatively if you are only changing one prop you can use setProp( ) which will rerender the component after setting the new value"</p>
-      <pre>
-        <code q-code="{code2}"></code>
-      </pre>
+  return (
+    <quas>
+      <div>
+        <h1>Updating Props</h1>
+        <p>If the value of a a prop changes the component must be rerendered to update the value on the DOM tree.</p>
+        <pre>
+          <code q-code="{code1}"></code>
+        </pre>
+        <p>"Alternatively if you are only changing one prop you can use setProp( ) which will rerender the component after setting the new value"</p>
+        <pre>
+          <code q-code="{code2}"></code>
+        </pre>
 
-      {DocsContent.nextBtn()}
-    </div>
-  </quas>
+        {DocsContent.nextBtn()}
+      </div>
+    </quas>
+  );
 }
 
 //event handling - page content
@@ -273,17 +283,19 @@ DocsContent.eventHandling = function(){
     "\t}\n"+
     "}";
 
-  <quas>
-    <div>
-      <h1>Event Handling</h1>
-      <p>You can creat a function to which will handle the event. All of the HTML DOM Events are supported.</p>
-      <pre>
-        <code q-code="{code1}"></code>
-      </pre>
+  return (
+    <quas>
+      <div>
+        <h1>Event Handling</h1>
+        <p>You can creat a function to which will handle the event. All of the HTML DOM Events are supported.</p>
+        <pre>
+          <code q-code="{code1}"></code>
+        </pre>
 
-      {DocsContent.nextBtn()}
-    </div>
-  </quas>
+        {DocsContent.nextBtn()}
+      </div>
+    </quas>
+  );
 }
 
 //sub elements - page content
@@ -302,17 +314,19 @@ DocsContent.subElements = function(){
     "\t}\n"+
     "}";
 
-  <quas>
-    <div>
-      <h1>Sub Elements</h1>
-      <p>You can create sub elements like so:</p>
-      <pre>
-        <code q-code="{code1}"></code>
-      </pre>
+  return (
+    <quas>
+      <div>
+        <h1>Sub Elements</h1>
+        <p>You can create sub elements like so:</p>
+        <pre>
+          <code q-code="{code1}"></code>
+        </pre>
 
-      {DocsContent.nextBtn()}
-    </div>
-  </quas>
+        {DocsContent.nextBtn()}
+      </div>
+    </quas>
+  );
 }
 
 //conditional rendering - page content
@@ -343,17 +357,19 @@ DocsContent.conditionalRendering = function(){
     "\t}\n"+
     "}";
 
-  <quas>
-    <div>
-      <h1>Conditional Rendering</h1>
-      <p>You can decide what the render with conditional statements. It is typically best practice to do this within sub elements rather than in the render function. This is becasue the brackets for the if statement should surround the quas blocks.</p>
-      <pre>
-        <code q-code="{code1}"></code>
-      </pre>
+  return (
+    <quas>
+      <div>
+        <h1>Conditional Rendering</h1>
+        <p>You can decide what the render with conditional statements. It is typically best practice to do this within sub elements rather than in the render function. This is becasue the brackets for the if statement should surround the quas blocks.</p>
+        <pre>
+          <code q-code="{code1}"></code>
+        </pre>
 
-      {DocsContent.nextBtn()}
-    </div>
-  </quas>
+        {DocsContent.nextBtn()}
+      </div>
+    </quas>
+  );
 }
 
 //production builds - page content
@@ -372,25 +388,27 @@ DocsContent.productionBuilds = function(){
     "// javascript and another for the css\n"+
     "Quas.build();";
 
-  <quas>
-    <div>
-      <h1>Production Builds</h1>
-      <p>When using a development build the process of bundling will be done when the page loads, however you can export a production build which means you can remove the need of quas-dev.js
-        <br><br>
-        You can do this by opening your browsers console and using one of the following commands
-      </p>
-      <pre>
-        <code q-code="{code2}"></code>
-      </pre>
+  return (
+    <quas>
+      <div>
+        <h1>Production Builds</h1>
+        <p>When using a development build the process of bundling will be done when the page loads, however you can export a production build which means you can remove the need of quas-dev.js
+          <br><br>
+          You can do this by opening your browsers console and using one of the following commands
+        </p>
+        <pre>
+          <code q-code="{code2}"></code>
+        </pre>
 
-      <p>Once you have the bundled file you must link it in your html and then remove the code which links quas-dev.js and also remember to remove the call to Quas.devBuild</p>
-      <pre>
-        <code q-code="{code1}"></code>
-      </pre>
+        <p>Once you have the bundled file you must link it in your html and then remove the code which links quas-dev.js and also remember to remove the call to Quas.devBuild</p>
+        <pre>
+          <code q-code="{code1}"></code>
+        </pre>
 
-      {DocsContent.nextBtn()}
-    </div>
-  </quas>
+        {DocsContent.nextBtn()}
+      </div>
+    </quas>
+  );
 }
 
 //custom attributes - page content
@@ -425,25 +443,28 @@ DocsContent.customAttributes = function(){
     "}";
 
   ;
-  <quas>
-    <div>
-      <h1>Custom Attributes</h1>
-      <p>Quas comes with some custom html attributes which allow you to define components easier. You can also add your own custom attributes and define how they should be handled</p>
 
-      <pre>
-        <code q-code="{code1}"></code>
-      </pre>
+  return (
+    <quas>
+      <div>
+        <h1>Custom Attributes</h1>
+        <p>Quas comes with some custom html attributes which allow you to define components easier. You can also add your own custom attributes and define how they should be handled</p>
 
-      <p>To create your own custom attributes you must set add a function to Quas.customAttrs. All custom attribute will have the prefix 'q-' in the html code and the command will come next. Here is an example which will print out a parameter a given number of times</p>
-      <pre>
-        <code q-code="{code2}"></code>
-      </pre>
+        <pre>
+          <code q-code="{code1}"></code>
+        </pre>
 
-      <p>Params will be the key of the attribute split by '-' so in the example it will be [ 'q', 'log', 'foo' ]</p>
+        <p>To create your own custom attributes you must set add a function to Quas.customAttrs. All custom attribute will have the prefix 'q-' in the html code and the command will come next. Here is an example which will print out a parameter a given number of times</p>
+        <pre>
+          <code q-code="{code2}"></code>
+        </pre>
 
-      {DocsContent.nextBtn()}
-    </div>
-  </quas>
+        <p>Params will be the key of the attribute split by '-' so in the example it will be [ 'q', 'log', 'foo' ]</p>
+
+        {DocsContent.nextBtn()}
+      </div>
+    </quas>
+  );
 }
 
 //custom events - page content
@@ -455,17 +476,19 @@ DocsContent.customEvents = function(){
     "...\n\n"+
     "Quas.broadcastEvent('myEvent', 'music');";
 
-  <quas>
-    <div>
-      <h1>Custom Events</h1>
-      <p>This will allow you to broadcast data to all the existing listeners</p>
-      <pre>
-        <code q-code="{code1}"></code>
-      </pre>
+  return (
+    <quas>
+      <div>
+        <h1>Custom Events</h1>
+        <p>This will allow you to broadcast data to all the existing listeners</p>
+        <pre>
+          <code q-code="{code1}"></code>
+        </pre>
 
-      {DocsContent.nextBtn()}
-    </div>
-  </quas>
+        {DocsContent.nextBtn()}
+      </div>
+    </quas>
+  );
 }
 
 //ajax requests - page content
@@ -499,17 +522,19 @@ DocsContent.ajaxRequests = function(){
     "if(i==0){ let n =0;";
 
 
-  <quas>
-    <div>
-      <h1>AJAX Requests</h1>
-      <p>Request data from a server</p>
-      <pre>
-        <code q-code="{code1}"></code>
-      </pre>
+  return (
+    <quas>
+      <div>
+        <h1>AJAX Requests</h1>
+        <p>Request data from a server</p>
+        <pre>
+          <code q-code="{code1}"></code>
+        </pre>
 
-      {DocsContent.nextBtn()}
-    </div>
-  </quas>
+        {DocsContent.nextBtn()}
+      </div>
+    </quas>
+  );
 }
 
 //url params - page content
@@ -530,24 +555,26 @@ DocsContent.urlVariables = function(){
     "Quas.setUrlValues(data);\n" +
     "//result: site.com/watch?video=abc\n";
 
-  <quas>
-    <div>
-      <h1>URL Variables</h1>
-      <p>You can easily get and set url variables with quas<p>
-      <pre>
-        <code q-code="{code1}"></code>
-      </pre>
+  return (
+    <quas>
+      <div>
+        <h1>URL Variables</h1>
+        <p>You can easily get and set url variables with quas<p>
+        <pre>
+          <code q-code="{code1}"></code>
+        </pre>
 
-      <p>If you want to remove a variable simply get the current url variables and delete the key</p>
-      <pre>
-        <code q-code="{code2}"></code>
-      </pre>
+        <p>If you want to remove a variable simply get the current url variables and delete the key</p>
+        <pre>
+          <code q-code="{code2}"></code>
+        </pre>
 
-      <p>There is no need to encode or decord the uri because these 2 functions will do that for you</p>
+        <p>There is no need to encode or decord the uri because these 2 functions will do that for you</p>
 
-      {DocsContent.nextBtn()}
-    </div>
-  </quas>
+        {DocsContent.nextBtn()}
+      </div>
+    </quas>
+  );
 }
 
 //cookies - page content
@@ -562,17 +589,19 @@ DocsContent.cookies = function(){
     "//remove the cookie\n" +
     "Quas.clearCookie('loginID');";
 
-  <quas>
-    <div>
-      <h1>Cookies</h1>
-      <p>You can easily get and set cookies with quas</p>
-      <pre>
-        <code q-code="{code1}"></code>
-      </pre>
+  return (
+    <quas>
+      <div>
+        <h1>Cookies</h1>
+        <p>You can easily get and set cookies with quas</p>
+        <pre>
+          <code q-code="{code1}"></code>
+        </pre>
 
-      {DocsContent.nextBtn()}
-    </div>
-  </quas>
+        {DocsContent.nextBtn()}
+      </div>
+    </quas>
+  );
 }
 
 //query elements - page content
@@ -585,17 +614,19 @@ let code1 =
   "let element = Quas.findChild(c, '#nameInput');\n"+
   "element.value = 'hello';";
 
-  <quas>
-    <div>
-      <h1>Query DOM tree</h1>
-      <p>If you want to find a DOM element within your component after it is rendered you can use this function</p>
-      <pre>
-        <code q-code="{code1}"></code>
-      </pre>
+  return (
+    <quas>
+      <div>
+        <h1>Query DOM tree</h1>
+        <p>If you want to find a DOM element within your component after it is rendered you can use this function</p>
+        <pre>
+          <code q-code="{code1}"></code>
+        </pre>
 
-      {DocsContent.nextBtn()}
-    </div>
-  </quas>
+        {DocsContent.nextBtn()}
+      </div>
+    </quas>
+  );
 }
 
 //scrolling breakpoints - page content
@@ -617,17 +648,19 @@ DocsContent.scrollingBreakpoints = function(){
     "Quas.onScroll('enter', c, c.enteredViewPort);\n"+
     "Quas.onScroll('exit', c, c.exitViewPort);";
 
-  <quas>
-    <div>
-      <h1>Scrolling breakpoints</h1>
-      <p>You can easily tell when a component enters or exits the viewport of the user</p>
-      <pre>
-        <code q-code="{code1}"></code>
-      </pre>
+  return (
+    <quas>
+      <div>
+        <h1>Scrolling breakpoints</h1>
+        <p>You can easily tell when a component enters or exits the viewport of the user</p>
+        <pre>
+          <code q-code="{code1}"></code>
+        </pre>
 
-      {DocsContent.nextBtn()}
-    </div>
-  </quas>
+        {DocsContent.nextBtn()}
+      </div>
+    </quas>
+  );
 }
 
 //api - page content
@@ -678,30 +711,34 @@ DocsContent.spwa = function(){
     "  case 'news' : renderNews(); break;\n"+
     "}";
 
-  <quas>
-    <div>
-      <h1>Single Page Web Application</h1>
-      <p>Creating a single page web application (SPWA\) is completely optional with Quas. The first problem with SPWA is handling the url. You must make also rewrite or redict rules to your main html file i.e. index.html for this to work.</p>
-      <p>Map all the uique pages that you will need to have for your web app using the Atlas</p>
+  return (
+    <quas>
+      <div>
+        <h1>Single Page Web Application</h1>
+        <p>Creating a single page web application (SPWA\) is completely optional with Quas. The first problem with SPWA is handling the url. You must make also rewrite or redict rules to your main html file i.e. index.html for this to work.</p>
+        <p>Map all the uique pages that you will need to have for your web app using the Atlas</p>
 
-      <pre>
-        <code q-code="{code1}"></code>
-      </pre>
+        <pre>
+          <code q-code="{code1}"></code>
+        </pre>
 
-      <pre>
-        <code q-code="{code2}"></code>
-      </pre>
+        <pre>
+          <code q-code="{code2}"></code>
+        </pre>
 
-      {DocsContent.nextBtn()}
-    </div>
-  </quas>
+        {DocsContent.nextBtn()}
+      </div>
+    </quas>
+  );
 }
 
 //api - page content
 DocsContent.api = function(){
-  <quas>
-    <div>api</div>
-  </quas>
+  return (
+    <quas>
+      <div>api</div>
+    </quas>
+  );
 }
 
 DocsContent.pages = {

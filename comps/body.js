@@ -17,14 +17,18 @@ class Body extends Component{
       return Body.renderDocs();
     }
     else if(currentPathID == "download"){
-      <quas>
-        <div>download</div>
-      </quas>
+      return (
+        <quas>
+          <div>download</div>
+        </quas>
+      );
     }
     else{
-      <quas>
-        <div>404</div>
-      </quas>
+      return (
+        <quas>
+          <div>404</div>
+        </quas>
+      );
     }
   }
 
@@ -36,25 +40,27 @@ class Body extends Component{
     let card5 = new Card("desktop-monitor.png", "Breakpoints", "what to put here");
     let card6 = new Card("refresh-page-option.png", "Cookies", "what to put here");
 
-    <quas>
-      <div>
-        //landing top
-        <div class="landing-top">
-          <img class="landing-logo" src="/img/logo_landing.png">
-          <div class="landing-desc">
-            <h1>Quas.js</h1>
-            <h2>A progressive JavaScript UI library</h2>
+    return (
+      <quas>
+        <div>
+          //landing top
+          <div class="landing-top">
+            <img class="landing-logo" src="/img/logo_landing.png">
+            <div class="landing-desc">
+              <h1>Quas.js</h1>
+              <h2>A progressive JavaScript UI library</h2>
+            </div>
+          </div>
+          <h2 class="section-heading">Features</h2>
+          <div class="card-con" id="card-row-1">
+            {card1.render(), card2.render(), card3.render()} //must put them in array for multiple components
+          </div>
+          <div class="card-con" id="card-row-2">
+            {card4.render(), card5.render(), card6.render()} //must put them in array for multiple components
           </div>
         </div>
-        <h2 class="section-heading">Features</h2>
-        <div class="card-con" id="card-row-1">
-          {card1.render(), card2.render(), card3.render()} //must put them in array for multiple components
-        </div>
-        <div class="card-con" id="card-row-2">
-          {card4.render(), card5.render(), card6.render()} //must put them in array for multiple components
-        </div>
-      </div>
-    </quas>
+      </quas>
+    );
   }
 
   static renderDocs(){
@@ -65,13 +71,15 @@ class Body extends Component{
       Body.docsContent = new DocsContent();
     }
 
-    <quas>
-      <div>
-        {Body.docsNav.render()}
-        <div class="docs-content">
-          {Body.docsContent.render()}
+    return (
+      <quas>
+        <div>
+          {Body.docsNav.render()}
+          <div class="docs-content">
+            {Body.docsContent.render()}
+          </div>
         </div>
-      </div>
-    </quas>
+      </quas>
+    );
   }
 }
