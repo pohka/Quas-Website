@@ -10,7 +10,19 @@ class Component{
   */
   setProp(k, v){
     this[k] = v;
-    Quas.rerender(this);
+    Quas.render(this);
+  }
+
+  /**
+    Sets multiple properties and rerenders the component
+    e.g. comp.setProps({key:value});
+    @param {JSON} key
+  */
+  setProps(obj){
+    for(let k in obj){
+      this[k] = obj[k];
+    }
+    Quas.render(this);
   }
 
   /**
