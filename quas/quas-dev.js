@@ -50,7 +50,7 @@ Quas.parseBundle = function(bundle){
       if(closeIndex > -1){
         html += lines[i].substr(0, closeIndex);
         let info = Quas.convertToRenderInfo(html);
-        lines[i] = "\treturn " + info + ";" + lines[i].substr(closeIndex + tagName.length + 3);
+        lines[i] = "\treturn" + info + ";" + lines[i].substr(closeIndex + tagName.length + 3);
         open = -1;
         html = "";
       }

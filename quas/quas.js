@@ -48,6 +48,9 @@ class Quas{
       comp.vdom = comp.render();
       comp.dom = Quas.createDOM(comp.vdom, comp);
       parent.appendChild(comp.dom);
+      if(comp.onPush){
+        Atlas.addPushListener(comp);
+      }
     }
   }
 
@@ -101,6 +104,9 @@ class Quas{
           parent.appendChild(comp.dom);
         }
       }
+    }
+    if(comp.onPush){
+      Atlas.addPushListener(comp);
     }
   }
 

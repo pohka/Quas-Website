@@ -2,7 +2,6 @@ class Navbar extends Component{
   constructor(items){
     super();
     this.pathIDs = items;
-    Atlas.addPushListener(this);
   }
 
   static createOption(pathID){
