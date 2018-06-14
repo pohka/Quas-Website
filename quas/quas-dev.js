@@ -406,6 +406,53 @@ Quas.bundle = function(rootFile){
     url : rootFile,
     type : "GET",
     success : (file) => {
+      let lines = file.split("\n");
+      let importRegex = /import+\s".*"|import+\s'.*'|import+\s`.*`/g;
+      let multiLineCommentOpen = false;
+      let finalFile = "";
+      let hasImport = false;
+
+      for(let i=0; i<lines.length; i++){
+        let validLine = "";
+        if(lines[i].indexOf("/*") > -1){
+          multiLineCommentOpen = true;
+          validLine += lines[i].split("/*")[0];
+        }
+
+        if(lines[i].indexOf("*/") > -1){
+          multiLineCommentOpen = false;
+          validLine += lines[i].split("*/")[1];
+        }
+
+        if(!multiLineCommentOpen && validLine == ""){
+          validLine = lines[i].split("//")[0];
+        }
+        else if(!multiLineCommentOpen && validLine != ""){
+          validLine = validLine.split("//")[0];
+        }
+
+        let importMatch = validLine.match(/import+\s".*"|import+\s'.*'|import+\s`.*`/);
+        if(importMatch){
+          hasImport = true;
+          let path = importMatch[0].match(/".*?"/)[0];
+          path = path.substr(1,path.length-2);
+
+          let arr = path.split(".");
+          let extention = arr[arr.length-1];
+
+          if(extention == "js" || extention == "css"){
+            Quas.import(path, extention);
+          }
+          else{ //both
+            Quas.import(path+".js", "js");
+            Quas.import(path+".css", "css");
+          }
+        }
+        else{
+          finalFile += lines[i] + "\n";
+        }
+      }
+/*
       let imports = file.match(/import+\s".*"|import+\s'.*'|import+\s`.*`/g);
       if(imports){
         for(let i=0; i<imports.length; i++){
@@ -425,17 +472,18 @@ Quas.bundle = function(rootFile){
           }
         }
       }
+      */
 
       //add root file
-      Quas.imports.js.content[rootFile] = file;
+      Quas.imports.js.content[rootFile] = finalFile;
 
       //if no imports just eval the root
-      if(!imports){
+      if(!hasImport){
         Quas.evalImports("js");
       }
     },
     error : (e) => {
-      console.log(e);
+      console.error("Root file not found: " + rootFile);
     }
   });
 }

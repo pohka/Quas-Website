@@ -13,8 +13,3 @@
  * removes space character after a comment
  * doesn't highlight keyword with different delimiters
    * e.g. func(this) 'this' key word is never highlighted
-
-
-## bundling
-* ignore commented out imports
-* warning when import doesn't find the file
