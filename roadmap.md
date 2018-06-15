@@ -13,3 +13,10 @@
  * removes space character after a comment
  * doesn't highlight keyword with different delimiters
    * e.g. func(this) 'this' key word is never highlighted
+
+## diffVDOM
+* custom attributes should append the vdom when creating dom elements
+* change event listeners
+
+## DOCS
+* onclick-onscroll=function(){} - multiple events with same function

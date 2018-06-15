@@ -69,24 +69,27 @@ class Quas{
     //diff the dom
     else if(comp.isRendered()){
       let newVDOM = comp.render();
-      Quas.diffVDOM(comp.dom, comp.vdom, newVDOM);
+      Quas.diffVDOM(comp, comp.dom.parentNode, comp.dom, comp.vdom, newVDOM);
       comp.vdom = newVDOM;
 
       parent = comp.dom.parentNode;
-      let newDOM = Quas.createDOM(comp.vdom, comp);
-      parent.replaceChild(newDOM, comp.dom);
-      comp.dom = newDOM;
+    //  let newDOM = Quas.createDOM(comp.vdom, comp);
+    //  parent.replaceChild(newDOM, comp.dom);
+      //comp.dom = newDOM;
     }
   }
 
-  static diffVDOM(dom, vdom, newVDOM){
-
+  static diffVDOM(comp, parent, dom, vdom, newVDOM){
     if(vdom.length == 0){
-      return;
+      return false;
     }
 
     //text node
     if(vdom.constructor == String){
+      if(vdom[0] !== newVDOM[0]){
+        console.log("text changed");
+        parent.textContent = newVDOM;
+      }
       return;
     }
 
@@ -98,37 +101,67 @@ class Quas{
       //diff tags
       if(vdom[0] !== newVDOM[0]){
         console.log("changed tag: " + newVDOM[0]);
+        let newDOM = Quas.createDOM(newVDOM, comp);
+        parent.replaceChild(newDOM, dom);
       }
 
-      //clone attrs
+      //clone attrs to keep track of newly added attrs
       let newAttrs = {};
-      for(let a in vdom[1]){
-        newAttrs[a] = vdom[1][a];
+      for(let a in newVDOM[1]){
+        newAttrs[a] = newVDOM[1][a];
       }
 
       for(let a in vdom[1]){
         //removed attribute a
         if(newVDOM[1][a] === undefined){
           console.log("removed attr: " + a);
+          dom.removeAttribute(a);
         }
         else{
           //diff attribute value
           if(vdom[1][a] !== newVDOM[1][a]){
             console.log("changed attr:" + a);
+
+
+            let prefix = a.substr(0,2);
+            //custom attribute
+            if(prefix === "q-"){
+            //  let useAttr = Quas.evalCustomAttr(comp, dom, a, newVDOM[1][a]);
+              //if(useAttr){
+            //    console.log("here");
+                //  dom.setAttribute(a, attrs[a]);
+            //  }
+            }
+            //event
+            else if(prefix === "on"){
+              let eventNames = a.substr(2).split("-on");
+              for(let i in eventNames){
+                //dom.addEventListener(eventNames[i],
+                //  function(e){
+                //    attrs[a](e, comp);
+                //});
+              }
+            }
+            //basic attribute
+            else{
+              dom.setAttribute(a, newVDOM[1][a]);
+            }
           }
-            delete newAttrs[a];
         }
+        delete newAttrs[a];
       }
       //all the newly added attributes
       for(let a in newAttrs){
         if(a != 0){
           console.log("added attr: " + a + "=" + newAttrs[a]);
+          dom.setAttribute(a, newAttrs[a]);
         }
       }
 
       //children
+      let children = dom.children
       for(let c=0; c<vdom[2].length; c++){
-        Quas.diffVDOM(dom, vdom[2][c], newVDOM[2][c]);
+        Quas.diffVDOM(comp, dom, dom.children[c], vdom[2][c], newVDOM[2][c]);
       }
     }
   }
