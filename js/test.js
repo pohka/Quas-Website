@@ -30,7 +30,9 @@ class test extends Component{
     else{
       return (
         <quas>
-          <div onclick=this.handleClick id="myid">{this.text}</div>
+          <div onclick=this.handleClick id="myid">{this.text}
+            <span>after</span>
+          </div>
         </quas>
       );
     }

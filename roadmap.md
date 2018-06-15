@@ -15,6 +15,7 @@
    * e.g. func(this) 'this' key word is never highlighted
 
 ## diffVDOM
+* proper diffing for custom attrs
 * custom attributes should append the vdom when creating dom elements
 * change event listeners
 
