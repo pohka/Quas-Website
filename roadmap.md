@@ -21,3 +21,20 @@
 
 ## DOCS
 * onclick-onscroll=function(){} - multiple events with same function
+
+
+state:
+* node
+* text node
+* undefined
+
+old new
+node text y
+node node y
+node unde y
+text text y
+text node y
+text unde y
+unde text y
+unde node y
+unde unde y

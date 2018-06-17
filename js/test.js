@@ -1,37 +1,47 @@
+var sam;
 function ready(){
-  Quas.render(new test(), "body");
+  sam = new test();
+  Quas.render(sam, "body");
+  console.log(sam.vdom);
 }
 
 
 class test extends Component{
   constructor(){
     super();
-    this.text = "hello";
+    this.text = "part1";
     this.cls = "first";
     this.alt = false;
   }
 
   handleClick(e, comp){
     comp.setProps({
-      "text" : "test",
-      "alt" : true
+      "text" : "AFF2",
+      "alt" : !comp.alt
     });
-    console.log("clicked");
+    console.log("-----------clicked--------------");
   }
 
   render(){
+    console.log("is alt:" +  this.alt);
     if(!this.alt){
       return (
         <quas>
-          <div onclick=this.handleClick class="{this.cls}">{this.text}</div>
+          <div onclick=this.handleClick class="{this.cls}">
+            {this.text}
+            <div id="1">another</div>
+            <div id="2">another</div>
+            <div  id="3">another</div>
+
+          </div>
         </quas>
       );
     }
     else{
       return (
         <quas>
-          <div onclick=this.handleClick id="myid">{this.text}
-            <span>after</span>
+          <div onclick=this.handleClick id="myid">
+            <div>not</div>
           </div>
         </quas>
       );

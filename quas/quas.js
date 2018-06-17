@@ -80,26 +80,101 @@ class Quas{
   }
 
   static diffVDOM(comp, parent, dom, vdom, newVDOM){
+    console.log("-----diffVDOM--------");
+
+    console.log("has dom:" + (dom !== undefined));
+
+    if(dom){
+      console.log(dom);
+    }
+
+    //printing old vdom
+    if(vdom !== undefined){
+      let str = "<" + vdom[0];
+      if(vdom.constructor != String){
+        for(let i in vdom[1]){
+          if(i.substr(0,2) !== "on"){
+            str += " " + i + "=" + vdom[1][i];
+          }
+        }
+        str += ">";
+      }
+      else{
+        str = newVDOM;
+      }
+
+      console.log("vdom: " + str);
+    }
+    else{
+      console.log("old vdom: undefined");
+    }
+
+    //printing new vdom
+    if(newVDOM !== undefined){
+      let str = "<" + newVDOM[0];
+      if(newVDOM.constructor != String){
+        for(let i in newVDOM[1]){
+          if(i.substr(0,2) !== "on"){
+            str += " " + i + "=" + newVDOM[1][i];
+          }
+        }
+        str += ">";
+      }
+      else{
+        str = newVDOM;
+      }
+
+      console.log("new vdom: " + str);
+    }
+    else{
+      console.log("new vdom: undefined");
+    }
+
+
+    if(dom) console.log(dom.innerHTML);
+
+
+    let returnVal = 0;
+
     if(!newVDOM){
       if(parent && dom){
         console.log("removed dom")
         parent.removeChild(dom);
       }
-      return;
+      return -1;
     }
 
     //text node
     if(newVDOM.constructor == String){
-      if(!vdom || vdom[0] !== newVDOM[0]){
+      if(!vdom){
         console.log("text changed");
-        parent.textContent = newVDOM;
+    //    parent.textContent = newVDOM;
+        let text = document.createTextNode(newVDOM);
+        parent.append(text);
       }
-      return;
+      else if(vdom != newVDOM){
+        //old vdom is not a text node
+        //if(vdom.constructor != String){
+
+        //  parent.removeChild(dom);
+        //  returnVal = -1
+        //}
+        parent.replaceChild(document.createTextNode(newVDOM), dom);
+        console.log("text changed");
+        //let text = document.createTextNode(newVDOM);
+      //  parent.append(text);
+      //  parent.textContent = newVDOM;
+      }
+      return returnVal;
     }
 
     //old vdom is text node and new vdom is not a text node
     else if(vdom && vdom.constructor == String && newVDOM.constructor != String){
-      parent.textContent = "";
+      //parent.textContent = "";
+      let newDOM = Quas.createDOM(newVDOM, comp);
+      parent.replaceChild(newDOM, dom);
+      //returnVal = -1;
+      return returnVal;
     }
 
     //old vdom doesn't have this new dom element
@@ -107,86 +182,115 @@ class Quas{
       console.log("new dom element");
       let newDOM = Quas.createDOM(newVDOM, comp);
       parent.appendChild(newDOM);
-      //return;
+      returnVal = 1;
+      return returnVal;
     }
     else{
       //diff tags
-      if(vdom[0] !== newVDOM[0]){
+      if(vdom[0] != newVDOM[0]){
         console.log("changed tag: " + newVDOM[0]);
         let newDOM = Quas.createDOM(newVDOM, comp);
         if(!dom){
           parent.appendChild(newDOM);
+          returnVal = 1;
         }
         else{
+          console.log(parent);
+          console.log(dom);
           parent.replaceChild(newDOM, dom);
         }
-        return;
+      //  dom = newVDOM;
+        return returnVal;
       }
-
-      //clone attrs to keep track of newly added attrs
-      let newAttrs = {};
-      for(let a in newVDOM[1]){
-        newAttrs[a] = newVDOM[1][a];
-      }
-
-      for(let a in vdom[1]){
-        //removed attribute a
-        if(newVDOM[1][a] === undefined){
-          console.log("removed attr: " + a);
-          dom.removeAttribute(a);
+      //same tag
+      else{
+        //clone attrs to keep track of newly added attrs
+        let newAttrs = {};
+        for(let a in newVDOM[1]){
+          newAttrs[a] = newVDOM[1][a];
         }
-        else{
-          //diff attribute value
-          if(vdom[1][a] !== newVDOM[1][a]){
-            console.log("changed attr:" + a);
+
+        for(let a in vdom[1]){
+          //removed attribute a
+          if(newVDOM[1][a] === undefined){
+            console.log("removed attr: " + a);
+            dom.removeAttribute(a);
+          }
+          else{
+            //diff attribute value
+            if(vdom[1][a] !== newVDOM[1][a]){
+              console.log("changed attr:" + a);
 
 
-            let prefix = a.substr(0,2);
-            //custom attribute
-            if(prefix === "q-"){
-              //placeholder, remove all the child nodes
-              while(dom.hasChildNodes()){
-                dom.removeChild(dom.firstChild);
+              let prefix = a.substr(0,2);
+              //custom attribute
+              if(prefix === "q-"){
+                //placeholder, remove all the child nodes
+                while(dom.hasChildNodes()){
+                  dom.removeChild(dom.firstChild);
+                }
+                let useAttr = Quas.evalCustomAttr(comp, dom, a, newVDOM[1][a]);
+                if(useAttr){
+                  dom.setAttribute(a, attrs[a]);
+                }
               }
-              let useAttr = Quas.evalCustomAttr(comp, dom, a, newVDOM[1][a]);
-              if(useAttr){
-                dom.setAttribute(a, attrs[a]);
+              //event
+              else if(prefix === "on"){
+                let eventNames = a.substr(2).split("-on");
+                for(let i in eventNames){
+                  //dom.addEventListener(eventNames[i],
+                  //  function(e){
+                  //    attrs[a](e, comp);
+                  //});
+                }
               }
-            }
-            //event
-            else if(prefix === "on"){
-              let eventNames = a.substr(2).split("-on");
-              for(let i in eventNames){
-                //dom.addEventListener(eventNames[i],
-                //  function(e){
-                //    attrs[a](e, comp);
-                //});
+              //basic attribute
+              else{
+                dom.setAttribute(a, newVDOM[1][a]);
               }
-            }
-            //basic attribute
-            else{
-              dom.setAttribute(a, newVDOM[1][a]);
             }
           }
+          delete newAttrs[a];
         }
-        delete newAttrs[a];
-      }
-      //all the newly added attributes
-      for(let a in newAttrs){
-        if(a != 0){
-          console.log("added attr: " + a + "=" + newAttrs[a]);
-          dom.setAttribute(a, newAttrs[a]);
+        //all the newly added attributes
+        for(let a in newAttrs){
+          if(a != 0){
+            console.log("added attr: " + a + "=" + newAttrs[a]);
+            dom.setAttribute(a, newAttrs[a]);
+          }
         }
       }
     }
 
     //children
-    if(dom){
-      let children = dom.children;
-      for(let c=0; c<newVDOM[2].length || c<vdom[2].length; c++){
-        Quas.diffVDOM(comp, dom, dom.children[c], vdom[2][c], newVDOM[2][c]);
+    if(dom && returnVal > -1){
+      let oldChildren;
+      if(vdom){
+        oldChildren = vdom[2];
+      }
+      let newChildren;
+      if(newVDOM){
+        newChildren = newVDOM[2];
+      }
+      let change = 0;
+      for(let c=0; (newVDOM && c<newVDOM[2].length) || (vdom && c<vdom[2].length); c++){
+        let nextOldChild;
+        if(oldChildren){
+          nextOldChild = oldChildren[c];
+        }
+        let nextNewChild;
+        if(newChildren){
+          nextNewChild = newChildren[c];
+        }
+        let nextDOM;
+
+        if(dom.childNodes){
+          nextDOM = dom.childNodes[c+change];
+        }
+        change += Quas.diffVDOM(comp, dom, nextDOM, nextOldChild, nextNewChild);
       }
     }
+    return returnVal;
   }
 
   /**
