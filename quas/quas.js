@@ -175,21 +175,16 @@ class Quas{
               //event
               else if(isEvent){
                 let eventNames = a.substr(2).split("-on");
-
-                //if newvdom has this key
-                if(newVDOM[1][a]){
+                for(let e in eventNames){
                   if(vdom[1][a] != newVDOM[1][a]){
-                    for(let e in eventNames){
+                    console.log("changed event:"+ eventNames[e]);
+                    dom.removeEventListener(eventNames[e], comp.events[eventNames[e]]);
+                    comp.events[eventNames[e]] = (mouseEvent)=>{
+                      newVDOM[1][a](mouseEvent, comp);
                     }
+                    dom.addEventListener(eventNames[e], comp.events[eventNames[e]]);
                   }
                 }
-                //for(let e in eventNames){
-
-                  //dom.addEventListener(eventNames[i],
-                  //  function(e){
-                  //    attrs[a](e, comp);
-                  //});
-              //  }
               }
               //basic attribute
               else{

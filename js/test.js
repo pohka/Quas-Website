@@ -21,6 +21,14 @@ class test extends Component{
     console.log("-----------clicked--------------");
   }
 
+  handleClick2(e, comp){
+    console.log("-----------clicked--------------");
+  }
+
+  getText(){
+    return "rip";
+  }
+
   getText(){
     return "rip";
   }
@@ -43,7 +51,7 @@ class test extends Component{
     else{
       return (
         <quas>
-          <div id="myid">
+          <div onclick=this.handleClick2 id="myid">
             <div>not</div>
           </div>
         </quas>
