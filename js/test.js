@@ -21,8 +21,8 @@ class test extends Component{
     console.log("-----------clicked--------------");
   }
 
-  handleClick2(e, comp){
-    console.log("-----------clicked--------------");
+  hover(e, comp){
+    console.log("-----------hover--------------");
   }
 
   getText(){
@@ -51,7 +51,7 @@ class test extends Component{
     else{
       return (
         <quas>
-          <div onclick=this.handleClick2 id="myid">
+          <div onclick=this.handleClick onmouseover=this.hover id="myid">
             <div>not</div>
           </div>
         </quas>

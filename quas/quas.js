@@ -149,7 +149,6 @@ class Quas{
             if(isEvent){
               let eventNames = a.substr(2).split("-on");
               for(let e in eventNames){
-                console.log("removed event:"+ eventNames[e]);
                 dom.removeEventListener(eventNames[e], comp.events[eventNames[e]]);
                 delete comp.events[eventNames[e]];
               }
@@ -177,7 +176,6 @@ class Quas{
                 let eventNames = a.substr(2).split("-on");
                 for(let e in eventNames){
                   if(vdom[1][a] != newVDOM[1][a]){
-                    console.log("changed event:"+ eventNames[e]);
                     dom.removeEventListener(eventNames[e], comp.events[eventNames[e]]);
                     comp.events[eventNames[e]] = (mouseEvent)=>{
                       newVDOM[1][a](mouseEvent, comp);
@@ -197,7 +195,22 @@ class Quas{
         //all the newly added attributes
         for(let a in newAttrs){
           if(a != 0){
-            dom.setAttribute(a, newAttrs[a]);
+            let prefix = a.substr(0,2);
+            let isCustomAttr = (prefix == "q-");
+            let isEvent = (prefix == "on");
+
+            if(isEvent){
+              let eventNames = a.substr(2).split("-on");
+              for(let e in eventNames){
+                comp.events[eventNames[e]] = (mouseEvent)=>{
+                  newAttrs[a](mouseEvent, comp);
+                }
+                dom.addEventListener(eventNames[e], comp.events[eventNames[e]]);
+              }
+            }
+            else{
+              dom.setAttribute(a, newAttrs[a]);
+            }
           }
         }
       }
