@@ -70,15 +70,20 @@ class Body extends Component{
       Body.docsContent = new DocsContent();
     }
 
-    return (
+    let pr = "hello";
+    //return (
+    let a = (
       <quas>
         <div>
           {Body.docsNav.render()}
+          <span>REEEEEEEEEEEEEEEEEEEEE</span>
           <div class="docs-content">
             {Body.docsContent.render()}
           </div>
         </div>
       </quas>
     );
+    console.log(a);
+    return a;
   }
 }

@@ -23,10 +23,14 @@
 * onclick-onscroll=function(){} - multiple events with same function
 
 
+beware of props function calls, quasdev: 139 (str += arr[2][j] + ",";)
+
 state:
 * node
 * text node
 * undefined
+
+ISSUE: out of sync vdom on old vdom when using nested components
 
 old new
 node text y

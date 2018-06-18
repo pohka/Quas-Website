@@ -136,7 +136,7 @@ Quas.jsArr = function(arr, tab){
 
             //function call prop
             if(arr[2][j].match(/\(.*?\)/g)){
-              str += arr[2][j] + ",";
+              str += arr[2][j];
             }
             //text context
             else{
@@ -199,6 +199,7 @@ Quas.convertToRenderInfo = function(html){
           }
 
           let parseProps = Quas.parseProps(trimmedText);
+          console.log(parseProps);
           parent.push(parseProps);
         }
         text = "";
@@ -240,6 +241,12 @@ Quas.convertToRenderInfo = function(html){
           }
         }
 
+        //console.log("info:");
+        //console.log(info);
+      //  console.log("adding:");
+        //console.log([tagInfo[0], attrs, []]);
+        //console.log("------");
+
         //adding root
         if(info === undefined){
           info = [tagInfo[0], attrs, []];
@@ -279,6 +286,7 @@ Quas.convertToRenderInfo = function(html){
   @param {String}
 */
 Quas.parseProps = function(str){
+  console.log(str);
   let matches =  str.match(/\{.*?\}/g);
   for(let i in matches){
   	let parsed = matches[i].replace("{", '"+');
@@ -290,6 +298,11 @@ Quas.parseProps = function(str){
     if(char !== "\\"){
       //function
       if(res.match(/\(.*?\)/g)){
+        console.log("func:"+res);
+        str.replace(matches[i], res);
+      //  if(str.charAt(0) != "\"" && str.charAt(str.length-1) != "\""){
+      //    str = "\"" + str + "\"";
+        //}
         return res;
       }
       //text component

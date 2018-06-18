@@ -22,13 +22,17 @@ class test extends Component{
     console.log("-----------clicked--------------");
   }
 
+  getText(){
+    return "rip";
+  }
+
   render(){
     console.log("is alt:" +  this.alt);
     if(!this.alt){
       return (
         <quas>
           <div onclick=this.handleClick class="{this.cls}">
-            {this.text}
+            after that {this.getText()} after {this.getText()}
             <div id="1">another</div>
             <div id="2">another</div>
             <div  id="3">another</div>

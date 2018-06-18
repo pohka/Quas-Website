@@ -1,7 +1,11 @@
 /**
   Super class for all components
 */
+
 class Component{
+  constructor(){
+    Quas.comps.push(this);
+  }
   /**
     Sets a property and rerenders the component
 
@@ -887,6 +891,7 @@ Quas.scrollSafeZone = {"top": 0, "bottom" : 0}; //safezone padding for scroll li
 Quas.isScrollable = true; //true if scrolling is enabled
 Quas.customAttrs = {}; //custom attributes
 Quas.isDevBuild = false; //true if using development mode
+Quas.comps = [];
 
 
 
@@ -929,6 +934,7 @@ class Atlas{
  static push(id){
    let newUrl = window.origin + Atlas.paths[id].path;
    window.history.pushState('','',newUrl);
+   document.body.scrollTop = document.documentElement.scrollTop = 0;
 
   //notify event listeners
   for(let i in Atlas.pushListeners){
