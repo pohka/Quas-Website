@@ -32,7 +32,7 @@ class test extends Component{
       return (
         <quas>
           <div onclick=this.handleClick class="{this.cls}">
-            after that {this.getText()} after {this.getText()}
+            {"before ", this.getText(), " after ", this.text}
             <div id="1">another</div>
             <div id="2">another</div>
             <div  id="3">another</div>

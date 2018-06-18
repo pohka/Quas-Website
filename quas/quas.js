@@ -4,7 +4,9 @@
 
 class Component{
   constructor(){
-    Quas.comps.push(this);
+    if(Quas.isDevBuild){
+      Quas.comps.push(this);
+    }
   }
   /**
     Sets a property and rerenders the component
@@ -84,65 +86,10 @@ class Quas{
   }
 
   static diffVDOM(comp, parent, dom, vdom, newVDOM){
-    console.log("-----diffVDOM--------");
-
-    console.log("has dom:" + (dom !== undefined));
-
-    if(dom){
-      console.log(dom);
-    }
-
-    //printing old vdom
-    if(vdom !== undefined){
-      let str = "<" + vdom[0];
-      if(vdom.constructor != String){
-        for(let i in vdom[1]){
-          if(i.substr(0,2) !== "on"){
-            str += " " + i + "=" + vdom[1][i];
-          }
-        }
-        str += ">";
-      }
-      else{
-        str = newVDOM;
-      }
-
-      console.log("vdom: " + str);
-    }
-    else{
-      console.log("old vdom: undefined");
-    }
-
-    //printing new vdom
-    if(newVDOM !== undefined){
-      let str = "<" + newVDOM[0];
-      if(newVDOM.constructor != String){
-        for(let i in newVDOM[1]){
-          if(i.substr(0,2) !== "on"){
-            str += " " + i + "=" + newVDOM[1][i];
-          }
-        }
-        str += ">";
-      }
-      else{
-        str = newVDOM;
-      }
-
-      console.log("new vdom: " + str);
-    }
-    else{
-      console.log("new vdom: undefined");
-    }
-
-
-    if(dom) console.log(dom.innerHTML);
-
-
     let returnVal = 0;
 
     if(!newVDOM){
       if(parent && dom){
-        console.log("removed dom")
         parent.removeChild(dom);
       }
       return -1;
@@ -151,39 +98,25 @@ class Quas{
     //text node
     if(newVDOM.constructor == String){
       if(!vdom){
-        console.log("text changed");
     //    parent.textContent = newVDOM;
         let text = document.createTextNode(newVDOM);
         parent.append(text);
       }
       else if(vdom != newVDOM){
-        //old vdom is not a text node
-        //if(vdom.constructor != String){
-
-        //  parent.removeChild(dom);
-        //  returnVal = -1
-        //}
         parent.replaceChild(document.createTextNode(newVDOM), dom);
-        console.log("text changed");
-        //let text = document.createTextNode(newVDOM);
-      //  parent.append(text);
-      //  parent.textContent = newVDOM;
       }
       return returnVal;
     }
 
     //old vdom is text node and new vdom is not a text node
     else if(vdom && vdom.constructor == String && newVDOM.constructor != String){
-      //parent.textContent = "";
       let newDOM = Quas.createDOM(newVDOM, comp);
       parent.replaceChild(newDOM, dom);
-      //returnVal = -1;
       return returnVal;
     }
 
     //old vdom doesn't have this new dom element
     if(!vdom){
-      console.log("new dom element");
       let newDOM = Quas.createDOM(newVDOM, comp);
       parent.appendChild(newDOM);
       returnVal = 1;
@@ -192,18 +125,14 @@ class Quas{
     else{
       //diff tags
       if(vdom[0] != newVDOM[0]){
-        console.log("changed tag: " + newVDOM[0]);
         let newDOM = Quas.createDOM(newVDOM, comp);
         if(!dom){
           parent.appendChild(newDOM);
           returnVal = 1;
         }
         else{
-          console.log(parent);
-          console.log(dom);
           parent.replaceChild(newDOM, dom);
         }
-      //  dom = newVDOM;
         return returnVal;
       }
       //same tag
@@ -217,15 +146,11 @@ class Quas{
         for(let a in vdom[1]){
           //removed attribute a
           if(newVDOM[1][a] === undefined){
-            console.log("removed attr: " + a);
             dom.removeAttribute(a);
           }
           else{
             //diff attribute value
             if(vdom[1][a] !== newVDOM[1][a]){
-              console.log("changed attr:" + a);
-
-
               let prefix = a.substr(0,2);
               //custom attribute
               if(prefix === "q-"){
@@ -259,7 +184,6 @@ class Quas{
         //all the newly added attributes
         for(let a in newAttrs){
           if(a != 0){
-            console.log("added attr: " + a + "=" + newAttrs[a]);
             dom.setAttribute(a, newAttrs[a]);
           }
         }
