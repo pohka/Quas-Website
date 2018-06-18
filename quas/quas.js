@@ -77,11 +77,6 @@ class Quas{
       let newVDOM = comp.render();
       Quas.diffVDOM(comp, comp.dom.parentNode, comp.dom, comp.vdom, newVDOM);
       comp.vdom = newVDOM;
-
-      //parent = comp.dom.parentNode;
-    //  let newDOM = Quas.createDOM(comp.vdom, comp);
-    //  parent.replaceChild(newDOM, comp.dom);
-      //comp.dom = newDOM;
     }
   }
 
@@ -98,7 +93,6 @@ class Quas{
     //text node
     if(newVDOM.constructor == String){
       if(!vdom){
-    //    parent.textContent = newVDOM;
         let text = document.createTextNode(newVDOM);
         parent.append(text);
       }
@@ -143,17 +137,32 @@ class Quas{
           newAttrs[a] = newVDOM[1][a];
         }
 
+
+
         for(let a in vdom[1]){
+          let prefix = a.substr(0,2);
+          let isCustomAttr = (prefix == "q-");
+          let isEvent = (prefix == "on");
+
           //removed attribute a
           if(newVDOM[1][a] === undefined){
-            dom.removeAttribute(a);
+            if(isEvent){
+              let eventNames = a.substr(2).split("-on");
+              for(let e in eventNames){
+                console.log("removed event:"+ eventNames[e]);
+                dom.removeEventListener(eventNames[e], comp.events[eventNames[e]]);
+                delete comp.events[eventNames[e]];
+              }
+            }
+            else{
+              dom.removeAttribute(a);
+            }
           }
           else{
             //diff attribute value
-            if(vdom[1][a] !== newVDOM[1][a]){
-              let prefix = a.substr(0,2);
+            if(vdom[1][a] != newVDOM[1][a]){
               //custom attribute
-              if(prefix === "q-"){
+              if(isCustomAttr){
                 //placeholder, remove all the child nodes
                 while(dom.hasChildNodes()){
                   dom.removeChild(dom.firstChild);
@@ -164,14 +173,23 @@ class Quas{
                 }
               }
               //event
-              else if(prefix === "on"){
+              else if(isEvent){
                 let eventNames = a.substr(2).split("-on");
-                for(let i in eventNames){
+
+                //if newvdom has this key
+                if(newVDOM[1][a]){
+                  if(vdom[1][a] != newVDOM[1][a]){
+                    for(let e in eventNames){
+                    }
+                  }
+                }
+                //for(let e in eventNames){
+
                   //dom.addEventListener(eventNames[i],
                   //  function(e){
                   //    attrs[a](e, comp);
                   //});
-                }
+              //  }
               }
               //basic attribute
               else{
@@ -331,11 +349,15 @@ class Quas{
       //event
       else if(prefix === "on"){
         let eventNames = a.substr(2).split("-on");
+        if(!comp.events){
+          comp.events = {};
+        }
         for(let i in eventNames){
-          el.addEventListener(eventNames[i],
-            function(e){
-              attrs[a](e, comp);
-          });
+          comp.events[eventNames[i]] = (e)=>{
+            attrs[a](e, comp);
+          }
+
+          el.addEventListener(eventNames[i], comp.events[eventNames[i]]);
         }
       }
       //attr

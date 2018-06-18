@@ -1,6 +1,5 @@
-var sam;
 function ready(){
-  sam = new test();
+  let sam = new test();
   Quas.render(sam, "body");
   console.log(sam.vdom);
 }
@@ -44,7 +43,7 @@ class test extends Component{
     else{
       return (
         <quas>
-          <div onclick=this.handleClick id="myid">
+          <div id="myid">
             <div>not</div>
           </div>
         </quas>
