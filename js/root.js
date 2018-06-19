@@ -72,8 +72,6 @@ let jsKeyWordEnd = [
 var isHTML = false;
 
 Quas.customAttrs["code"] = function(params, data, parentVDOM){
-  return;
-//  let matches = data.indexOf(/"|'|`/g);
   let lastCharWasSpace = false;
   let quoteException = false;
   let word = "";
@@ -106,18 +104,17 @@ Quas.customAttrs["code"] = function(params, data, parentVDOM){
     if(!isHTML){
       if(isComment){
         if((isNewLine && !isMultilineComment) || (last2Chars == "*/" && isMultilineComment)){
-          let span = document.createElement("span");
-          span.setAttribute("class", "code-comment");
+          let text = "";
 
           if(isMultilineComment){
-            span.textContent = word + char;
+            text = word + char;
             word = "";
           }
           else{
-            span.textContent = word;
+            text = word;
             word = char;
           }
-          parent.appendChild(span);
+          parentVDOM[2].push(["span", {"class":"code-comment"}, [text]]);
           isComment = false;
           isMultilineComment = false;
 
@@ -132,7 +129,7 @@ Quas.customAttrs["code"] = function(params, data, parentVDOM){
         if(!quoteOpen){
           if(last2Chars == "//" || last2Chars == "/*"){
             word = word.substr(0,word.length-1); //remove /
-            highlightWord(parent, word, ""); //handle current word
+            highlightWord(parentVDOM, word, ""); //handle current word
             word = "/";
             isComment = true;
             if(last2Chars == "/*"){
@@ -148,7 +145,7 @@ Quas.customAttrs["code"] = function(params, data, parentVDOM){
         if(isQuote && !quoteOpen){
           quoteOpen = true;
           quoteType = char;
-          highlightWord(parent, word, ""); //handle current word
+          highlightWord(parentVDOM, word, ""); //handle current word
           word = char;
         }
 
@@ -156,11 +153,8 @@ Quas.customAttrs["code"] = function(params, data, parentVDOM){
         else if(isQuote && quoteOpen && char == quoteType){
           word += char;
           quoteOpen = false;
+          parentVDOM[2].push(["span", {"class":"code-quote"}, [word]]);
 
-          let span = document.createElement("span");
-          span.setAttribute("class", "code-quote");
-          span.textContent = word;
-          parent.appendChild(span);
           quoteException = true;
 
           word = "";
@@ -172,16 +166,15 @@ Quas.customAttrs["code"] = function(params, data, parentVDOM){
 
         //end of word
         if(!quoteOpen && !quoteException){
-          //console.log(word + ":" + isKeyWordEnd + ":" + jsKeyWords.indexOf(word.trim()));
           if(!lastCharWasSpace && (isNewLine || isSpace)){
-            highlightWord(parent, word, char);
+            highlightWord(parentVDOM, word, char);
             word = "";
             lastCharWasSpace = true;
           }
           //ending a keyword with a symbol
           else if(isKeyWordEnd && jsKeyWords.indexOf(word.trim()) > -1){
             console.log("here");
-            highlightWord(parent, word, "");
+            highlightWord(parentVDOM, word, "");
             word = char;
             lastCharWasSpace = false;
           }
@@ -200,7 +193,7 @@ Quas.customAttrs["code"] = function(params, data, parentVDOM){
 
       //add last word
       if(i == data.length-1){
-        highlightWord(parent, word, "");
+        highlightWord(parentVDOM, word, "");
       }
       else{
         lastChar = char;
@@ -212,7 +205,7 @@ Quas.customAttrs["code"] = function(params, data, parentVDOM){
       word += char;
 
       if(isNewLine || i == data.length-1){
-        highlightHTMLLine(parent, word);
+        highlightHTMLLine(parentVDOM, word);
         word = "";
       }
     }
@@ -220,7 +213,7 @@ Quas.customAttrs["code"] = function(params, data, parentVDOM){
 };
 
 //highlights a word, if its a keyword it will have the keyword class
-function highlightWord(parent, word, char){
+function highlightWord(parentVDOM, word, char){
   let text = word + char;
   let isChange = false;
   if(!isHTML && text.indexOf("\<quas\>") > -1){
@@ -236,34 +229,24 @@ function highlightWord(parent, word, char){
     let mid = arr[0];
     let after = ">" + arr[1];
 
-    let span1 = document.createElement("span");
-    span1.textContent = pre;
-    parent.appendChild(span1);
-
-    let span2 = document.createElement("span");
-    span2.textContent = mid;
-    span2.setAttribute("class", "code-htmltag");
-    parent.appendChild(span2);
-
-    let span3 = document.createElement("span");
-    span3.textContent = after;
-    parent.appendChild(span3);
+    //html tag
+    parentVDOM[2].push(["span", {}, [pre]]);
+    parentVDOM[2].push(["span", {"class":"code-htmltag"}, [mid]]);
+    parentVDOM[2].push(["span", {}, [after]]);
   }
   else{
     //javascript
     if(!isHTML){
-      let span = document.createElement("span");
+      let vdom = ["span", {}, [text]];
       if(jsKeyWords.indexOf(word.trim()) > -1){
-        span.setAttribute("class", "code-keyword");
+        vdom[1]["class"] = "code-keyword";
       }
-
-      span.textContent = text;
-      parent.appendChild(span);
+      parentVDOM[2].push(vdom);
     }
   }
 }
 
-function highlightHTMLLine(parent, word){
+function highlightHTMLLine(parentVDOM, word){
   let strs = word.split(/<(.*?)>/g);
   let tags = word.match(/<(.*?)>/g);
 
@@ -272,12 +255,11 @@ function highlightHTMLLine(parent, word){
   for(let i=0; i<strs.length; i++){
 
     if(isTag){
-      let open = document.createElement("span");
-      open.textContent = "<";
-      let close = document.createElement("span");
-      close.textContent = ">";
+      let openVDOM = ["span", {}, ["<"]];
+      let closeVDOM = ["span", {}, [">"]];
 
-      let midSpans = [];
+      //let midSpans = [];
+      let midVDOMs = [];
 
       let attrs = strs[i].match(/"[^"]*"|\S+/g);
 
@@ -288,45 +270,30 @@ function highlightHTMLLine(parent, word){
 
         //html tag
         if(i == 0){
-          let span = document.createElement("span");
-          span.setAttribute("class", "code-htmltag");
-          span.textContent = attrs[i];
-          midSpans.push(span);
+          midVDOMs.push(["span", {"class":"code-htmltag"}, [attrs[i]]]);
         }
         //html attribute
         else{
           let kv = attrs[i].split("=");
-          let key = document.createElement("span");
-          key.textContent = kv[0];
-          key.setAttribute("class", "code-htmlkey");
-          midSpans.push(key);
+          midVDOMs.push(["span", {"class":"code-htmlkey"}, [kv[0]]]);
 
           if(kv.length > 1){
-            let equals = document.createElement("span");
-            equals.textContent = "=";
-            midSpans.push(equals);
-
-            let val = document.createElement("span");
-            val.setAttribute("class", "code-htmlval");
-            val.textContent = kv[1];
-            midSpans.push(val);
+            midVDOMs.push(["span", {}, ["="]]);
+            midVDOMs.push(["span", {"class":"code-htmlval"}, [kv[1]]]);
           }
         }
       }
-
-
-      parent.appendChild(open);
-      for(let i in midSpans){
-        parent.appendChild(midSpans[i]);
+      parentVDOM[2].push(openVDOM);
+      for(let i=0; i<midVDOMs.length; i++){
+        parentVDOM[2].push(midVDOMs[i]);
       }
-      parent.appendChild(close);
+      parentVDOM[2].push(closeVDOM);
+
+
     }
     else{
-      let span = document.createElement("span");
-      span.textContent = strs[i];
-      parent.appendChild(span);
+      parentVDOM[2].push(["span", {}, [strs[i]]]);
     }
-
     isTag = !isTag;
   }
 
