@@ -17,7 +17,6 @@
 ## diffVDOM
 * proper diffing for custom attrs
 * custom attributes should append the vdom when creating dom elements
-* change event listeners
 
 ## DOCS
 * onclick-onscroll=function(){} - multiple events with same function

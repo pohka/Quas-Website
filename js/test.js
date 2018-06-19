@@ -10,10 +10,12 @@ class test extends Component{
     super();
     this.text = "part1";
     this.cls = "first";
-    this.alt = false;
+    this.alt = true;
+    this.items = ["item 2", "item 3"];
   }
 
   handleClick(e, comp){
+  //  comp.items.push("another");
     comp.setProps({
       "text" : "AFF2",
       "alt" : !comp.alt
@@ -52,7 +54,7 @@ class test extends Component{
       return (
         <quas>
           <div onclick=this.handleClick onmouseover=this.hover id="myid">
-            <div>not</div>
+            <ul q-foreach-li=this.items>not</ul>
           </div>
         </quas>
       );

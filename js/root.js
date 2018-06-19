@@ -70,7 +70,9 @@ let jsKeyWordEnd = [
 ];
 
 var isHTML = false;
-Quas.customAttrs["code"] = function(comp, parent, params, data){
+
+Quas.customAttrs["code"] = function(params, data, parentVDOM){
+  return;
 //  let matches = data.indexOf(/"|'|`/g);
   let lastCharWasSpace = false;
   let quoteException = false;
