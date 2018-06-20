@@ -400,7 +400,11 @@ Dev.evalImports = function(type){
     bundle += "\nif(typeof ready==='function'){ready();}";
 
     console.log(bundle);
-    eval(bundle);
+    var script = document.createElement("script");
+    script.type = 'text/javascript';
+    script.textContent = bundle;
+    document.getElementsByTagName('head')[0].appendChild(script);
+
   }
   else if(type == "css"){
     for(let i in Dev.imports.css.content){

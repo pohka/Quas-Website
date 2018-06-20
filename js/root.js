@@ -1,3 +1,5 @@
+import "/quas/router.js"
+
 import "/comps/navbar"
 
 import "/comps/card"
