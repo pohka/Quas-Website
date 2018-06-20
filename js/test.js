@@ -1,3 +1,5 @@
+import "/quas/router.js";
+
 function ready(){
   let sam = new test();
   Quas.render(sam, "body");
@@ -44,7 +46,7 @@ class test extends Component{
             {"before ", this.getText(), " after ", this.text}
             <div id="1">another</div>
             <div id="2">another</div>
-            <div  id="3">another</div>
+            <div id="3">another</div>
 
           </div>
         </quas>

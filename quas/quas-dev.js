@@ -3,9 +3,9 @@ This script is used for transpiling and bundling development builds
 For production use a static build and remember to remove links to this script
 */
 
-var Dev = {};
+Quas.comps = [];
 
-Dev.comps = [];
+var Dev = {};
 
 //tags that require no closing tag
 Dev.noClosingTag = ["img", "source", "br", "hr", "area", "track", "link", "col", "meta", "base", "embed", "param", "input"];
@@ -21,7 +21,7 @@ Dev.imports = {
   }
 };
 
-Dev.devBundle = {};
+Dev.bundle = {};
 
 /**
   Returns the bundle as as javascript valid code
@@ -377,7 +377,7 @@ Dev.import = function(path, type){
       Dev.imports[type].content[path] = file;
       Dev.imports[type].importsLeft -= 1;
       if(Dev.imports[type].importsLeft == 0){
-        Dev.evalImports(type);
+        Dev.addImports(type);
       }
     },
     error : (e) => {
@@ -386,8 +386,8 @@ Dev.import = function(path, type){
   });
 }
 
-//eval the current imports
-Dev.evalImports = function(type){
+//concatanate and add the current imports
+Dev.addImports = function(type){
   let bundle = "";
   if(type == "js"){
     for(let i in Dev.imports.js.content){
@@ -396,7 +396,7 @@ Dev.evalImports = function(type){
         Dev.imports.js.content[i].trim() + "\n\n";
     }
     bundle = Dev.parseBundle(bundle);
-    Dev.devBundle.js = bundle;
+    Dev.bundle.js = bundle;
     bundle += "\nif(typeof ready==='function'){ready();}";
 
     console.log(bundle);
@@ -412,7 +412,7 @@ Dev.evalImports = function(type){
         "/*---------- " + i + " ----------*/\n\n" +
         Dev.imports.css.content[i].trim() + "\n\n";
     }
-    Dev.devBundle.css = bundle;
+    Dev.bundle.css = bundle;
     var style = document.createElement("style");
     style.textContent = bundle;
     document.getElementsByTagName("head")[0].appendChild(style);
@@ -420,8 +420,8 @@ Dev.evalImports = function(type){
 }
 
 //for development builds
-Dev.bundle = function(rootFile){
-  Dev.isDevBuild = true;
+Quas.main = function(rootFile){
+  Quas.isDevBuild = true;
   Quas.ajax({
     url : rootFile,
     type : "GET",
@@ -478,7 +478,7 @@ Dev.bundle = function(rootFile){
 
       //if no imports just eval the root
       if(!hasImport){
-        evalImports("js");
+        Dev.addImports("js");
       }
     },
     error : (e) => {
@@ -488,18 +488,18 @@ Dev.bundle = function(rootFile){
 }
 
 //export the bundle
-Dev.export = function(filename, extention){
+Quas.export = function(filename, extention){
   if(!filename){
     var filename = "bundle";
   }
-  let types = devBundle;
+  let types = Dev.bundle;
   if(extention !== undefined){
     types = [extention];
   }
 
   for(let i in types){
     let element = document.createElement('a');
-    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + devBundle[types[i]]);
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + Dev.bundle[types[i]]);
     element.setAttribute('download', filename+"."+types[i]);
     element.style.display = 'none';
     document.body.appendChild(element);

@@ -5,7 +5,7 @@
 class Component{
   constructor(){
     if(Quas.isDevBuild){
-      Dev.comps.push(this);
+      Quas.comps.push(this);
     }
   }
   /**

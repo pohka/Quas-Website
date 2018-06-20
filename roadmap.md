@@ -2,6 +2,7 @@
 * Router.pathMatches("/docs/\*")
 * custom attribute loader and packager
 * new bundling system
+* router sub directories
 * API documentation generator
 * API for different versions
 * Home Page
