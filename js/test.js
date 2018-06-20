@@ -1,9 +1,10 @@
-import "/quas/router.js";
+import importme from "/js/importme.js";
 
 function ready(){
   let sam = new test();
   Quas.render(sam, "body");
   console.log(sam.vdom);
+  importme.me();
 }
 
 

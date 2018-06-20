@@ -15,8 +15,7 @@ Dev.noClosingTag = ["img", "source", "br", "hr", "area", "track", "link", "col",
 //all he imported files
 Dev.imports = {
   "js" : {
-    content : {
-    },
+    content : [],
     importsLeft : 0,
   }
 };
@@ -360,7 +359,7 @@ Dev.exportToFile = function(content, filename){
 
 
 
-Dev.import = function(path, type){
+Dev.import = function(key, path, type){
   if(Dev.imports[type] === undefined){
     Dev.imports[type] = {
       content : {},
@@ -374,7 +373,11 @@ Dev.import = function(path, type){
     url : path,
     type : "GET",
     success : (file) => {
-      Dev.imports[type].content[path] = file;
+      Dev.imports[type].content.push({
+        path : path,
+        key : key,
+        file : file
+      });
       Dev.imports[type].importsLeft -= 1;
       if(Dev.imports[type].importsLeft == 0){
         Dev.addImports(type);
@@ -390,11 +393,28 @@ Dev.import = function(path, type){
 Dev.addImports = function(type){
   let bundle = "";
   if(type == "js"){
-    for(let i in Dev.imports.js.content){
-      bundle +=
-        "/*---------- " + i + " ----------*/\n\n" +
-        Dev.imports.js.content[i].trim() + "\n\n";
+    let jsContent = Dev.imports.js.content;
+    for(let i=0; i<jsContent.length; i++){
+      //bundle +=
+      //  "/*---------- " + i + " ----------*/\n\n" +
+    //    Dev.imports.js.content[i].trim() + "\n\n";
+      if(jsContent[i].key == "root"){
+        bundle +=
+          "/*---------- " + jsContent[i].path + " ----------*/\n" +
+          jsContent[i].file.trim() + "\n\n";
+      }
+      else{
+        bundle += "/*---------- " + jsContent[i].path + " ----------*/\n" +
+          "Quas.modules['" + jsContent[i].key + "'] = " + jsContent[i].file.trim() + ";\n\n";
+      }
     }
+
+    //add all the references to modules
+    for(let i=0; i<jsContent.length; i++){
+      bundle += "const " + jsContent[i].key + " = Quas.modules['" + jsContent[i].key + "'];\n";
+    }
+
+
     bundle = Dev.parseBundle(bundle);
     Dev.bundle.js = bundle;
     bundle += "\nif(typeof ready==='function'){ready();}";
@@ -427,7 +447,7 @@ Quas.main = function(rootFile){
     type : "GET",
     success : (file) => {
       let lines = file.split("\n");
-      let importRegex = /import+\s".*"|import+\s'.*'|import+\s`.*`/g;
+      let importRegex = /import+\s.*?\sfrom+\s".*"|import+\s.*?\sfrom+\s'.*'|import+\s.*?\sfrom+\s`.*`/;
       let multiLineCommentOpen = false;
       let finalFile = "";
       let hasImport = false;
@@ -451,21 +471,24 @@ Quas.main = function(rootFile){
           validLine = validLine.split("//")[0];
         }
 
-        let importMatch = validLine.match(/import+\s".*"|import+\s'.*'|import+\s`.*`/);
+        let importMatch = validLine.match(importRegex);
         if(importMatch){
           hasImport = true;
-          let path = importMatch[0].match(/".*?"/)[0];
-          path = path.substr(1,path.length-2);
+          let key = importMatch[0].split(/\s/)[1];
+          let path = importMatch[0].match(/".*?"|'.*?'|`.*?`/)[0];
+          path = path.substr(1,path.length-2); //remove quotes
 
           let arr = path.split(".");
           let extention = arr[arr.length-1];
 
+
+
           if(extention == "js" || extention == "css"){
-            Dev.import(path, extention);
+            Dev.import(key, path, extention);
           }
           else{ //both
-            Dev.import(path+".js", "js");
-            Dev.import(path+".css", "css");
+            Dev.import(key, path+".js", "js");
+            Dev.import(key, path+".css", "css");
           }
         }
         else{
@@ -474,7 +497,11 @@ Quas.main = function(rootFile){
       }
 
       //add root file
-      Dev.imports.js.content[rootFile] = finalFile;
+      Dev.imports.js.content.push({
+        path : rootFile,
+        key : "root",
+        file : finalFile
+      });
 
       //if no imports just eval the root
       if(!hasImport){
