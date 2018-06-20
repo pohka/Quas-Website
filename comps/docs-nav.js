@@ -5,7 +5,7 @@ class DocsNav extends Component{
   //set the url
   static setPath(e, comp){
     let page = this["data-page"];
-    Atlas.pushByPath("/docs/" + page);
+    Router.pushByPath("/docs/" + page);
     window.scrollTo(0,0); //scroll to top
   }
 

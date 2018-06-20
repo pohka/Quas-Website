@@ -19,7 +19,7 @@ class DocsContent extends Component{
   //  console.log(comp);
     for(let key in DocsContent.pages){
       if(found){
-        Atlas.pushByPath("/docs/" + key);
+        Router.pushByPath("/docs/" + key);
         window.scrollTo(0,0);
         break;
       }
@@ -667,9 +667,9 @@ DocsContent.scrollingBreakpoints = function(){
 DocsContent.spwa = function(){
   let code1 =
     '//map( PathID , path, pageTitle )\n'+
-    'Atlas.map("index", "/", "Home");\n'+
-    'Atlas.map("about", "/about", "About");\n'+
-    'Atlas.map("news", "/news/new", "Recent News");';
+    'Router.map("index", "/", "Home");\n'+
+    'Router.map("about", "/about", "About");\n'+
+    'Router.map("news", "/news/new", "Recent News");';
 
   let code2 =
     "class Navbar extends Component{\n"+
@@ -677,18 +677,18 @@ DocsContent.spwa = function(){
     "    this.super();\n"+
     "    this.items = ['home', 'about' 'news'];\n"+
     "    //now this component listens to new page state pushes\n"+
-    "     Atlas.addPushListener(this);\n"+
+    "     Router.addPushListener(this);\n"+
     "  }\n\n"+
     "  //called when a new page loads\n"+
     "  onPush(newPath){\n"+
     "   Quas.rerender(this);\n"+
     " }\n\n"+
     "  static genItem(item){\n"+
-    "   let pageName = Atlas.paths[item].title;\n"+
-    "   let path  = Atlas.paths[item].path;\n"+
+    "   let pageName = Router.paths[item].title;\n"+
+    "   let path  = Router.paths[item].path;\n"+
     "   let isActive = 'false';\n"+
     "    //check if the current pathID matches the item\n"+
-    "    if(item == Atlas.getCurrentPathID()){\n"+
+    "    if(item == Router.getCurrentPathID()){\n"+
     "      isActive = 'true';\n"+
     "    }\n"+
     "    \<quas\>\n"+
@@ -705,7 +705,7 @@ DocsContent.spwa = function(){
     "}\n\n"+
     "//this component will always exist\n"+
     "Quas.render(new Navbar(), 'body');\n\n"+
-    "switch(Atlas.getCurrentPathID()){\n"+
+    "switch(Router.getCurrentPathID()){\n"+
     "  case 'index' : renderIndex(); break;\n"+
     "  case 'about' : renderAbout(); break;\n"+
     "  case 'news' : renderNews(); break;\n"+
@@ -716,7 +716,7 @@ DocsContent.spwa = function(){
       <div>
         <h1>Single Page Web Application</h1>
         <p>Creating a single page web application (SPWA\) is completely optional with Quas. The first problem with SPWA is handling the url. You must make also rewrite or redict rules to your main html file i.e. index.html for this to work.</p>
-        <p>Map all the uique pages that you will need to have for your web app using the Atlas</p>
+        <p>Map all the uique pages that you will need to have for your web app using the Router</p>
 
         <pre>
           <code q-code="{code1}"></code>

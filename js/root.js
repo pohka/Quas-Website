@@ -320,9 +320,9 @@ function ready(){
 
 
 
-  Atlas.map("index", "/", "Quas");
-  Atlas.map("docs", "/docs/setup", "Docs");
-  Atlas.map("download", "/download", "Download");
+  Router.map("index", "/", "Quas");
+  Router.map("docs", "/docs/setup", "Docs");
+  Router.map("download", "/download", "Download");
 
 //  console.log(Quas.paths);
 

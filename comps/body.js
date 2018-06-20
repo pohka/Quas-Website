@@ -8,11 +8,11 @@ class Body extends Component{
   }
 
   render(){
-    let currentPathID = Atlas.getCurrentPathID();
+    let currentPathID = Router.getCurrentPathID();
     if(currentPathID == "index"){
       return Body.renderIndex();
     }
-    else if(Atlas.currentPathStartsWith("/docs")){
+    else if(Router.currentPathStartsWith("/docs")){
       return Body.renderDocs();
     }
     else if(currentPathID == "download"){

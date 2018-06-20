@@ -62,8 +62,8 @@ let jsKeyWordEnd = [
 ];
 
 var isHTML = false;
-Quas.customAttrs["code"] = function(comp, parent, params, data){
-//  let matches = data.indexOf(/"|'|`/g);
+
+Quas.customAttrs["code"] = function(params, data, parentVDOM){
   let lastCharWasSpace = false;
   let quoteException = false;
   let word = "";
@@ -96,18 +96,17 @@ Quas.customAttrs["code"] = function(comp, parent, params, data){
     if(!isHTML){
       if(isComment){
         if((isNewLine && !isMultilineComment) || (last2Chars == "*/" && isMultilineComment)){
-          let span = document.createElement("span");
-          span.setAttribute("class", "code-comment");
+          let text = "";
 
           if(isMultilineComment){
-            span.textContent = word + char;
+            text = word + char;
             word = "";
           }
           else{
-            span.textContent = word;
+            text = word;
             word = char;
           }
-          parent.appendChild(span);
+          parentVDOM[2].push(["span", {"class":"code-comment"}, [text]]);
           isComment = false;
           isMultilineComment = false;
 
@@ -122,7 +121,7 @@ Quas.customAttrs["code"] = function(comp, parent, params, data){
         if(!quoteOpen){
           if(last2Chars == "//" || last2Chars == "/*"){
             word = word.substr(0,word.length-1); //remove /
-            highlightWord(parent, word, ""); //handle current word
+            highlightWord(parentVDOM, word, ""); //handle current word
             word = "/";
             isComment = true;
             if(last2Chars == "/*"){
@@ -138,7 +137,7 @@ Quas.customAttrs["code"] = function(comp, parent, params, data){
         if(isQuote && !quoteOpen){
           quoteOpen = true;
           quoteType = char;
-          highlightWord(parent, word, ""); //handle current word
+          highlightWord(parentVDOM, word, ""); //handle current word
           word = char;
         }
 
@@ -146,11 +145,8 @@ Quas.customAttrs["code"] = function(comp, parent, params, data){
         else if(isQuote && quoteOpen && char == quoteType){
           word += char;
           quoteOpen = false;
+          parentVDOM[2].push(["span", {"class":"code-quote"}, [word]]);
 
-          let span = document.createElement("span");
-          span.setAttribute("class", "code-quote");
-          span.textContent = word;
-          parent.appendChild(span);
           quoteException = true;
 
           word = "";
@@ -162,16 +158,15 @@ Quas.customAttrs["code"] = function(comp, parent, params, data){
 
         //end of word
         if(!quoteOpen && !quoteException){
-          //console.log(word + ":" + isKeyWordEnd + ":" + jsKeyWords.indexOf(word.trim()));
           if(!lastCharWasSpace && (isNewLine || isSpace)){
-            highlightWord(parent, word, char);
+            highlightWord(parentVDOM, word, char);
             word = "";
             lastCharWasSpace = true;
           }
           //ending a keyword with a symbol
           else if(isKeyWordEnd && jsKeyWords.indexOf(word.trim()) > -1){
             console.log("here");
-            highlightWord(parent, word, "");
+            highlightWord(parentVDOM, word, "");
             word = char;
             lastCharWasSpace = false;
           }
@@ -190,7 +185,7 @@ Quas.customAttrs["code"] = function(comp, parent, params, data){
 
       //add last word
       if(i == data.length-1){
-        highlightWord(parent, word, "");
+        highlightWord(parentVDOM, word, "");
       }
       else{
         lastChar = char;
@@ -202,7 +197,7 @@ Quas.customAttrs["code"] = function(comp, parent, params, data){
       word += char;
 
       if(isNewLine || i == data.length-1){
-        highlightHTMLLine(parent, word);
+        highlightHTMLLine(parentVDOM, word);
         word = "";
       }
     }
@@ -210,7 +205,7 @@ Quas.customAttrs["code"] = function(comp, parent, params, data){
 };
 
 //highlights a word, if its a keyword it will have the keyword class
-function highlightWord(parent, word, char){
+function highlightWord(parentVDOM, word, char){
   let text = word + char;
   let isChange = false;
   if(!isHTML && text.indexOf("\<quas\>") > -1){
@@ -226,34 +221,24 @@ function highlightWord(parent, word, char){
     let mid = arr[0];
     let after = ">" + arr[1];
 
-    let span1 = document.createElement("span");
-    span1.textContent = pre;
-    parent.appendChild(span1);
-
-    let span2 = document.createElement("span");
-    span2.textContent = mid;
-    span2.setAttribute("class", "code-htmltag");
-    parent.appendChild(span2);
-
-    let span3 = document.createElement("span");
-    span3.textContent = after;
-    parent.appendChild(span3);
+    //html tag
+    parentVDOM[2].push(["span", {}, [pre]]);
+    parentVDOM[2].push(["span", {"class":"code-htmltag"}, [mid]]);
+    parentVDOM[2].push(["span", {}, [after]]);
   }
   else{
     //javascript
     if(!isHTML){
-      let span = document.createElement("span");
+      let vdom = ["span", {}, [text]];
       if(jsKeyWords.indexOf(word.trim()) > -1){
-        span.setAttribute("class", "code-keyword");
+        vdom[1]["class"] = "code-keyword";
       }
-
-      span.textContent = text;
-      parent.appendChild(span);
+      parentVDOM[2].push(vdom);
     }
   }
 }
 
-function highlightHTMLLine(parent, word){
+function highlightHTMLLine(parentVDOM, word){
   let strs = word.split(/<(.*?)>/g);
   let tags = word.match(/<(.*?)>/g);
 
@@ -262,12 +247,11 @@ function highlightHTMLLine(parent, word){
   for(let i=0; i<strs.length; i++){
 
     if(isTag){
-      let open = document.createElement("span");
-      open.textContent = "<";
-      let close = document.createElement("span");
-      close.textContent = ">";
+      let openVDOM = ["span", {}, ["<"]];
+      let closeVDOM = ["span", {}, [">"]];
 
-      let midSpans = [];
+      //let midSpans = [];
+      let midVDOMs = [];
 
       let attrs = strs[i].match(/"[^"]*"|\S+/g);
 
@@ -278,45 +262,30 @@ function highlightHTMLLine(parent, word){
 
         //html tag
         if(i == 0){
-          let span = document.createElement("span");
-          span.setAttribute("class", "code-htmltag");
-          span.textContent = attrs[i];
-          midSpans.push(span);
+          midVDOMs.push(["span", {"class":"code-htmltag"}, [attrs[i]]]);
         }
         //html attribute
         else{
           let kv = attrs[i].split("=");
-          let key = document.createElement("span");
-          key.textContent = kv[0];
-          key.setAttribute("class", "code-htmlkey");
-          midSpans.push(key);
+          midVDOMs.push(["span", {"class":"code-htmlkey"}, [kv[0]]]);
 
           if(kv.length > 1){
-            let equals = document.createElement("span");
-            equals.textContent = "=";
-            midSpans.push(equals);
-
-            let val = document.createElement("span");
-            val.setAttribute("class", "code-htmlval");
-            val.textContent = kv[1];
-            midSpans.push(val);
+            midVDOMs.push(["span", {}, ["="]]);
+            midVDOMs.push(["span", {"class":"code-htmlval"}, [kv[1]]]);
           }
         }
       }
-
-
-      parent.appendChild(open);
-      for(let i in midSpans){
-        parent.appendChild(midSpans[i]);
+      parentVDOM[2].push(openVDOM);
+      for(let i=0; i<midVDOMs.length; i++){
+        parentVDOM[2].push(midVDOMs[i]);
       }
-      parent.appendChild(close);
+      parentVDOM[2].push(closeVDOM);
+
+
     }
     else{
-      let span = document.createElement("span");
-      span.textContent = strs[i];
-      parent.appendChild(span);
+      parentVDOM[2].push(["span", {}, [strs[i]]]);
     }
-
     isTag = !isTag;
   }
 
@@ -510,7 +479,6 @@ class Navbar extends Component{
   constructor(items){
     super();
     this.pathIDs = items;
-    Atlas.addPushListener(this);
   }
 
   static createOption(pathID){
@@ -526,7 +494,8 @@ class Navbar extends Component{
       title = pathInfo.title
     }
 
-	return   [
+    return (
+  [
     "div",
     {}, 
     [
@@ -538,16 +507,18 @@ class Navbar extends Component{
         ]
       ]
     ]
-  ];
+  ]
+    );
   }
 
   onPush(path){
     console.log(path);
-    Quas.rerender(this);
+    Quas.render(this);
   }
 
   render(){
-	return   [
+    return (
+  [
     "nav",
     {}, 
     [
@@ -614,7 +585,49 @@ class Navbar extends Component{
         ]
       ]
     ]
-  ];
+  ]
+    );
+  }
+}
+
+/*---------- /comps/card.js ----------*/
+
+class Card extends Component{
+  constructor(img, title, text){
+    super();
+    this.img = img;
+    this.title = title;
+    this.text = text;
+  }
+
+  render(){
+    return (
+  [
+    "div",
+    {"class":"card"}, 
+    [
+      [
+        "img",
+        {"src":"/img/"+this.img+""}, 
+        []
+      ],
+      [
+        "h3",
+        {}, 
+        [
+          ""+this.title+""
+        ]
+      ],
+      [
+        "span",
+        {}, 
+        [
+          ""+this.text+""
+        ]
+      ]
+    ]
+  ]
+    );
   }
 }
 
@@ -641,18 +654,22 @@ class DocsNav extends Component{
     let page = DocsNav.getPageID(item.name);
     let currentURLPage = location.pathname.replace("/docs/", "");
     let isActive = (page == currentURLPage);
-	return   [
+
+    return (
+  [
     "div",
     {"class":"docs-nav-item","onclick":DocsNav.setPath,"data-page":""+page+"","active":""+isActive+""}, 
     [
       ""+item.name+""
     ]
-  ];
+  ]
+    );
   }
 
 
   render(){
-	return   [
+    return (
+  [
     "div",
     {"class":"docs-nav-con"}, 
     [
@@ -662,46 +679,8 @@ class DocsNav extends Component{
         []
       ]
     ]
-  ];
-  }
-}
-
-/*---------- /comps/card.js ----------*/
-
-class Card extends Component{
-  constructor(img, title, text){
-    super();
-    this.img = img;
-    this.title = title;
-    this.text = text;
-  }
-
-  render(){
-	return   [
-    "div",
-    {"class":"card"}, 
-    [
-      [
-        "img",
-        {"src":"/img/"+this.img+""}, 
-        []
-      ],
-      [
-        "h3",
-        {}, 
-        [
-          ""+this.title+""
-        ]
-      ],
-      [
-        "span",
-        {}, 
-        [
-          ""+this.text+""
-        ]
-      ]
-    ]
-  ];
+  ]
+    );
   }
 }
 
@@ -745,7 +724,8 @@ class DocsContent extends Component{
 }
 
 DocsContent.nextBtn = function(){
-	return   [
+  return (
+  [
     "div",
     {"class":"docs-footer-nav"}, 
     [
@@ -757,7 +737,8 @@ DocsContent.nextBtn = function(){
         ]
       ]
     ]
-  ];
+  ]
+  );
 };
 
 //setup - page content
@@ -780,7 +761,8 @@ DocsContent.setup = function(){
   "\t//your code goes here\n"+
   "\}";
 
-	return   [
+  return (
+  [
     "div",
     {}, 
     [
@@ -937,9 +919,10 @@ DocsContent.setup = function(){
           ]
         ]
       ],
-      DocsContent.nextBtn(),
+      DocsContent.nextBtn()
     ]
-  ];
+  ]
+  );
 }
 
 //props - page content
@@ -973,7 +956,8 @@ DocsContent.components = function(){
   let code5 = "console.log(myComponent.el);";
   let code6 = "Quas.render(myComponent, '#myID');";
 
-	return   [
+  return (
+  [
     "div",
     {}, 
     [
@@ -1036,7 +1020,7 @@ DocsContent.components = function(){
         "p",
         {}, 
         [
-          "There is a few different ways you can render a component. The default way as shown above will append the content of the component as a child of the parent chosen using the query selector. The query selector works the same as JavaScript's document.querySelector( ) e.g. '#id' and '.class'.",
+          "There is a few different ways you can render a component. The default way as shown above will append the content of the component as a child of the parent chosen using the query selector. The query selector works the same as JavaScript's document.querySelector( ) e.g. '#id' and '.class'."
         ]
       ],
       [
@@ -1102,7 +1086,7 @@ DocsContent.components = function(){
         "p",
         {}, 
         [
-          "You can use Quas.renderRule( ) to give extra options when rendering, such as prepend. Prepend will render the component as the first child to the parent rather than the last.",
+          "You can use Quas.renderRule( ) to give extra options when rendering, such as prepend. Prepend will render the component as the first child to the parent rather than the last."
         ]
       ],
       [
@@ -1116,9 +1100,10 @@ DocsContent.components = function(){
           ]
         ]
       ],
-      DocsContent.nextBtn(),
+      DocsContent.nextBtn()
     ]
-  ];
+  ]
+  );
 }
 
 //props - page content
@@ -1155,7 +1140,8 @@ DocsContent.props = function(){
   "Quas.render(new MyComponent('john'), 'body');"
   ;
 
-	return   [
+  return (
+  [
     "div",
     {}, 
     [
@@ -1170,7 +1156,7 @@ DocsContent.props = function(){
         "p",
         {}, 
         [
-          "A prop (property) allows you to pass a value as input. Just surround the value in curly brackets",
+          "A prop (property) allows you to pass a value as input. Just surround the value in curly brackets"
         ]
       ],
       [
@@ -1214,9 +1200,10 @@ DocsContent.props = function(){
           ]
         ]
       ],
-      DocsContent.nextBtn(),
+      DocsContent.nextBtn()
     ]
-  ];
+  ]
+  );
 }
 
 //updating props - page content
@@ -1235,7 +1222,8 @@ DocsContent.updatingProps = function(){
   "Quas.render(comp, 'body');\n"+
   "comp.setProp('name', 'doe'); //sets and rerenders the component";
 
-	return   [
+  return (
+  [
     "div",
     {}, 
     [
@@ -1268,7 +1256,7 @@ DocsContent.updatingProps = function(){
         "p",
         {}, 
         [
-          "Alternatively if you are only changing one prop you can use setProp( ) which will rerender the component after setting the new value",
+          "Alternatively if you are only changing one prop you can use setProp( ) which will rerender the component after setting the new value"
         ]
       ],
       [
@@ -1282,9 +1270,10 @@ DocsContent.updatingProps = function(){
           ]
         ]
       ],
-      DocsContent.nextBtn(),
+      DocsContent.nextBtn()
     ]
-  ];
+  ]
+  );
 }
 
 //event handling - page content
@@ -1301,7 +1290,8 @@ DocsContent.eventHandling = function(){
     "\t}\n"+
     "}";
 
-	return   [
+  return (
+  [
     "div",
     {}, 
     [
@@ -1330,9 +1320,10 @@ DocsContent.eventHandling = function(){
           ]
         ]
       ],
-      DocsContent.nextBtn(),
+      DocsContent.nextBtn()
     ]
-  ];
+  ]
+  );
 }
 
 //sub elements - page content
@@ -1351,7 +1342,8 @@ DocsContent.subElements = function(){
     "\t}\n"+
     "}";
 
-	return   [
+  return (
+  [
     "div",
     {}, 
     [
@@ -1380,9 +1372,10 @@ DocsContent.subElements = function(){
           ]
         ]
       ],
-      DocsContent.nextBtn(),
+      DocsContent.nextBtn()
     ]
-  ];
+  ]
+  );
 }
 
 //conditional rendering - page content
@@ -1413,7 +1406,8 @@ DocsContent.conditionalRendering = function(){
     "\t}\n"+
     "}";
 
-	return   [
+  return (
+  [
     "div",
     {}, 
     [
@@ -1442,9 +1436,10 @@ DocsContent.conditionalRendering = function(){
           ]
         ]
       ],
-      DocsContent.nextBtn(),
+      DocsContent.nextBtn()
     ]
-  ];
+  ]
+  );
 }
 
 //production builds - page content
@@ -1463,7 +1458,8 @@ DocsContent.productionBuilds = function(){
     "// javascript and another for the css\n"+
     "Quas.build();";
 
-	return   [
+  return (
+  [
     "div",
     {}, 
     [
@@ -1521,9 +1517,10 @@ DocsContent.productionBuilds = function(){
           ]
         ]
       ],
-      DocsContent.nextBtn(),
+      DocsContent.nextBtn()
     ]
-  ];
+  ]
+  );
 }
 
 //custom attributes - page content
@@ -1558,7 +1555,9 @@ DocsContent.customAttributes = function(){
     "}";
 
   ;
-	return   [
+
+  return (
+  [
     "div",
     {}, 
     [
@@ -1612,9 +1611,10 @@ DocsContent.customAttributes = function(){
           "Params will be the key of the attribute split by '-' so in the example it will be [ 'q', 'log', 'foo' ]"
         ]
       ],
-      DocsContent.nextBtn(),
+      DocsContent.nextBtn()
     ]
-  ];
+  ]
+  );
 }
 
 //custom events - page content
@@ -1626,7 +1626,8 @@ DocsContent.customEvents = function(){
     "...\n\n"+
     "Quas.broadcastEvent('myEvent', 'music');";
 
-	return   [
+  return (
+  [
     "div",
     {}, 
     [
@@ -1655,9 +1656,10 @@ DocsContent.customEvents = function(){
           ]
         ]
       ],
-      DocsContent.nextBtn(),
+      DocsContent.nextBtn()
     ]
-  ];
+  ]
+  );
 }
 
 //ajax requests - page content
@@ -1691,7 +1693,8 @@ DocsContent.ajaxRequests = function(){
     "if(i==0){ let n =0;";
 
 
-	return   [
+  return (
+  [
     "div",
     {}, 
     [
@@ -1720,9 +1723,10 @@ DocsContent.ajaxRequests = function(){
           ]
         ]
       ],
-      DocsContent.nextBtn(),
+      DocsContent.nextBtn()
     ]
-  ];
+  ]
+  );
 }
 
 //url params - page content
@@ -1743,7 +1747,8 @@ DocsContent.urlVariables = function(){
     "Quas.setUrlValues(data);\n" +
     "//result: site.com/watch?video=abc\n";
 
-	return   [
+  return (
+  [
     "div",
     {}, 
     [
@@ -1799,13 +1804,14 @@ DocsContent.urlVariables = function(){
                   "There is no need to encode or decord the uri because these 2 functions will do that for you"
                 ]
               ],
-              DocsContent.nextBtn(),
+              DocsContent.nextBtn()
             ]
           ]
         ]
       ]
     ]
-  ];
+  ]
+  );
 }
 
 //cookies - page content
@@ -1820,7 +1826,8 @@ DocsContent.cookies = function(){
     "//remove the cookie\n" +
     "Quas.clearCookie('loginID');";
 
-	return   [
+  return (
+  [
     "div",
     {}, 
     [
@@ -1849,9 +1856,10 @@ DocsContent.cookies = function(){
           ]
         ]
       ],
-      DocsContent.nextBtn(),
+      DocsContent.nextBtn()
     ]
-  ];
+  ]
+  );
 }
 
 //query elements - page content
@@ -1864,7 +1872,8 @@ let code1 =
   "let element = Quas.findChild(c, '#nameInput');\n"+
   "element.value = 'hello';";
 
-	return   [
+  return (
+  [
     "div",
     {}, 
     [
@@ -1893,9 +1902,10 @@ let code1 =
           ]
         ]
       ],
-      DocsContent.nextBtn(),
+      DocsContent.nextBtn()
     ]
-  ];
+  ]
+  );
 }
 
 //scrolling breakpoints - page content
@@ -1917,7 +1927,8 @@ DocsContent.scrollingBreakpoints = function(){
     "Quas.onScroll('enter', c, c.enteredViewPort);\n"+
     "Quas.onScroll('exit', c, c.exitViewPort);";
 
-	return   [
+  return (
+  [
     "div",
     {}, 
     [
@@ -1946,9 +1957,10 @@ DocsContent.scrollingBreakpoints = function(){
           ]
         ]
       ],
-      DocsContent.nextBtn(),
+      DocsContent.nextBtn()
     ]
-  ];
+  ]
+  );
 }
 
 //api - page content
@@ -1999,7 +2011,8 @@ DocsContent.spwa = function(){
     "  case 'news' : renderNews(); break;\n"+
     "}";
 
-	return   [
+  return (
+  [
     "div",
     {}, 
     [
@@ -2046,20 +2059,23 @@ DocsContent.spwa = function(){
           ]
         ]
       ],
-      DocsContent.nextBtn(),
+      DocsContent.nextBtn()
     ]
-  ];
+  ]
+  );
 }
 
 //api - page content
 DocsContent.api = function(){
-	return   [
+  return (
+  [
     "div",
     {}, 
     [
       "api"
     ]
-  ];
+  ]
+  );
 }
 
 DocsContent.pages = {
@@ -2138,11 +2154,10 @@ DocsContent.pages = {
 class Body extends Component{
   constructor(){
     super();
-    Atlas.addPushListener(this);
   }
 
   onPush(path){
-    Quas.rerender(this);
+    Quas.render(this);
   }
 
   render(){
@@ -2154,22 +2169,26 @@ class Body extends Component{
       return Body.renderDocs();
     }
     else if(currentPathID == "download"){
-	return   [
+      return (
+  [
     "div",
     {}, 
     [
       "download"
     ]
-  ];
+  ]
+      );
     }
     else{
-	return   [
+      return (
+  [
     "div",
     {}, 
     [
       "404"
     ]
-  ];
+  ]
+      );
     }
   }
 
@@ -2181,7 +2200,8 @@ class Body extends Component{
     let card5 = new Card("desktop-monitor.png", "Breakpoints", "what to put here");
     let card6 = new Card("refresh-page-option.png", "Cookies", "what to put here");
 
-	return   [
+    return (
+  [
     "div",
     {}, 
     [
@@ -2227,18 +2247,19 @@ class Body extends Component{
         "div",
         {"class":"card-con","id":"card-row-1"}, 
         [
-          card1.render(), card2.render(), card3.render(),
+          card1.render(), card2.render(), card3.render()
         ]
       ],
       [
         "div",
         {"class":"card-con","id":"card-row-2"}, 
         [
-          card4.render(), card5.render(), card6.render(),
+          card4.render(), card5.render(), card6.render()
         ]
       ]
     ]
-  ];
+  ]
+    );
   }
 
   static renderDocs(){
@@ -2249,19 +2270,32 @@ class Body extends Component{
       Body.docsContent = new DocsContent();
     }
 
-	return   [
+    let pr = "hello";
+    //return (
+    let a = (
+  [
     "div",
     {}, 
     [
-      Body.docsNav.render(),,
+      Body.docsNav.render(),
+      [
+        "span",
+        {}, 
+        [
+          "REEEEEEEEEEEEEEEEEEEEE"
+        ]
+      ],
       [
         "div",
         {"class":"docs-content"}, 
         [
-          Body.docsContent.render(),
+          Body.docsContent.render()
         ]
       ]
     ]
-  ];
+  ]
+    );
+    console.log(a);
+    return a;
   }
 }

@@ -6,10 +6,10 @@ class Navbar extends Component{
 
   static createOption(pathID){
     let cls="";
-    if(pathID == Atlas.getCurrentPathID() || (pathID == "docs" && Atlas.currentPathStartsWith("/docs"))){
+    if(pathID == Router.getCurrentPathID() || (pathID == "docs" && Router.currentPathStartsWith("/docs"))){
       cls = "active";
     }
-    let pathInfo = Atlas.paths[pathID];
+    let pathInfo = Router.paths[pathID];
     let title = pathID;
     let link = "";
     if(pathInfo){
