@@ -1,10 +1,12 @@
 import importme from "/js/importme.js";
+import Card from "/comps/card.js";
 
 function ready(){
   let sam = new test();
   Quas.render(sam, "body");
   console.log(sam.vdom);
   importme.me();
+  Quas.render(new Card("code.png", "code", "sample description"), "body");
 }
 
 

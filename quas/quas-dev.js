@@ -373,11 +373,14 @@ Dev.import = function(key, path, type){
     url : path,
     type : "GET",
     success : (file) => {
+      Dev.parseImports(path, file, key);
+      /*
       Dev.imports[type].content.push({
         path : path,
         key : key,
         file : file
       });
+      */
       Dev.imports[type].importsLeft -= 1;
       if(Dev.imports[type].importsLeft == 0){
         Dev.addImports(type);
@@ -394,6 +397,7 @@ Dev.addImports = function(type){
   let bundle = "";
   if(type == "js"){
     let jsContent = Dev.imports.js.content;
+    let keys = "";
     for(let i=0; i<jsContent.length; i++){
       //bundle +=
       //  "/*---------- " + i + " ----------*/\n\n" +
@@ -404,16 +408,27 @@ Dev.addImports = function(type){
           jsContent[i].file.trim() + "\n\n";
       }
       else{
-        bundle += "/*---------- " + jsContent[i].path + " ----------*/\n" +
-          "Quas.modules['" + jsContent[i].key + "'] = " + jsContent[i].file.trim() + ";\n\n";
+        bundle += "/*---------- " + jsContent[i].path + " ----------*/\n";
+          let exportMatch = jsContent[i].file.match(/Quas\.export\(/);
+
+          if(exportMatch){
+            //let thisExport = exportMatch[0].match(/\(/)[0];
+          //  thisExport = thisExport.substr(1, thisExport.length-2);
+            //let setModule = "Quas.modules['" + jsContent[i].key + "'] = " + thisExport + ";\n\n";
+            let setModule = "Quas.modules['" + jsContent[i].key + "'] = (";
+            jsContent[i].file = jsContent[i].file.replace(exportMatch[0], setModule);
+          }
+
+          bundle += jsContent[i].file + "\n";
+
+    //      "Quas.modules['" + jsContent[i].key + "'] = " + jsContent[i].file.trim() + ";\n\n";
+
+         keys +="const " + jsContent[i].key + " = Quas.modules['" + jsContent[i].key + "'];\n";
       }
     }
 
     //add all the references to modules
-    for(let i=0; i<jsContent.length; i++){
-      bundle += "const " + jsContent[i].key + " = Quas.modules['" + jsContent[i].key + "'];\n";
-    }
-
+    bundle += keys;
 
     bundle = Dev.parseBundle(bundle);
     Dev.bundle.js = bundle;
@@ -446,62 +461,66 @@ Quas.main = function(rootFile){
     url : rootFile,
     type : "GET",
     success : (file) => {
-      let lines = file.split("\n");
-      let importRegex = /import+\s.*?\sfrom+\s".*"|import+\s.*?\sfrom+\s'.*'|import+\s.*?\sfrom+\s`.*`/;
-      let multiLineCommentOpen = false;
-      let finalFile = "";
-      let hasImport = false;
+      //
+      // let lines = file.split("\n");
+      // let importRegex = /import+\s.*?\sfrom+\s".*"|import+\s.*?\sfrom+\s'.*'|import+\s.*?\sfrom+\s`.*`/;
+      // let multiLineCommentOpen = false;
+      // let finalFile = "";
+      // let hasImport = false;
+      //
+      // for(let i=0; i<lines.length; i++){
+      //   let validLine = "";
+      //   if(lines[i].indexOf("/*") > -1){
+      //     multiLineCommentOpen = true;
+      //     validLine += lines[i].split("/*")[0];
+      //   }
+      //
+      // if(lines[i].indexOf("*/") > -1){
+      //     multiLineCommentOpen = false;
+      //     validLine += lines[i].split("*/")[1];
+      //   }
+      //
+      //   if(!multiLineCommentOpen && validLine == ""){
+      //     validLine = lines[i].split("//")[0];
+      //   }
+      //   else if(!multiLineCommentOpen && validLine != ""){
+      //     validLine = validLine.split("//")[0];
+      //   }
+      //
+      //   let importMatch = validLine.match(importRegex);
+      //   if(importMatch){
+      //     hasImport = true;
+      //     let key = importMatch[0].split(/\s/)[1];
+      //     let path = importMatch[0].match(/".*?"|'.*?'|`.*?`/)[0];
+      //     path = path.substr(1,path.length-2); //remove quotes
+      //
+      //     let arr = path.split(".");
+      //     let extention = arr[arr.length-1];
+      //
+      //
+      //
+      //     if(extention == "js" || extention == "css"){
+      //       Dev.import(key, path, extention);
+      //     }
+      //     else{ //both
+      //       Dev.import(key, path+".js", "js");
+      //       Dev.import(key, path+".css", "css");
+      //     }
+      //   }
+      //   else{
+      //     finalFile += lines[i] + "\n";
+      //   }
+      // }
 
-      for(let i=0; i<lines.length; i++){
-        let validLine = "";
-        if(lines[i].indexOf("/*") > -1){
-          multiLineCommentOpen = true;
-          validLine += lines[i].split("/*")[0];
-        }
-
-        if(lines[i].indexOf("*/") > -1){
-          multiLineCommentOpen = false;
-          validLine += lines[i].split("*/")[1];
-        }
-
-        if(!multiLineCommentOpen && validLine == ""){
-          validLine = lines[i].split("//")[0];
-        }
-        else if(!multiLineCommentOpen && validLine != ""){
-          validLine = validLine.split("//")[0];
-        }
-
-        let importMatch = validLine.match(importRegex);
-        if(importMatch){
-          hasImport = true;
-          let key = importMatch[0].split(/\s/)[1];
-          let path = importMatch[0].match(/".*?"|'.*?'|`.*?`/)[0];
-          path = path.substr(1,path.length-2); //remove quotes
-
-          let arr = path.split(".");
-          let extention = arr[arr.length-1];
-
-
-
-          if(extention == "js" || extention == "css"){
-            Dev.import(key, path, extention);
-          }
-          else{ //both
-            Dev.import(key, path+".js", "js");
-            Dev.import(key, path+".css", "css");
-          }
-        }
-        else{
-          finalFile += lines[i] + "\n";
-        }
-      }
 
       //add root file
-      Dev.imports.js.content.push({
-        path : rootFile,
-        key : "root",
-        file : finalFile
-      });
+      // Dev.imports.js.content.push({
+      //   path : rootFile,
+      //   key : "root",
+      //   file : finalFile
+      // });
+
+      let hasImport = Dev.parseImports(rootFile, file, "root");
 
       //if no imports just eval the root
       if(!hasImport){
@@ -514,8 +533,77 @@ Quas.main = function(rootFile){
   });
 }
 
+Dev.parseImports = (filename, file, key) => {
+  let lines = file.split("\n");
+  let importRegex = /import+\s.*?\sfrom+\s".*"|import+\s.*?\sfrom+\s'.*'|import+\s.*?\sfrom+\s`.*`/;
+  let multiLineCommentOpen = false;
+  let parsedFile = "";
+  let hasImport = false;
+
+  for(let i=0; i<lines.length; i++){
+    let validLine = "";
+    if(lines[i].indexOf("/*") > -1){
+      multiLineCommentOpen = true;
+      validLine += lines[i].split("/*")[0];
+    }
+
+    if(lines[i].indexOf("*/") > -1){
+      multiLineCommentOpen = false;
+      validLine += lines[i].split("*/")[1];
+    }
+
+    if(!multiLineCommentOpen && validLine == ""){
+      validLine = lines[i].split("//")[0];
+    }
+    else if(!multiLineCommentOpen && validLine != ""){
+      validLine = validLine.split("//")[0];
+    }
+
+    let importMatch = validLine.match(importRegex);
+    if(importMatch){
+      hasImport = true;
+      let key = importMatch[0].split(/\s/)[1];
+      let path = importMatch[0].match(/".*?"|'.*?'|`.*?`/)[0];
+      path = path.substr(1,path.length-2); //remove quotes
+
+      let arr = path.split(".");
+      let extention = arr[arr.length-1];
+
+      if(extention == "js"){
+        Dev.import(key, path, extention);
+      }
+      //else{ //both
+      //  Dev.import(key, path+".js", "js");
+      //  Dev.import(key, path+".css", "css");
+      //}
+    }
+    else{
+      parsedFile += lines[i] + "\n";
+    }
+  }
+
+  let alreadyImported = false;
+  for(let i=0; i<Dev.imports.js.content.length; i++){
+    if(Dev.imports.js.content[i].key == key){
+      alreadyImported = true;
+      break;
+    }
+  }
+
+  //add file
+  if(!alreadyImported){
+    Dev.imports.js.content.push({
+      path : filename,
+      key : key,
+      file : parsedFile
+    });
+  }
+
+  return hasImport;
+}
+
 //export the bundle
-Quas.export = function(filename, extention){
+Quas.build = function(filename, extention){
   if(!filename){
     var filename = "bundle";
   }

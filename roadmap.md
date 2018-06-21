@@ -18,3 +18,6 @@
 
 ## DOCS
 * onclick-onscroll=function(){} - multiple events with same function
+
+## importer
+* js,css,components,custom attrs
