@@ -1,7 +1,5 @@
 ## Road Map
 * Router.pathMatches("/docs/\*")
-* custom attribute loader and packager
-* new bundling system
 * router sub directories
 * API documentation generator
 * API for different versions
@@ -18,3 +16,4 @@
 
 ## DOCS
 * onclick-onscroll=function(){} - multiple events with same function
+* fix router with pushing href with no matching id

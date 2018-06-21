@@ -91,7 +91,7 @@ Quas.export(
             <pre>
               <code q-code="{configCode}"></code>
             </pre>
-            You can read more about this in the <a href="production-builds">Production Build</a> section.
+            You can read more about this in the <a href="/docs/production-builds">Production Build</a> section.
             <hr>
             <h2>Starting Point</h2>
             <p>Once quas has loaded it will starts its executing the startQuas function.</p>

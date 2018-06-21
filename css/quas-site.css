@@ -48,40 +48,6 @@ h1{
 	font-size: 30px;
 }
 
-pre{
-	padding: 0px 30px;
-
-	min-height: 100%;
-	overflow: auto;
-}
-
-code{
-
-}
-
-.code-keyword{
-	color: #00FFFF;
-}
-
-.code-quote{
-	color: #cccc00;
-}
-
-.code-comment{
-	color: #9a9a9a;
-}
-
-.code-htmltag{
-	color: #0af;
-}
-
-.code-htmlkey{
-	color: #f0a;
-}
-
-.code-htmlval{
-	color: #cccc00;
-}
 
 /*----------- BODY ---------*/
 

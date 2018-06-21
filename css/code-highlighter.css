@@ -24,6 +24,9 @@
 
 pre{
 	min-height: auto;
+	padding: 0px 30px;
+	min-height: 100%;
+	overflow: auto;
 }
 
 pre code{
