@@ -130,7 +130,7 @@ Quas.export(
           if(!quoteOpen){
             if(last2Chars == "//" || last2Chars == "/*"){
               word = word.substr(0,word.length-1); //remove /
-              highlightWord(parentVDOM, word, ""); //handle current word
+              CodeHighlighter.highlightWord(parentVDOM, word, ""); //handle current word
               word = "/";
               isComment = true;
               if(last2Chars == "/*"){

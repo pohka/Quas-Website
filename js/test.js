@@ -10,10 +10,6 @@ function ready(){
   let sam = new test();
   Quas.render(sam, "body");
   console.log(sam.vdom);
-  //importme2.me();
-  //Card.init();
-  // /console.log(code.jsKeyWords);
-  //console.log(Card.id);
   Quas.render(new Card("code.png", "code", "sample description"), "body");
 }
 

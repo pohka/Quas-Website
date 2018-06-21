@@ -474,8 +474,10 @@ Quas.main = function(rootFile){
   });
 }
 
-//checks the file too see if it has any imports
+//checks a javascript file to see if it has any imports
 Dev.parseImports = (filename, file, key) => {
+//  if(key === undefined){
+//  }
 
   //check if this file key has already been imported
   for(let i=0; i<Dev.imports.js.content.length; i++){
