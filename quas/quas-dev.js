@@ -420,7 +420,10 @@ Dev.addImports = function(type){
         }
 
         bundle += jsContent[i].file + "\n";
-        keys +="const " + jsContent[i].key + " = Quas.modules['" + jsContent[i].key + "'];\n";
+        keys +="const " + jsContent[i].key + " = Quas.modules['" + jsContent[i].key + "'];\n" +
+          "if(typeof Quas.modules['" + jsContent[i].key + "'].init =='function'){\n" +
+          "  Quas.modules['" + jsContent[i].key + "'].init('" + jsContent[i].key + "');\n}\n";
+
       }
     }
 
@@ -534,8 +537,6 @@ Dev.parseImports = (filename, file, key) => {
       parsedFile += lines[i] + "\n";
     }
   }
-
-
 
   //add file
   Dev.imports.js.content.push({

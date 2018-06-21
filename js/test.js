@@ -1,5 +1,9 @@
 import importme from "/js/importme.js";
 import Card from "/comps/card.js";
+import code from "/js/code-highlighter.js";
+
+
+
 
 
 function ready(){
@@ -7,6 +11,9 @@ function ready(){
   Quas.render(sam, "body");
   console.log(sam.vdom);
   //importme2.me();
+  //Card.init();
+  // /console.log(code.jsKeyWords);
+  //console.log(Card.id);
   Quas.render(new Card("code.png", "code", "sample description"), "body");
 }
 

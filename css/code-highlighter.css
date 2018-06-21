@@ -1,0 +1,38 @@
+.code-keyword{
+	color: #00FFFF;
+}
+
+.code-quote{
+	color: #cccc00;
+}
+
+.code-comment{
+	color: #9a9a9a;
+}
+
+.code-htmltag{
+	color: #0af;
+}
+
+.code-htmlkey{
+	color: #f0a;
+}
+
+.code-htmlval{
+	color: #cccc00;
+}
+
+pre{
+	min-height: auto;
+}
+
+pre code{
+	font-size: 16px;
+	background: #444;
+	color : white;
+	display: block;
+	padding: 15px 50px;
+	margin: 10px 0px;
+	line-height: 1.6;
+	tab-size: 2;
+}
