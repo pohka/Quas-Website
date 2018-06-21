@@ -1,5 +1,5 @@
 Quas.export({
-  me : function(){
+  me : () => {
     console.log("i was importeted");
   }
 });

@@ -1,4 +1,5 @@
 import importme from "/js/importme.js";
+import "/comps/card.css";
 
 Quas.export(
   class Card extends Component{

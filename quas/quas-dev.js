@@ -357,9 +357,8 @@ Dev.exportToFile = function(content, filename){
   document.body.removeChild(element);
 }
 
-
-
-Dev.import = function(key, path, type){
+//imports a file
+Dev.import = function(path, type, key){
   if(Dev.imports[type] === undefined){
     Dev.imports[type] = {
       content : {},
@@ -373,15 +372,19 @@ Dev.import = function(key, path, type){
     url : path,
     type : "GET",
     success : (file) => {
-      Dev.parseImports(path, file, key);
-      /*
-      Dev.imports[type].content.push({
-        path : path,
-        key : key,
-        file : file
-      });
-      */
+      if(type == "js"){
+        Dev.parseImports(path, file, key);
+      }
+      else if(type == "css"){
+        cssContent = Dev.imports[type].content;
+        if(!cssContent[path]){
+          cssContent[path] = file;
+        }
+      }
+
       Dev.imports[type].importsLeft -= 1;
+
+      //check if all the files loaded of this type have been completed
       if(Dev.imports[type].importsLeft == 0){
         Dev.addImports(type);
       }
@@ -399,9 +402,7 @@ Dev.addImports = function(type){
     let jsContent = Dev.imports.js.content;
     let keys = "";
     for(let i=0; i<jsContent.length; i++){
-      //bundle +=
-      //  "/*---------- " + i + " ----------*/\n\n" +
-    //    Dev.imports.js.content[i].trim() + "\n\n";
+      //root file is not a module
       if(jsContent[i].key == "root"){
         bundle +=
           "/*---------- " + jsContent[i].path + " ----------*/\n" +
@@ -409,25 +410,22 @@ Dev.addImports = function(type){
       }
       else{
         bundle += "/*---------- " + jsContent[i].path + " ----------*/\n";
-          let exportMatch = jsContent[i].file.match(/Quas\.export\(/);
 
-          if(exportMatch){
-            //let thisExport = exportMatch[0].match(/\(/)[0];
-          //  thisExport = thisExport.substr(1, thisExport.length-2);
-            //let setModule = "Quas.modules['" + jsContent[i].key + "'] = " + thisExport + ";\n\n";
-            let setModule = "Quas.modules['" + jsContent[i].key + "'] = (";
-            jsContent[i].file = jsContent[i].file.replace(exportMatch[0], setModule);
-          }
+        //replace all "Quas.export(" with "Quas.modules[key] = ("
+        let exportMatch = jsContent[i].file.match(/Quas\.export\(/);
 
-          bundle += jsContent[i].file + "\n";
+        if(exportMatch){
+          let setModule = "Quas.modules['" + jsContent[i].key + "'] = (";
+          jsContent[i].file = jsContent[i].file.replace(exportMatch[0], setModule);
+        }
 
-    //      "Quas.modules['" + jsContent[i].key + "'] = " + jsContent[i].file.trim() + ";\n\n";
-
-         keys +="const " + jsContent[i].key + " = Quas.modules['" + jsContent[i].key + "'];\n";
+        bundle += jsContent[i].file + "\n";
+        keys +="const " + jsContent[i].key + " = Quas.modules['" + jsContent[i].key + "'];\n";
       }
     }
 
-    //add all the references to modules
+    //add all the references to modules to the end
+    //e.g. const Card = Quas.modules["Card"];
     bundle += keys;
 
     bundle = Dev.parseBundle(bundle);
@@ -439,7 +437,6 @@ Dev.addImports = function(type){
     script.type = 'text/javascript';
     script.textContent = bundle;
     document.getElementsByTagName('head')[0].appendChild(script);
-
   }
   else if(type == "css"){
     for(let i in Dev.imports.css.content){
@@ -461,68 +458,9 @@ Quas.main = function(rootFile){
     url : rootFile,
     type : "GET",
     success : (file) => {
-      //
-      // let lines = file.split("\n");
-      // let importRegex = /import+\s.*?\sfrom+\s".*"|import+\s.*?\sfrom+\s'.*'|import+\s.*?\sfrom+\s`.*`/;
-      // let multiLineCommentOpen = false;
-      // let finalFile = "";
-      // let hasImport = false;
-      //
-      // for(let i=0; i<lines.length; i++){
-      //   let validLine = "";
-      //   if(lines[i].indexOf("/*") > -1){
-      //     multiLineCommentOpen = true;
-      //     validLine += lines[i].split("/*")[0];
-      //   }
-      //
-      // if(lines[i].indexOf("*/") > -1){
-      //     multiLineCommentOpen = false;
-      //     validLine += lines[i].split("*/")[1];
-      //   }
-      //
-      //   if(!multiLineCommentOpen && validLine == ""){
-      //     validLine = lines[i].split("//")[0];
-      //   }
-      //   else if(!multiLineCommentOpen && validLine != ""){
-      //     validLine = validLine.split("//")[0];
-      //   }
-      //
-      //   let importMatch = validLine.match(importRegex);
-      //   if(importMatch){
-      //     hasImport = true;
-      //     let key = importMatch[0].split(/\s/)[1];
-      //     let path = importMatch[0].match(/".*?"|'.*?'|`.*?`/)[0];
-      //     path = path.substr(1,path.length-2); //remove quotes
-      //
-      //     let arr = path.split(".");
-      //     let extention = arr[arr.length-1];
-      //
-      //
-      //
-      //     if(extention == "js" || extention == "css"){
-      //       Dev.import(key, path, extention);
-      //     }
-      //     else{ //both
-      //       Dev.import(key, path+".js", "js");
-      //       Dev.import(key, path+".css", "css");
-      //     }
-      //   }
-      //   else{
-      //     finalFile += lines[i] + "\n";
-      //   }
-      // }
-
-
-      //add root file
-      // Dev.imports.js.content.push({
-      //   path : rootFile,
-      //   key : "root",
-      //   file : finalFile
-      // });
-
       let hasImport = Dev.parseImports(rootFile, file, "root");
 
-      //if no imports just eval the root
+      //if no imports just add the root
       if(!hasImport){
         Dev.addImports("js");
       }
@@ -533,9 +471,19 @@ Quas.main = function(rootFile){
   });
 }
 
+//checks the file too see if it has any imports
 Dev.parseImports = (filename, file, key) => {
+
+  //check if this file key has already been imported
+  for(let i=0; i<Dev.imports.js.content.length; i++){
+    if(Dev.imports.js.content[i].key == key){
+      return false;
+    }
+  }
+
   let lines = file.split("\n");
-  let importRegex = /import+\s.*?\sfrom+\s".*"|import+\s.*?\sfrom+\s'.*'|import+\s.*?\sfrom+\s`.*`/;
+  let importModuleRegex = /import+\s.*?\sfrom+\s".*"|import+\s.*?\sfrom+\s'.*'|import+\s.*?\sfrom+\s`.*`/;
+  let importCssRegex = /import+\s".*"|import+\s'.*'|import+\s`.*`/;
   let multiLineCommentOpen = false;
   let parsedFile = "";
   let hasImport = false;
@@ -559,45 +507,42 @@ Dev.parseImports = (filename, file, key) => {
       validLine = validLine.split("//")[0];
     }
 
-    let importMatch = validLine.match(importRegex);
-    if(importMatch){
+    let importModuleMatch = validLine.match(importModuleRegex);
+    let importCssMatch = validLine.match(importCssRegex);
+    if(importModuleMatch){
       hasImport = true;
-      let key = importMatch[0].split(/\s/)[1];
-      let path = importMatch[0].match(/".*?"|'.*?'|`.*?`/)[0];
+      let key = importModuleMatch[0].split(/\s/)[1];
+      let path = importModuleMatch[0].match(/".*?"|'.*?'|`.*?`/)[0];
       path = path.substr(1,path.length-2); //remove quotes
 
       let arr = path.split(".");
       let extention = arr[arr.length-1];
 
       if(extention == "js"){
-        Dev.import(key, path, extention);
+        Dev.import(path, extention, key);
       }
-      //else{ //both
-      //  Dev.import(key, path+".js", "js");
-      //  Dev.import(key, path+".css", "css");
-      //}
+    }
+    else if(importCssMatch){
+      hasImport = true;
+      let path = importCssMatch[0].match(/".*?"|'.*?'|`.*?`/)[0];
+      path = path.substr(1,path.length-2); //remove quotes
+      let arr = path.split(".");
+      let extention = arr[arr.length-1];
+      Dev.import(path, extention);
     }
     else{
       parsedFile += lines[i] + "\n";
     }
   }
 
-  let alreadyImported = false;
-  for(let i=0; i<Dev.imports.js.content.length; i++){
-    if(Dev.imports.js.content[i].key == key){
-      alreadyImported = true;
-      break;
-    }
-  }
+
 
   //add file
-  if(!alreadyImported){
-    Dev.imports.js.content.push({
-      path : filename,
-      key : key,
-      file : parsedFile
-    });
-  }
+  Dev.imports.js.content.push({
+    path : filename,
+    key : key,
+    file : parsedFile
+  });
 
   return hasImport;
 }
