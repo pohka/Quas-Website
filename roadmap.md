@@ -5,6 +5,8 @@
 * API for different versions
 * Home Page
 * Download Page
+* decide what other functionality within quas needs to be seperated into its own module
+  * scroll tracker 
 
 ## Known Issues
 * highlighter:

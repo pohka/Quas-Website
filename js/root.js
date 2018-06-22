@@ -1,14 +1,16 @@
-import Router from "/quas/router.js"
-import CodeHighlighter from "/js/code-highlighter.js"
-import Navbar from "/comps/navbar.js"
+//custom attrs
+import Router from "/quas/modules/router.js"
+import CodeHighlighter from "/quas/modules/code-highlighter.js"
+import Async from "/quas/modules/async.js"
 
+//components
+import Navbar from "/comps/navbar.js"
 import Card from "/comps/card.js"
 import DocsNav from "/comps/docs-nav.js"
 import DocsContent from "/comps/docs-content.js"
 import Body from "/comps/body.js"
 
-import Async from "/js/async.js"
-
+//css
 import "/css/quas-site.css"
 
 
