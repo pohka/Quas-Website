@@ -1,14 +1,17 @@
-//custom attrs
+//modules
 import Router from "/quas/modules/router.js"
 import CodeHighlighter from "/quas/modules/code-highlighter.js"
 import Async from "/quas/modules/async.js"
 
 //components
 import Navbar from "/comps/navbar.js"
-import Card from "/comps/card.js"
+//import Card from "/comps/card.js"
 import DocsNav from "/comps/docs-nav.js"
 import DocsContent from "/comps/docs-content.js"
 import Body from "/comps/body.js"
+
+import LandingBody from "/comps/landing-body.js"
+import DownloadBody from "/comps/download-body.js"
 
 //css
 import "/css/quas-site.css"
@@ -32,17 +35,42 @@ function ready(){
 
 
 
-  Router.map("index", "/", "Quas");
-  Router.map("docs", "/docs/setup", "Docs");
-  Router.map("download", "/download", "Download");
+//  Router.map("index", "/", "Quas");
+//  Router.map("docs", "/docs/setup", "Docs");
+//  Router.map("download", "/download", "Download");
 
 //  console.log(Quas.paths);
 
   let nav = new Navbar(["docs", "download"]);
-  Quas.renderRule(nav, "body", "prepend");
 
-  let body = new Body();
-  Quas.render(body, "body");
+  let landing = new LandingBody();
+
+  let download = new DownloadBody();
+//  Quas.render(nav, "#app");
+
+  //let body = new Body();
+//  Quas.render(body, "#app");
+
+  //let main
+
+//  let landingPage = new LandingPage();
+
+  Router.add({
+    id : "index",
+    path : "/",
+    title : "Quas",
+    comps : [nav, landing],
+    children : []
+  });
+
+  Router.add({
+    id : "download",
+    path : "/download",
+    title : "Download",
+    comps : [nav, download]
+  });
+
+  Router.load();
 }
 
 

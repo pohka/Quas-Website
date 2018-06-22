@@ -9,6 +9,36 @@ Quas.export(
       };
     }
 
+    static add(data){
+      this.routes.push(data);
+    }
+
+    static load(){
+      let path = window.location.pathname;
+      let route = this.findRouteByPath(path, this.routes);
+      if(route){
+        console.log("found route");
+        for(let i=0; i<route.comps.length; i++){
+          Quas.render(route.comps[i], "#app");
+        }
+      }
+    }
+
+    static findRouteByPath(path, routes){
+      for(let i=0; i<routes.length; i++){
+        if(routes[i].path == path){
+          return routes[i];
+        }
+        //if has children and path has a matching directory
+        else if(routes[i].children && path.indexOf(routes[i].path) == 0){
+          let r = this.findRouteByPath(path, routes[i].children);
+          if(r){
+            return r;
+          }
+        }
+      }
+    }
+
     //returns the path id of the current page using the URl
      static getCurrentPathID(){
        let url = location.pathname;
@@ -61,6 +91,7 @@ Quas.export(
 
     static init(){
       this.paths = {};
+      this.routes = [];
       this.pushListeners = [];
       window.addEventListener("popstate", function(e) {
         for(let i in Router.pushListeners){
