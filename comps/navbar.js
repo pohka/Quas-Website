@@ -1,3 +1,4 @@
+import Router from "/quas/modules/router.js";
 import "/comps/navbar.css";
 
 Quas.export(
@@ -6,28 +7,23 @@ Quas.export(
       super(props);
     }
 
-    static createOption(pathID){
-      let cls="";
-      if(pathID == Router.getCurrentPathID() || (pathID == "docs" && Router.currentPathStartsWith("/docs"))){
+    static createOption(routeID){
+      let route = Router.findRouteByID(routeID);
+      let cls = "";
+      if(route.path == window.location.pathname){
         cls = "active";
       }
-      let pathInfo = Router.paths[pathID];
-      let title = pathID;
-      let link = "";
-      if(pathInfo){
-        link = pathInfo.path;
-        title = pathInfo.title
-      }
+
 
       return (
         <quas>
-          <div><a class="nav-item {cls}" href="{link}" target="push">{title}</a></div>
+          <div><a class="nav-item {cls}" href="{route.path}" target="push">{route.title}</a></div>
         </quas>
       );
     }
 
-    onPush(path){
-      console.log(path);
+    onPush(route){
+    //  console.log(route);
       Quas.render(this);
     }
 

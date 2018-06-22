@@ -366,8 +366,9 @@ class Quas{
       //add on click eventlistener
       el.addEventListener("click", function(e){
         e.preventDefault();
-        let id = Router.getIDByPath(this.href);
-        Router.push(id);
+        let path = this.href.replace(window.location.origin, "");
+        let route = Router.findRouteByPath(path);
+        Router.push(route);
       });
     }
 

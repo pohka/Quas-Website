@@ -28,6 +28,7 @@
 ## routing
 * vue
   * each route has an array of components
+  * reusing components
   * child routes for nesting
   * params from path: /user/:userid
   * push with params e.g. router.push({ path: `/user/${userId}` })

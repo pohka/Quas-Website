@@ -55,21 +55,41 @@ function ready(){
 
 //  let landingPage = new LandingPage();
 
+  let navbarProps = {
+    items : ["download"]
+  }
+
   Router.add({
     id : "index",
     path : "/",
     title : "Quas",
-    comps : [nav, landing],
+    comps : [
+      {
+        comp : Navbar,
+        props : navbarProps
+      },
+      {
+        comp : LandingBody
+      }
+    ],
     children : []
   });
-/*
+
   Router.add({
     id : "download",
     path : "/download",
     title : "Download",
-    comps : [nav, download]
+    comps : [
+      {
+        comp : Navbar,
+        props : navbarProps
+      },
+      {
+        comp : DownloadBody
+      }
+    ]
   });
-
+/*
   Router.add({
     id : "docs",
     path : "/docs",
