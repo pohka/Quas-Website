@@ -41,7 +41,7 @@ function ready(){
 
 //  console.log(Quas.paths);
 
-  let nav = new Navbar(["docs", "download"]);
+  let nav = new Navbar({ items : ["docs", "download"]});
 
   let landing = new LandingBody();
 
@@ -62,7 +62,7 @@ function ready(){
     comps : [nav, landing],
     children : []
   });
-
+/*
   Router.add({
     id : "download",
     path : "/download",
@@ -70,6 +70,13 @@ function ready(){
     comps : [nav, download]
   });
 
+  Router.add({
+    id : "docs",
+    path : "/docs",
+    title : "Docs",
+    comps : [nav]
+  });
+*/
   Router.load();
 }
 

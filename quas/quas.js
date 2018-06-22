@@ -3,7 +3,13 @@
 */
 
 class Component{
-  constructor(){
+  constructor(props){
+    if(props){
+      this.props = props;
+    }
+    else{
+      this.props = {}
+    }
     if(Quas.isDevBuild){
       Quas.comps.push(this);
     }
@@ -15,7 +21,7 @@ class Component{
     @param {?} value
   */
   setProp(k, v){
-    this[k] = v;
+    this.props[k] = v;
     Quas.render(this);
   }
 
@@ -26,7 +32,7 @@ class Component{
   */
   setProps(obj){
     for(let k in obj){
-      this[k] = obj[k];
+      this.props[k] = obj[k];
     }
     Quas.render(this);
   }

@@ -2,9 +2,8 @@ import "/comps/navbar.css";
 
 Quas.export(
   class Navbar extends Component{
-    constructor(items){
-      super();
-      this.pathIDs = items;
+    constructor(props){
+      super(props);
     }
 
     static createOption(pathID){
@@ -40,7 +39,7 @@ Quas.export(
               <img src="/img/logo_sm.png">
               <span>Quas.js</span>
             </a>
-            <div q-bind-for=[Navbar.createOption,this.pathIDs] class="nav-con">
+            <div q-bind-for=[Navbar.createOption,this.props.items] class="nav-con">
             </div>
             <div class="search-bar-con">
               <input type="text" class="search-bar" autocomplete="off" spellcheck="false" placeholder="Search API">

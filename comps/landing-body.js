@@ -4,13 +4,37 @@ Quas.export(
   class LandingBody extends Component{
     constructor(){
       super();
-      this.cards = [
-        new Card("small-rocket-ship-silhouette.png", "Super Fast", "Some text"),
-        new Card("lightning-bolt-shadow.png", "Lightweight", "Less than 3KB with gzip"),
-        new Card("couple-of-arrows-changing-places.png", "Modular Components", "Definately not the poor mans versin of react"),
-        new Card("code.png", "Custom HTML Attributes", "what to put here"),
-        new Card("desktop-monitor.png", "Breakpoints", "what to put here"),
-        new Card("refresh-page-option.png", "Cookies", "what to put here"),
+      this.props.cards = [
+        new Card({
+          img : "small-rocket-ship-silhouette.png",
+          title : "Super Fast",
+          text : "Some text"
+        }),
+        new Card({
+          img : "lightning-bolt-shadow.png",
+          title : "Lightweight",
+          text : "Less than 3KB with gzip"
+        }),
+        new Card({
+          img : "couple-of-arrows-changing-places.png",
+          title : "Modular Components",
+          text : "Definately not the poor mans versin of react"
+        }),
+        new Card({
+          img : "code.png",
+          title : "Custom HTML Attributes",
+          text : "what to put here"
+        }),
+        new Card({
+          img : "desktop-monitor.png",
+          title : "Breakpoints",
+          text : "what to put here"
+        }),
+        new Card({
+          img : "refresh-page-option.png",
+          title : "Cookies",
+          text : "what to put here"
+        })
       ];
     }
 
@@ -28,10 +52,10 @@ Quas.export(
             </div>
             <h2 class="section-heading">Features</h2>
             <div class="card-con" id="card-row-1">
-              {this.cards[0].render(), this.cards[1].render(), this.cards[2].render()} //must put them in array for multiple components
+              {this.props.cards[0].render(), this.props.cards[1].render(), this.props.cards[2].render()} //must put them in array for multiple components
             </div>
             <div class="card-con" id="card-row-2">
-              {this.cards[3].render(), this.cards[4].render(), this.cards[5].render()} //must put them in array for multiple components
+              {this.props.cards[3].render(), this.props.cards[4].render(), this.props.cards[5].render()} //must put them in array for multiple components
             </div>
           </div>
         </quas>

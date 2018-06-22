@@ -2,20 +2,17 @@ import "/comps/card.css";
 
 Quas.export(
   class Card extends Component{
-    constructor(img, title, text){
-      super();
-      this.img = img;
-      this.title = title;
-      this.text = text;
+    constructor(props){
+      super(props);
     }
 
     render(){
       return (
         <quas>
           <div class="card">
-            <img src="/img/{this.img}">
-            <h3>{this.title}</h3>
-            <span>{this.text}</span>
+            <img src="/img/{this.props.img}">
+            <h3>{this.props.title}</h3>
+            <span>{this.props.text}</span>
           </div>
         </quas>
       );

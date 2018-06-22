@@ -22,6 +22,7 @@
 ## issues
 * rendering if parent is undefined
 * dont know what language the code blocks are
+* Component.setProps() needs to be tested
 
 
 ## routing
