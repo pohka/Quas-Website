@@ -5,7 +5,6 @@
 * API for different versions
 * Home Page
 * Download Page
-* lazy loading custom attr (q-async-img)
 
 ## Known Issues
 * highlighter:

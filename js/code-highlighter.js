@@ -71,7 +71,7 @@ Quas.export(
     Quas.customAttrs["code"] = this.handler;
   }
 
-  static handler(params, data, parentVDOM){
+  static handler(params, data, parentVDOM, comp){
     //console.log(this);
     let lastCharWasSpace = false;
     let quoteException = false;

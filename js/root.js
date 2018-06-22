@@ -4,10 +4,14 @@ import Navbar from "/comps/navbar.js"
 
 import Card from "/comps/card.js"
 import DocsNav from "/comps/docs-nav.js"
-import DocsContent from "/comps/docs-content.js";
+import DocsContent from "/comps/docs-content.js"
 import Body from "/comps/body.js"
 
+import Async from "/js/async.js"
+
 import "/css/quas-site.css"
+
+
 
 
 function ready(){

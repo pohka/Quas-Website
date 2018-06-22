@@ -45,7 +45,7 @@ Quas.export(
           <div>
             //landing top
             <div class="landing-top">
-              <img class="landing-logo" src="/img/logo_landing.png">
+              <img class="landing-logo" q-async-imgsrc="/img/logo_landing.png">
               <div class="landing-desc">
                 <h1>Quas.js</h1>
                 <h2>A progressive JavaScript UI library</h2>
