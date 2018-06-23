@@ -41,11 +41,11 @@ function ready(){
 
 //  console.log(Quas.paths);
 
-  let nav = new Navbar({ items : ["docs", "download"]});
+//  let nav = new Navbar({ items : ["docs", "download"]});
 
-  let landing = new LandingBody();
+//  let landing = new LandingBody();
 
-  let download = new DownloadBody();
+//  let download = new DownloadBody();
 //  Quas.render(nav, "#app");
 
   //let body = new Body();
@@ -56,7 +56,7 @@ function ready(){
 //  let landingPage = new LandingPage();
 
   let navbarProps = {
-    items : ["download"]
+    items : ["docs", "download"]
   }
 
   Router.add({
@@ -89,14 +89,19 @@ function ready(){
       }
     ]
   });
-/*
+
   Router.add({
     id : "docs",
     path : "/docs",
     title : "Docs",
-    comps : [nav]
+    comps : [
+      {
+        comp : Navbar,
+        props : {items : ["download"]}
+      }
+    ]
   });
-*/
+
   Router.load();
 }
 

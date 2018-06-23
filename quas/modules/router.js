@@ -21,11 +21,19 @@ Quas.export(
       if(route){
         console.log("found route");
         this.currentRouteID = route.id;
-        for(let i=0; i<route.comps.length; i++){
-          let comp = new route.comps[i].comp(route.comps[i].props);
-          this.comps.push(comp);
+        if(route.comps){
+          for(let i=0; i<route.comps.length; i++){
+            let props = {};
+            if(route.comps[i].props){
+              for(let p in route.comps[i].props){
+                props[p] = route.comps[i].props[p];
+              }
+            }
+            let comp = new route.comps[i].comp(props);
+            this.comps.push(comp);
 
-          Quas.render(comp, "#app");
+            Quas.render(comp, "#app");
+          }
         }
       }
     }
@@ -102,57 +110,57 @@ Quas.export(
        //todo: move this into its own optional functionality
        document.body.scrollTop = document.documentElement.scrollTop = 0;
 
-       //let cur = this.findRouteByID(this.currentRouteID);
-       //for(let i=0; i<cur.comps.length; i++){
-      //
-       //}
-       let newComps = [];
 
+       this.currentRouteID = route.id;
+
+
+       let newComps = [];
+       let reuseComps = [];
+
+       //update the components
        for(let r=0; r<route.comps.length; r++){
-         let hasInstance = false;
          let instance;
-         for(let i=0; i<this.comps.length && !hasInstance; i++){
-          // console.log(route.comps[r].comp);
+         let props;
+         for(let i=0; i<this.comps.length && !instance; i++){
            if(this.comps[i] instanceof route.comps[r].comp){
-             hasInstance = true;
-            // console.log("found matching instance");
              instance = this.comps[i];
+             props = route.comps[r].props;
+             this.comps.splice(i,1);
+             i -= 1;
            }
          }
 
-         if(hasInstance){
-           newComps.push(instance);
+         //reusing an existing component
+         if(instance){
+           reuseComps.push(instance);
            if(typeof instance.onPush === "function"){
              instance.onPush(route);
            }
+           instance.setProps(props);
          }
+         //new component
          else{
-           //todo: unmount existing component
            let comp = new route.comps[r].comp(route.comps[r].props);
            newComps.push(comp);
          }
        }
 
+       //unmount the old components
+       for(let i=0; i<this.comps.length; i++){
+         this.comps[i].unmount();
+       }
 
+       //render the new components
+       for(let i=0; i<newComps.length; i++){
+         Quas.render(newComps[i], "#app");
+       }
+
+       //set the current components
        this.comps = newComps;
-       this.currentRouteID = route.id;
-
-
-      //notify event listeners
-      //for(let i in Router.pushListeners){
-    //    Router.pushListeners[i].onPush(route);
-      //}
+       for(let i=0; i<reuseComps.length; i++){
+         this.comps.push(reuseComps[i]);
+       }
      }
-
-     /*
-     static pushByPath(path){
-        let newUrl = window.origin + path;
-        window.history.pushState('','',newUrl);
-        for(let i in Router.pushListeners){
-          Router.pushListeners[i].onPush(path);
-        }
-     }
-     */
 
      //add a component to listen to an Router event
      static addPushListener(comp){
@@ -164,7 +172,7 @@ Quas.export(
       this.routes = [];
       this.currentRouteID;
       this.pushListeners = [];
-      this.comps = [];
+      this.comps = []; //all the current instances of components
       window.addEventListener("popstate", function(e) {
         for(let i in Router.pushListeners){
           Router.pushListeners[i].onPush(e.target.location.href);

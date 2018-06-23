@@ -19,11 +19,12 @@ class Component{
 
     @param {String} key
     @param {?} value
-  */
+
   setProp(k, v){
     this.props[k] = v;
     Quas.render(this);
   }
+  */
 
   /**
     Sets multiple properties and rerenders the component
@@ -37,21 +38,28 @@ class Component{
     Quas.render(this);
   }
 
+
   /**
     removes this component from the DOM tree
   */
+  /*
   remove(){
     if(this.dom){
       this.dom.parentNode.removeChild(this.dom);
       this.dom = undefined;
     }
   }
-
+*/
   /*
     returns true if this component has been rendered
   */
-  isRendered(){
+  isMounted(){
     return this.dom !== undefined;
+  }
+
+  unmount(){
+    this.dom.remove();
+    this.vdom = [];
   }
 }
 
@@ -70,7 +78,7 @@ class Quas{
       parent = document.querySelector(parent);
     }
     //first time rendering
-    if(!comp.isRendered() && parent !== null){
+    if(!comp.isMounted() && parent !== null){
       comp.vdom = comp.render();
       comp.dom = Quas.createDOM(comp.vdom, comp);
       parent.appendChild(comp.dom);
@@ -79,7 +87,7 @@ class Quas{
       }
     }
     //diff the dom
-    else if(comp.isRendered()){
+    else if(comp.isMounted()){
       let newVDOM = comp.render();
       Quas.diffVDOM(comp, comp.dom.parentNode, comp.dom, comp.vdom, newVDOM);
       comp.vdom = newVDOM;
@@ -789,7 +797,7 @@ class Quas{
 
     @return {Boolean}
   */
-  static isRendered(comp){
+  static isMounted(comp){
     return comp.dom !== undefined;
   }
 

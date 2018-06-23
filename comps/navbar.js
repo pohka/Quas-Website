@@ -24,10 +24,12 @@ Quas.export(
 
     onPush(route){
     //  console.log(route);
-      Quas.render(this);
+      console.log("pushing");
+      //Quas.render(this);
     }
 
     render(){
+      console.log("rendering navbar");
       return (
         <quas>
           <nav>
