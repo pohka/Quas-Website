@@ -7,7 +7,7 @@ import Async from "/quas/modules/async.js"
 import Navbar from "/comps/navbar.js"
 //import Card from "/comps/card.js"
 import DocsNav from "/comps/docs-nav.js"
-import DocsContent from "/comps/docs-content.js"
+//import DocsContent from "/comps/docs-content.js"
 import Body from "/comps/body.js"
 
 import LandingBody from "/comps/landing-body.js"
@@ -90,22 +90,51 @@ function ready(){
     ]
   });
 
+
+  let docsPages = [
+    {
+      id: "docs-setup",
+      path : "setup",
+      title : "Setup",
+      comps : [
+        // {
+        //   comp : Navbar,
+        //   props : navbarProps
+        // }
+      ]
+    },
+    {
+      id: "docs-components",
+      path : "components",
+      title : "Components",
+      comps : [
+
+      ]
+    }
+  ];
+
+
   Router.add({
     id : "docs",
-    path : "/docs",
+    path : "/docs/",
     title : "Docs",
     comps : [
       {
         comp : Navbar,
-        props : {items : ["download"]}
+        props : navbarProps
+      },
+      {
+        comp : DocsNav,
+        props : { pages : docsPages }
       }
-    ]
+    ],
+    children : docsPages
   });
 
   Router.load();
 }
 
-
+/*
 function atest(){
   //Quas.setUrlValues({"key":"value"});
   let str = "/docs/set"
@@ -252,3 +281,4 @@ function formatCode(code){
   }
   return "\n" + lines.join("\n");
 }
+*/

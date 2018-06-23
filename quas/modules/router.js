@@ -12,14 +12,29 @@ Quas.export(
     */
 
     static add(data){
+      Router.setFullPathToChildRoutes(data.children, data.path);
+      data.fullpath = data.path;
       this.routes.push(data);
     }
+
+    static setFullPathToChildRoutes(children, parentPath){
+      if(!children){
+        return;
+      }
+
+      for(let i=0; i<children.length; i++){
+        children[i].fullpath = parentPath + children[i].path;
+        Router.setFullPathToChildRoutes(children[i].children, children[i].fullpath);
+      }
+    }
+
 
     static load(){
       let path = window.location.pathname;
       let route = this.findRouteByPath(path);
       if(route){
         console.log("found route");
+        document.title = route.title;
         this.currentRouteID = route.id;
         if(route.comps){
           for(let i=0; i<route.comps.length; i++){
@@ -29,6 +44,7 @@ Quas.export(
                 props[p] = route.comps[i].props[p];
               }
             }
+          //  console.log(props);
             let comp = new route.comps[i].comp(props);
             this.comps.push(comp);
 
@@ -43,11 +59,11 @@ Quas.export(
         routes = this.routes;
       }
       for(let i=0; i<routes.length; i++){
-        if(routes[i].path == path){
+        if(routes[i].fullpath == path){
           return routes[i];
         }
         //if has children and path has a matching directory
-        else if(routes[i].children && path.indexOf(routes[i].path) == 0){
+        else if(routes[i].children && path.indexOf(routes[i].fullpath) == 0){
           let r = this.findRouteByPath(path, routes[i].children);
           if(r){
             return r;
@@ -104,7 +120,8 @@ Quas.export(
      //push a new page by the id in Router.paths
      static push(route){
        console.log(route);
-       let newUrl = window.origin + route.path;
+       document.title = route.title;
+       let newUrl = window.origin + route.fullpath;
        window.history.pushState('','',newUrl);
 
        //todo: move this into its own optional functionality
@@ -174,9 +191,8 @@ Quas.export(
       this.pushListeners = [];
       this.comps = []; //all the current instances of components
       window.addEventListener("popstate", function(e) {
-        for(let i in Router.pushListeners){
-          Router.pushListeners[i].onPush(e.target.location.href);
-        }
+        let route = Router.findRouteByPath(e.target.location.pathname);
+        Router.push(route);
       });
     }
   }

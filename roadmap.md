@@ -24,6 +24,8 @@
 * dont know what language the code blocks are
 * Component.setProps() needs to be tested
 * fix changing props
+* back and forward history doesn't work properly
+* test if unmounting and rendering the component again will mess up vdom synced with dom
 
 
 ## routing

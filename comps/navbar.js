@@ -10,7 +10,7 @@ Quas.export(
     static createOption(routeID){
       let route = Router.findRouteByID(routeID);
       let cls = "";
-      if(route.path == window.location.pathname){
+      if(route.fullpath == window.location.pathname){
         cls = "active";
       }
 

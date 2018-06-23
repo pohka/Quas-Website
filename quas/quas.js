@@ -526,10 +526,11 @@ class Quas{
     Removes a component from the DOM tree
 
     @param {Component} component
-  */
+
   static remove(comp){
     comp.dom.parentNode.removeChild(comp.dom);
   }
+  */
 
   /**
     Find an element with a matching selector, within this components element in thr DOM tree
@@ -538,10 +539,11 @@ class Quas{
     @param {String} selector
 
     @return {HTMLDOMElement}
-  */
+
   static findChild(comp, s){
     return comp.dom.querySelector(s);
   }
+  */
 
   /**
     Call a function for each child specified for the selector
@@ -549,10 +551,11 @@ class Quas{
     @param {Component} component
     @param {String} selector
     @param {Function} callback
-  */
+
   static eachChild(comp, s, func){
     [].forEach.call(comp.dom.querySelectorAll(s), func);
   }
+  */
 
   /**
     Returns a json object with the browser info
@@ -796,10 +799,11 @@ class Quas{
     @param {Component} component
 
     @return {Boolean}
-  */
+
   static isMounted(comp){
     return comp.dom !== undefined;
   }
+  */
 
   /**
     Makes the function listen to a custom event

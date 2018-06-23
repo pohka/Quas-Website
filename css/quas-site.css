@@ -169,6 +169,7 @@ h1{
 }
 
 .docs-nav-item{
+	display: block;
 	padding-left: 30px;
 	width: 100%;
 	line-height: 40px;

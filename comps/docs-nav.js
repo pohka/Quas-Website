@@ -1,42 +1,37 @@
+import Router from "/quas/modules/router.js"
+
 Quas.export(
   class DocsNav extends Component{
-    constructor(){
+    constructor(props){
       super();
-    }
-    //set the url
-    static setPath(e, comp){
-      let page = this["data-page"];
-      Router.pushByPath("/docs/" + page);
-      window.scrollTo(0,0); //scroll to top
-    }
-
-    //converts a DocsNav.pages object into a valid url page name
-    static getPageID(page){
-      return page.toLowerCase().replace(/\s/g, "-");
+      this.props.pages = [];
+      for(let i=0; i<props.pages.length; i++){
+        this.props.pages.push({
+          id : props.pages[i].id,
+          path : props.pages[i].fullpath,
+          title : props.pages[i].title,
+        });
+      }
     }
 
-    //list items
-    genItem(item){
-      let page = DocsNav.getPageID(item.name);
-      let currentURLPage = location.pathname.replace("/docs/", "");
-      let isActive = (page == currentURLPage);
-
+    static genItem(page){
+      let isActive = (Router.currentPathID == page.id);
       return (
         <quas>
-          <div class="docs-nav-item" onclick=DocsNav.setPath data-page="{page}" active="{isActive}">{item.name}</div>
+          <a href="{page.path}" target="push" class="docs-nav-item" active="{isActive}">{page.title}</a>
         </quas>
       );
     }
-
 
     render(){
       return (
         <quas>
-            <div class="docs-nav-con">
-              <div class="docs-nav-list" q-bind-for=[this.genItem,DocsContent.pages]></div>
-            </div>
+          <div class="docs-nav-con">
+            <div class="docs-nav-list" q-bind-for=[DocsNav.genItem,this.props.pages]></div>
+          </div>
         </quas>
       );
+
     }
   }
 );
