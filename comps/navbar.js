@@ -8,7 +8,7 @@ Quas.export(
     }
 
     static createOption(routeID){
-      let route = Router.findRouteByID(routeID);
+      let route = Router.getRouteInfoByID(routeID);
       let cls = "";
       if(route.fullpath == window.location.pathname){
         cls = "active";
@@ -17,7 +17,7 @@ Quas.export(
 
       return (
         <quas>
-          <div><a class="nav-item {cls}" href="{route.path}" target="push">{route.title}</a></div>
+          <div><a class="nav-item {cls}" href="{route.fullpath}" target="push">{route.title}</a></div>
         </quas>
       );
     }

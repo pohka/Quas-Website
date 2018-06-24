@@ -1,15 +1,6 @@
 Quas.export(
   //handling of the mapping and changing the page
   class Router{
-    //map a path
-    /*
-    static map(id, path, title, func){
-      Router.paths[id] = {
-          "path": path,
-          "title":title
-      };
-    }
-    */
 
     static add(data){
       Router.setFullPathToChildRoutes(data.children, data.path);
@@ -44,7 +35,6 @@ Quas.export(
                 props[p] = route.comps[i].props[p];
               }
             }
-          //  console.log(props);
             let comp = new route.comps[i].comp(props);
             this.comps.push(comp);
 
@@ -54,17 +44,52 @@ Quas.export(
       }
     }
 
-    static findRouteByPath(path, routes){
+    static findRouteByPath(path, routes, parentComps){
       if(!routes){
         routes = this.routes;
       }
+      if(!parentComps){
+        parentComps = [];
+      }
+
       for(let i=0; i<routes.length; i++){
+        //found match
         if(routes[i].fullpath == path){
-          return routes[i];
+          //clone the route so we can append the parentComps
+          let clone = {};
+          for(let a in routes[i]){
+            if(a != "comps"){
+              clone[a] = routes[i][a];
+            }
+          }
+
+          //adding comps to clone
+          clone.comps = parentComps;
+          if(routes[i].comps){
+            for(let c=0; c<routes[i].comps.length; c++){
+              clone.comps.push(routes[i].comps[c]);
+            }
+          }
+
+          return clone;
         }
         //if has children and path has a matching directory
         else if(routes[i].children && path.indexOf(routes[i].fullpath) == 0){
-          let r = this.findRouteByPath(path, routes[i].children);
+
+          let nextParentComps = [];
+
+          for(let p=0; p<parentComps.length; p++){
+            nextParentComps.push(parentComps[p]);
+          }
+
+          if(routes[i].comps){
+            for(let p=0; p<routes[i].comps.length; p++){
+              nextParentComps.push(routes[i].comps[p]);
+            }
+          }
+
+
+          let r = this.findRouteByPath(path, routes[i].children, nextParentComps);
           if(r){
             return r;
           }
@@ -72,17 +97,21 @@ Quas.export(
       }
     }
 
-    static findRouteByID(id, routes){
+    static getRouteInfoByID(id, routes){
       if(!routes){
         routes = this.routes;
       }
       for(let i=0; i<routes.length; i++){
         if(routes[i].id == id){
-          return routes[i];
+          return {
+            id : routes[i].id,
+            title : routes[i].title,
+            fullpath : routes[i].fullpath
+          };
         }
         //if has children and path has a matching directory
         else if(routes[i].children){
-          let r = this.findRouteByID(id, routes[i].children);
+          let r = this.getRouteInfoByID(id, routes[i].children);
           if(r){
             return r;
           }
@@ -90,32 +119,27 @@ Quas.export(
       }
     }
 
-    //returns the path id of the current page using the URl
-    /*
-     static getCurrentPathID(){
-       let url = location.pathname;
-       for(let id in Router.paths){
-         if(Router.paths[id].path == url){
-           return id;
-         }
-       }
-     }
-
-     static currentPathStartsWith(str){
-       return (location.pathname.indexOf(str) > -1);
-     }
-
-     //returns a id of a matching path to a href
-     static getIDByPath(href){
-       //remove origin form href
-       let path = href.replace(window.origin,"");
-       for(let id in Router.paths){
-         if(Router.paths[id].path == path){
-            return id;
+    static getRouteInfoByPath(path, routes){
+      if(!routes){
+        routes = this.routes;
+      }
+      for(let i=0; i<routes.length; i++){
+        if(routes[i].fullpath == path){
+          return {
+            id : routes[i].id,
+            title : routes[i].title,
+            fullpath : routes[i].fullpath
+          };
+        }
+        //if has children and path has a matching directory
+        else if(routes[i].children && path.indexOf(routes[i].fullpath) == 0){
+          let r = this.getRouteInfoByPath(path, routes[i].children);
+          if(r){
+            return r;
           }
-       }
-     }
-     */
+        }
+      }
+    }
 
      //push a new page by the id in Router.paths
      static push(route){
@@ -197,15 +221,3 @@ Quas.export(
     }
   }
 );
-
-//all the paths mapped to the Router
-//Router.paths = {};
-//listeners to events
-//Router.pushListeners = [];
-
-//listen to back and forward button in browser
-// window.addEventListener("popstate", function(e) {
-//   for(let i in Router.pushListeners){
-//     Router.pushListeners[i].onPush(e.target.location.href);
-//   }
-// });
