@@ -56,8 +56,19 @@ function ready(){
 //  let landingPage = new LandingPage();
 
   let navbarProps = {
-    items : ["docs", "download"]
-  }
+    items : [
+      {
+        path : "/docs/setup",
+        title : "Docs",
+        case : "/docs"
+      },
+      {
+        path : "/download",
+        title : "Download",
+        case : "/download"
+      }
+    ]
+  };
 
   Router.add({
     id : "index",
@@ -106,7 +117,6 @@ function ready(){
   Router.add({
     id : "docs",
     path : "/docs/:page",
-    title : "Docs",
     comps : [
       {
         comp : Navbar,

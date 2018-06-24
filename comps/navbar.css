@@ -57,7 +57,7 @@ nav a:hover{
 	padding: 0 20px;
 }
 
-.nav-item.active{
+.nav-item[active=true]{
 	border-bottom: 3px solid var(--pri);
 	padding-top: 3px;
 }

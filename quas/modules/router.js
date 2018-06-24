@@ -44,7 +44,8 @@ Quas.export(
 
     static convertDynamicPath(path, params){
       for(let i in params){
-        path = path.replace(":"+i, params[i]);
+        let exp = new RegExp(":"+i, "g");
+        path = path.replace(exp, params[i]);
       }
       return path;
     }
@@ -102,7 +103,9 @@ Quas.export(
             }
           }
 
-          clone.fullpath = Router.convertDynamicPath(clone.fullpath, match);
+          if(Object.keys(match).length > 0){
+            clone.fullpath = Router.convertDynamicPath(clone.fullpath, match);
+          }
           clone.params = match;
 
           return clone;
@@ -178,7 +181,9 @@ Quas.export(
      //push a new page by the id in Router.paths
      static push(route){
        console.log(route);
-       document.title = route.title;
+       if(route.title){
+         document.title = route.title;
+       }
        let newUrl = window.origin + route.fullpath;
        window.history.pushState('','',newUrl);
 

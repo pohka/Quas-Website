@@ -7,25 +7,18 @@ Quas.export(
       super(props);
     }
 
-    static createOption(routeID){
-      let route = Router.getRouteInfoByID(routeID);
-      let cls = "";
-      if(route.fullpath == window.location.pathname){
-        cls = "active";
-      }
-
+    static createOption(item){
+      let isActive = (window.location.pathname.indexOf(item.case) > -1);
 
       return (
         <quas>
-          <div><a class="nav-item {cls}" href="{route.fullpath}" target="push">{route.title}</a></div>
+          <div><a class="nav-item" href="{item.path}" target="push" active="{isActive}">{item.title}</a></div>
         </quas>
       );
     }
 
     onPush(route){
-    //  console.log(route);
       console.log("pushing");
-      //Quas.render(this);
     }
 
     render(){
