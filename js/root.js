@@ -29,7 +29,7 @@ function ready(){
         case : "/docs"
       },
       {
-        path : "/other",
+        path : "/download",
         title : "Download",
         case : "/download"
       }
@@ -49,7 +49,21 @@ function ready(){
         comp : LandingBody
       }
     ],
-    children : []
+    children : [],
+    meta : [
+      {
+        name : "title",
+        content : "Quas"
+      },
+      {
+        name : "description",
+        content : "A great UI lib"
+      },
+      {
+        prop : "og:title",
+        content : "Quas"
+      }
+    ]
   });
 
   Router.add({

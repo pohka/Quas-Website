@@ -3,7 +3,7 @@ Quas.export(
   class Router{
 
     static add(data){
-      Router.setFullPathToChildRoutes(data.children, data.path);
+      this.setFullPathToChildRoutes(data.children, data.path);
       data.fullpath = data.path;
       this.routes.push(data);
     }
@@ -15,12 +15,12 @@ Quas.export(
 
       for(let i=0; i<children.length; i++){
         children[i].fullpath = parentPath + children[i].path;
-        Router.setFullPathToChildRoutes(children[i].children, children[i].fullpath);
+        this.setFullPathToChildRoutes(children[i].children, children[i].fullpath);
       }
     }
 
     static setRoute404(route){
-      Router.route404 = route;
+      this.route404 = route;
     }
 
     static matchingRoutePath(routeFullpath, path){
@@ -76,6 +76,11 @@ Quas.export(
         if(route.title){
           document.title = route.title;
         }
+
+        if(route.meta){
+          this.setMetaData(route.meta);
+        }
+
         this.currentRoute = route;
         if(route.comps){
           for(let i=0; i<route.comps.length; i++){
@@ -91,6 +96,25 @@ Quas.export(
             Quas.render(comp, "#app");
           }
         }
+      }
+    }
+
+    static setMetaData(data){
+      let head = document.getElementsByTagName('head')[0];
+      for(let i=0; i<data.length; i++){
+        let meta = document.createElement("meta");
+        for(let a in data[i]){
+          let key;
+          if(a == "prop"){
+            key = "property";
+          }
+          else{
+            key = a;
+          }
+          meta.setAttribute(key, data[i][a]);
+
+        }
+        head.appendChild(meta);
       }
     }
 
@@ -135,7 +159,7 @@ Quas.export(
     static findRouteByPathLoop(path, routes, parentComps){
       for(let i=0; i<routes.length; i++){
         //found match
-        let match = Router.matchingRoutePath(routes[i].fullpath, path)
+        let match = this.matchingRoutePath(routes[i].fullpath, path)
         if(match){
           //clone the route so we can append the parentComps
           let clone = {};
@@ -154,7 +178,7 @@ Quas.export(
           }
 
           if(Object.keys(match).length > 0){
-            clone.fullpath = Router.convertDynamicPath(clone.fullpath, match);
+            clone.fullpath = this.convertDynamicPath(clone.fullpath, match);
           }
           clone.params = match;
 
@@ -183,6 +207,7 @@ Quas.export(
         }
       }
     }
+
 
     static routeToInfo(route){
       let info = {};
@@ -230,15 +255,33 @@ Quas.export(
       }
     }
 
+    //push route by id
+    static pushByID(routeID){
+      //find route
+      let info = this.getRouteInfoByID(routeID);
+      if(info){
+        let route = this.findRouteByPath(info.fullpath);
+        this.push(route);
+      }
+      //no route found with a matching ID, so display 404
+      else{
+        this.push();
+      }
+    }
+
      //push a new page by the id in Router.paths
      static push(route){
        //404
        if(!route){
-         if(!this.route404){ //no 404 page set
+         if(!this.route404){ //no action if 404 route is not set
            return;
          }
          route = this.route404;
+         if(!route.fullpath){
+           route.fullpath = "/404";
+         }
        }
+
 
        let newUrl = window.origin + route.fullpath;
        window.history.pushState('','',newUrl);
@@ -302,10 +345,6 @@ Quas.export(
        }
      }
 
-     //add a component to listen to an Router event
-    // static addPushListener(comp){
-    //   Router.pushListeners.push(comp);
-     //}
 
     static init(){
       this.paths = {};

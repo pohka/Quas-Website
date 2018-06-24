@@ -29,6 +29,7 @@
 * back and forward history doesn't work properly (make sure it also works with router aliases and redirects)
 * test if unmounting and rendering the component again will mess up vdom synced with dom
 * router aliases with dynamic urls
+* async load meta data
 
 
 ## routing
