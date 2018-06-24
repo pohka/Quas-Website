@@ -19,6 +19,10 @@ Quas.export(
       }
     }
 
+    static setRoute404(route){
+      Router.route404 = route;
+    }
+
     static matchingRoutePath(routeFullpath, path){
       let a = routeFullpath.split("/");
       let b = path.split("/");
@@ -54,9 +58,16 @@ Quas.export(
     static load(){
       let path = window.location.pathname;
       let route = this.findRouteByPath(path);
+
+      if(!route){
+        route = this.route404;
+      }
+
       if(route){
         console.log("found route");
-        document.title = route.title;
+        if(route.title){
+          document.title = route.title;
+        }
         this.currentRoute = route;
         if(route.comps){
           for(let i=0; i<route.comps.length; i++){
@@ -180,12 +191,20 @@ Quas.export(
 
      //push a new page by the id in Router.paths
      static push(route){
-       console.log(route);
+       //404
+       if(!route){
+         if(!this.route404){ //no 404 page set
+           return;
+         }
+         route = this.route404;
+       }
+
+       let newUrl = window.origin + route.fullpath;
+       window.history.pushState('','',newUrl);
+
        if(route.title){
          document.title = route.title;
        }
-       let newUrl = window.origin + route.fullpath;
-       window.history.pushState('','',newUrl);
 
        //todo: move this into its own optional functionality
        document.body.scrollTop = document.documentElement.scrollTop = 0;
@@ -243,18 +262,21 @@ Quas.export(
      }
 
      //add a component to listen to an Router event
-     static addPushListener(comp){
-       Router.pushListeners.push(comp);
-     }
+    // static addPushListener(comp){
+    //   Router.pushListeners.push(comp);
+     //}
 
     static init(){
       this.paths = {};
       this.routes = [];
       this.currentRoute;
-      this.pushListeners = [];
+      //this.pushListeners = [];
       this.comps = []; //all the current instances of components
       window.addEventListener("popstate", function(e) {
         let route = Router.findRouteByPath(e.target.location.pathname);
+        if(!route){
+          route = this.route404;
+        }
         Router.push(route);
       });
     }

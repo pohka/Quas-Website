@@ -82,9 +82,9 @@ class Quas{
       comp.vdom = comp.render();
       comp.dom = Quas.createDOM(comp.vdom, comp);
       parent.appendChild(comp.dom);
-      if(Quas.hasRouter && comp.onPush){
-        Router.addPushListener(comp);
-      }
+    //  if(Quas.hasRouter && comp.onPush){
+    //    Router.addPushListener(comp);
+  //    }
     }
     //diff the dom
     else if(comp.isMounted()){
@@ -304,9 +304,9 @@ class Quas{
         }
       }
     }
-    if(Quas.hasRouter && comp.onPush){
-      Router.addPushListener(comp);
-    }
+//    if(Quas.hasRouter && comp.onPush){
+  //    Router.addPushListener(comp);
+  //  }
   }
 
   /**
@@ -376,6 +376,10 @@ class Quas{
         e.preventDefault();
         let path = this.href.replace(window.location.origin, "");
         let route = Router.findRouteByPath(path);
+        if(!route && Router.route404){
+          route = Router.route404;
+          route.fullpath = path;
+        }
         Router.push(route);
       });
     }
