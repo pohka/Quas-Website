@@ -184,17 +184,23 @@ Quas.export(
       }
     }
 
+    static routeToInfo(route){
+      let info = {};
+      for(let k in route){
+        if(k != "comps" && k != "children"){
+          info[k] = route[k];
+        }
+      }
+      return info;
+    }
+
     static getRouteInfoByID(id, routes){
       if(!routes){
         routes = this.routes;
       }
       for(let i=0; i<routes.length; i++){
         if(routes[i].id == id){
-          return {
-            id : routes[i].id,
-            title : routes[i].title,
-            fullpath : routes[i].fullpath
-          };
+          return this.routeToInfo(routes[i]);
         }
         //if has children and path has a matching directory
         else if(routes[i].children){
@@ -212,11 +218,7 @@ Quas.export(
       }
       for(let i=0; i<routes.length; i++){
         if(routes[i].fullpath == path){
-          return {
-            id : routes[i].id,
-            title : routes[i].title,
-            fullpath : routes[i].fullpath
-          };
+          return this.routeToInfo(routes[i]);
         }
         //if has children and path has a matching directory
         else if(routes[i].children && path.indexOf(routes[i].fullpath) == 0){
