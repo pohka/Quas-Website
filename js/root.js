@@ -108,5 +108,10 @@ function ready(){
     ]
   });
 
+  Router.addAlias({
+    from : "/other",
+    to : "/download"
+  });
+
   Router.load();
 }

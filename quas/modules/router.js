@@ -86,14 +86,31 @@ Quas.export(
       }
     }
 
-    static findRouteByPath(path, routes, parentComps){
-      if(!routes){
-        routes = this.routes;
-      }
-      if(!parentComps){
-        parentComps = [];
+    static addAlias(redirect){
+      this.aliases.push(redirect);
+    }
+
+    static findRouteByPath(path){
+      let from;
+      for(let i=0; i<this.aliases.length; i++){
+        if(this.aliases[i].from == path){
+          path = this.aliases[i].to;
+          from = this.aliases[i].from;
+          break;
+        }
       }
 
+      let route = this.findRouteByPathLoop(path, this.routes, []);
+
+      //alias
+      if(from){
+        route.fullpath = from;
+      }
+
+      return route;
+    }
+
+    static findRouteByPathLoop(path, routes, parentComps){
       for(let i=0; i<routes.length; i++){
         //found match
         let match = Router.matchingRoutePath(routes[i].fullpath, path)
@@ -137,7 +154,7 @@ Quas.export(
           }
 
 
-          let r = this.findRouteByPath(path, routes[i].children, nextParentComps);
+          let r = this.findRouteByPathLoop(path, routes[i].children, nextParentComps);
           if(r){
             return r;
           }
@@ -269,6 +286,7 @@ Quas.export(
     static init(){
       this.paths = {};
       this.routes = [];
+      this.aliases = [];
       this.currentRoute;
       //this.pushListeners = [];
       this.comps = []; //all the current instances of components
