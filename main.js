@@ -1,6 +1,6 @@
 //modules
 import Router from "/quas/modules/router.js"
-import CodeHighlighter from "/quas/modules/code-highlighter.js"
+import CodeHighlighter from "/modules/code-highlighter.js"
 import Async from "/quas/modules/async.js"
 
 //components
@@ -13,7 +13,7 @@ import LandingBody from "/comps/landing-body.js"
 import DownloadBody from "/comps/download-body.js"
 
 //css
-import "/css/quas-site.css"
+import "/quas-site.css"
 
 
 
@@ -26,7 +26,7 @@ function ready(){
       {
         path : "/docs/setup",
         title : "Docs",
-        case : "/docs"
+        case : "/docs/setup"
       },
       {
         path : "/download",
@@ -122,7 +122,7 @@ function ready(){
     ]
   });
 
-  Router.addAlias({
+  Router.addRedirect({
     from : "/other",
     to : "/docs/setup"
   });

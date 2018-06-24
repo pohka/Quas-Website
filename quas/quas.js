@@ -10,9 +10,6 @@ class Component{
     else{
       this.props = {}
     }
-    if(Quas.isDevBuild){
-      Quas.comps.push(this);
-    }
   }
   /**
     Sets a property and rerenders the component
@@ -851,13 +848,12 @@ Quas.scrollKeys = {37: 1, 38: 1, 39: 1, 40: 1}; //Keys codes that can scroll
 Quas.scrollSafeZone = {"top": 0, "bottom" : 0}; //safezone padding for scroll listeners
 Quas.isScrollable = true; //true if scrolling is enabled
 Quas.customAttrs = {}; //custom attributes
-Quas.isDevBuild = false; //true if using development mode
 Quas.modules = {};
 
 
 
-window.onload = function(){
-  if(typeof ready === "function" && !Quas.isDevBuild){
+document.addEventListener("DOMContentLoaded", function(event) {
+  if(typeof ready === "function" && typeof Dev == "undefined"){
     ready();
   }
-}
+});

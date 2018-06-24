@@ -2,21 +2,19 @@
 	<head>
 		<title>Quas</title>
 		<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
-		<link href="https://fonts.googleapis.com/css?family=Aldrich|Roboto" rel="stylesheet">
+
 		<script src="/quas/quas.js"></script>
+
+		<!-- devopment build -->
+		<script src="/quas/quas-dev.js" defer></script>
+
+		<!-- bundle -->
+		<!-- <link href="/bundle/bundle.css" rel="stylesheet" async>
+		<script src="/bundle/bundle.js" defer></script> -->
+		<link href="https://fonts.googleapis.com/css?family=Aldrich|Roboto" rel="stylesheet" defer async>
 	</head>
 	<body>
 		<div id="app"></div>
 	</body>
 
 </html>
-
-<!-- dev build -->
-
-<script src="/quas/quas-dev.js"></script>
-<script>Quas.main("/js/root.js");</script>
-
-
-<!-- bundle -->
-<!-- <link href="/css/bundle.css" rel="stylesheet">
-<script src="/js/bundle.js"></script> -->

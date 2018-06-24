@@ -57,13 +57,6 @@ Quas.export(
 
     static load(){
       let path = window.location.pathname;
-      // for(let i=0; i<this.redirects.length; i++){
-      //   if(this.redirects[i].from == path){
-      //     let to = window.origin + this.redirects[i].to;
-      //     console.log("redirect");
-      //     window.history.pushState('', '', to);
-      //   }
-      // }
 
       let route = this.findRouteByPath(path);
 
@@ -208,7 +201,6 @@ Quas.export(
       }
     }
 
-
     static routeToInfo(route){
       let info = {};
       for(let k in route){
@@ -256,11 +248,12 @@ Quas.export(
     }
 
     //push route by id
-    static pushByID(routeID){
+    static pushByID(routeID, params){
       //find route
       let info = this.getRouteInfoByID(routeID);
       if(info){
-        let route = this.findRouteByPath(info.fullpath);
+        let path = this.convertDynamicPath(info.fullpath, params);
+        let route = this.findRouteByPath(path);
         this.push(route);
       }
       //no route found with a matching ID, so display 404
@@ -343,16 +336,14 @@ Quas.export(
        for(let i=0; i<reuseComps.length; i++){
          this.comps.push(reuseComps[i]);
        }
-     }
+    }
 
 
     static init(){
-      this.paths = {};
       this.routes = [];
       this.aliases = [];
       this.redirects = [];
       this.currentRoute;
-      //this.pushListeners = [];
       this.comps = []; //all the current instances of components
       window.addEventListener("popstate", function(e) {
         let route = Router.findRouteByPath(e.target.location.pathname);
