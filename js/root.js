@@ -93,30 +93,19 @@ function ready(){
 
   let docsPages = [
     {
-      id: "docs-setup",
       path : "setup",
-      title : "Setup",
-      comps : [
-        // {
-        //   comp : Navbar,
-        //   props : navbarProps
-        // }
-      ]
+      title : "Setup"
     },
     {
-      id: "docs-components",
       path : "components",
-      title : "Components",
-      comps : [
-
-      ]
+      title : "Components"
     }
   ];
 
 
   Router.add({
     id : "docs",
-    path : "/docs/",
+    path : "/docs/:page",
     title : "Docs",
     comps : [
       {
@@ -127,8 +116,7 @@ function ready(){
         comp : DocsNav,
         props : { pages : docsPages }
       }
-    ],
-    children : docsPages
+    ]
   });
 
   Router.load();

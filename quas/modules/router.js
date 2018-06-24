@@ -19,6 +19,36 @@ Quas.export(
       }
     }
 
+    static matchingRoutePath(routeFullpath, path){
+      let a = routeFullpath.split("/");
+      let b = path.split("/");
+
+      if(a.length != b.length){
+        return;
+      }
+
+      let params = {};
+
+      for(let i=0; i<a.length; i++){
+        if(a[i].charAt(0) == ":"){
+          let key = a[i].substr(1);
+          params[key] = b[i];
+        }
+        else if(a[i] != b[i]){
+          return;
+        }
+      }
+
+      return params;
+    }
+
+    static convertDynamicPath(path, params){
+      for(let i in params){
+        path = path.replace(":"+i, params[i]);
+      }
+      return path;
+    }
+
 
     static load(){
       let path = window.location.pathname;
@@ -26,7 +56,7 @@ Quas.export(
       if(route){
         console.log("found route");
         document.title = route.title;
-        this.currentRouteID = route.id;
+        this.currentRoute = route;
         if(route.comps){
           for(let i=0; i<route.comps.length; i++){
             let props = {};
@@ -54,7 +84,8 @@ Quas.export(
 
       for(let i=0; i<routes.length; i++){
         //found match
-        if(routes[i].fullpath == path){
+        let match = Router.matchingRoutePath(routes[i].fullpath, path)
+        if(match){
           //clone the route so we can append the parentComps
           let clone = {};
           for(let a in routes[i]){
@@ -70,6 +101,9 @@ Quas.export(
               clone.comps.push(routes[i].comps[c]);
             }
           }
+
+          clone.fullpath = Router.convertDynamicPath(clone.fullpath, match);
+          clone.params = match;
 
           return clone;
         }
@@ -152,7 +186,7 @@ Quas.export(
        document.body.scrollTop = document.documentElement.scrollTop = 0;
 
 
-       this.currentRouteID = route.id;
+       this.currentRoute = route;
 
 
        let newComps = [];
@@ -211,7 +245,7 @@ Quas.export(
     static init(){
       this.paths = {};
       this.routes = [];
-      this.currentRouteID;
+      this.currentRoute;
       this.pushListeners = [];
       this.comps = []; //all the current instances of components
       window.addEventListener("popstate", function(e) {

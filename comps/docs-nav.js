@@ -3,23 +3,24 @@ import Router from "/quas/modules/router.js"
 Quas.export(
   class DocsNav extends Component{
     constructor(props){
-      super();
-      this.props.pages = [];
-      for(let i=0; i<props.pages.length; i++){
-        this.props.pages.push({
-          id : props.pages[i].id,
-          fullpath : props.pages[i].fullpath,
-          title : props.pages[i].title,
-        });
-      }
+      super(props);
+      let route = Router.getRouteInfoByID("docs");
+      DocsNav.path = route.fullpath;
     }
 
+
     static genItem(page){
-      let isActive = (page.id == Router.currentRouteID);
+
+      let path = Router.convertDynamicPath(DocsNav.path, { page : page.path });
+      let isActive = (Router.currentRoute.fullpath == path);
+      if(isActive){
+        document.title = page.title;
+      }
+
 
       return (
         <quas>
-          <a href="{page.fullpath}" target="push" class="docs-nav-item" active="{isActive}">{page.title}</a>
+          <a href="{path}" target="push" class="docs-nav-item" active="{isActive}">{page.title}</a>
         </quas>
       );
     }
