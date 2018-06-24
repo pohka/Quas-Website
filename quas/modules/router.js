@@ -57,6 +57,14 @@ Quas.export(
 
     static load(){
       let path = window.location.pathname;
+      // for(let i=0; i<this.redirects.length; i++){
+      //   if(this.redirects[i].from == path){
+      //     let to = window.origin + this.redirects[i].to;
+      //     console.log("redirect");
+      //     window.history.pushState('', '', to);
+      //   }
+      // }
+
       let route = this.findRouteByPath(path);
 
       if(!route){
@@ -86,25 +94,39 @@ Quas.export(
       }
     }
 
-    static addAlias(redirect){
-      this.aliases.push(redirect);
+    static addAlias(alias){
+      this.aliases.push(alias);
+    }
+
+    static addRedirect(redirect){
+      this.redirects.push(redirect);
     }
 
     static findRouteByPath(path){
-      let from;
-      for(let i=0; i<this.aliases.length; i++){
-        if(this.aliases[i].from == path){
-          path = this.aliases[i].to;
-          from = this.aliases[i].from;
-          break;
+      let route;
+      for(let i=0; i<this.redirects.length; i++){
+        if(this.redirects[i].from == path){
+          window.history.replaceState('','',window.origin + this.redirects[i].to);
+          route = this.findRouteByPath(this.redirects[i].to);
         }
       }
 
-      let route = this.findRouteByPathLoop(path, this.routes, []);
+      if(!route){
+        let from;
+        for(let i=0; i<this.aliases.length; i++){
+          if(this.aliases[i].from == path){
+            path = this.aliases[i].to;
+            from = this.aliases[i].from;
+            break;
+          }
+        }
 
-      //alias
-      if(from){
-        route.fullpath = from;
+        route = this.findRouteByPathLoop(path, this.routes, []);
+
+        //alias
+        if(from){
+          route.fullpath = from;
+        }
       }
 
       return route;
@@ -287,6 +309,7 @@ Quas.export(
       this.paths = {};
       this.routes = [];
       this.aliases = [];
+      this.redirects = [];
       this.currentRoute;
       //this.pushListeners = [];
       this.comps = []; //all the current instances of components

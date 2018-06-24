@@ -29,7 +29,7 @@ function ready(){
         case : "/docs"
       },
       {
-        path : "/download",
+        path : "/other",
         title : "Download",
         case : "/download"
       }
@@ -110,7 +110,7 @@ function ready(){
 
   Router.addAlias({
     from : "/other",
-    to : "/download"
+    to : "/docs/setup"
   });
 
   Router.load();
