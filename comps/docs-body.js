@@ -4,26 +4,26 @@ Quas.export(
   class DocsBody extends Component{
     constructor(){
       super();
-      this.fetchData();
       this.props.loaded = false;
       this.props.content = [];
+      this.fetchData();
     }
 
     onPush(route){
-      if(this.props.loaded){
-        this.props.loaded = false;
-      }
+      this.setProps({
+        loaded : false
+      });
       this.fetchData();
     }
 
     fetchData(){
       let page = Router.currentRoute.params.page;
+      let comp = this;
       Quas.fetch("/docs/"+page+".md").then((res) => {
         let vdoms = Markdown.parseToVDOM(res);
-        console.log(vdoms);
-        this.setProps({
-          loaded : true,
-          content : vdoms
+        comp.setProps({
+         loaded : true,
+         content : vdoms
         });
       })
       .catch(error => console.error(error));
@@ -34,11 +34,10 @@ Quas.export(
     }
 
     render(){
-      console.log("rendering docs body - loaded: " + this.props.loaded);
       if(!this.props.loaded){
         return (
           <quas>
-            <h1>not loaded yet</h1>
+            <h1>test {this.props.loaded}</h1>
           </quas>
         );
       }

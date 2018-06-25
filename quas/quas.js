@@ -70,25 +70,37 @@ class Quas{
     @param {String|HTMLDOMElement} parent
   */
   static render(comp, parent){
+    this.state = "rendering";
     //if parent passed is a query selector string
     if(parent && parent.constructor === String){
       parent = document.querySelector(parent);
     }
+
+
     //first time rendering
     if(!comp.isMounted() && parent !== null){
       comp.vdom = comp.render();
       comp.dom = Quas.createDOM(comp.vdom, comp);
       parent.appendChild(comp.dom);
-    //  if(Quas.hasRouter && comp.onPush){
-    //    Router.addPushListener(comp);
-  //    }
     }
-    //diff the dom
+
+    //diff the vdom
     else if(comp.isMounted()){
       let newVDOM = comp.render();
-      Quas.diffVDOM(comp, comp.dom.parentNode, comp.dom, comp.vdom, newVDOM);
+      
+      //root tag is different
+      if(newVDOM[0] != comp.vdom[0]){
+        let newDOM = Quas.createDOM(newVDOM, comp);
+        comp.dom.parentNode.replaceChild(newDOM, comp.dom);
+        comp.dom = newDOM;
+      }
+      else{
+        Quas.diffVDOM(comp, comp.dom.parentNode, comp.dom, comp.vdom, newVDOM);
+      }
       comp.vdom = newVDOM;
     }
+
+    this.state = "ready";
   }
 
   static diffVDOM(comp, parent, dom, vdom, newVDOM){
@@ -889,6 +901,7 @@ Quas.scrollSafeZone = {"top": 0, "bottom" : 0}; //safezone padding for scroll li
 Quas.isScrollable = true; //true if scrolling is enabled
 Quas.customAttrs = {}; //custom attributes
 Quas.modules = {};
+Quas.state = "ready";
 
 
 

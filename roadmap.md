@@ -1,6 +1,4 @@
 ## Road Map
-* Router.pathMatches("/docs/\*")
-* router sub directories
 * API documentation generator
 * API for different versions
 * Home Page
@@ -25,14 +23,12 @@
 
 ## issues
 * rendering if parent is undefined
-* dont know what language the code blocks are
-* Component.setProps() needs to be tested
-* fix changing props
 * back and forward history doesn't work properly (make sure it also works with router aliases and redirects)
 * test if unmounting and rendering the component again will mess up vdom synced with dom
-* router aliases with dynamic urls
-* async load meta data
-
+* router aliases with dynamic urls e.g. /other/:page
+* ensure async load meta data can be crawled by search engine
+* vdom diffing bug if root tag changes e.g. h1 to div
+* /docs/ permission is denied
 
 ## routing
 * vue
