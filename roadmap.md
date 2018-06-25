@@ -9,6 +9,7 @@
   * scroll tracker
 * import Quas.Router (import main modules)
 * static comps, dont diff vdom when rerendering
+* vdom events use promises so you can use this keyword
 
 ## Known Issues
 * highlighter:
