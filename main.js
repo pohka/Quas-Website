@@ -22,33 +22,6 @@ import "/quas-site.css"
 function ready(){
   console.log("ready");
 
-  // Quas.fetch("/docs/setup.md").then((res) => {
-  //   console.log(res);
-  // })
-  // .catch(error => console.error(error));
-
-
-  // fetch("/docs/setup.md")
-  //   .then(res => res.text())
-  //   .catch(error => console.error(error))
-  //   .then((res) => {
-  //     console.log(res);
-  //     console.log(a);
-  //   });
-
-
-
-  // Quas.ajax({
-  //   url : "/docs/setup.md",
-  //   type : "GET",
-  //   success : (res) => {
-  //     console.log(res);
-  //     console.log(a);
-  //   }
-  // });
-
-
-
   let navbarProps = {
     items : [
       {

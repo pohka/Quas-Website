@@ -1,4 +1,4 @@
-//import Markdown from "/quas/modules/markdown.js"
+import Markdown from "/quas/modules/markdown.js"
 
 Quas.export(
   class DocsBody extends Component{
@@ -6,6 +6,7 @@ Quas.export(
       super();
       this.fetchData();
       this.props.loaded = false;
+      this.props.content = [];
     }
 
     onPush(route){
@@ -18,9 +19,18 @@ Quas.export(
     fetchData(){
       let page = Router.currentRoute.params.page;
       Quas.fetch("/docs/"+page+".md").then((res) => {
-        this.setProps({"loaded" : true});
+        let vdoms = Markdown.parseToVDOM(res);
+        console.log(vdoms);
+        this.setProps({
+          loaded : true,
+          content : vdoms
+        });
       })
       .catch(error => console.error(error));
+    }
+
+    static addVDOM(vdom){
+      return vdom;
     }
 
     render(){
@@ -35,7 +45,7 @@ Quas.export(
       else{
         return (
           <quas>
-            <h1>loaded</h1>
+            <div class="docs-content" q-bind-for=[DocsBody.addVDOM,this.props.content]></div>
           </quas>
         );
       }
