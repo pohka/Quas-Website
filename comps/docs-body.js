@@ -37,7 +37,12 @@ Quas.export(
       if(!this.props.loaded){
         return (
           <quas>
-            <h1>test {this.props.loaded}</h1>
+            <div class="docs-content">
+              <div class="placeholder placeholder-heading"></div>
+              <div class="placeholder placeholder-line"></div>
+              <div class="placeholder placeholder-line"></div>
+              <div class="placeholder placeholder-line"></div>
+            </div>
           </quas>
         );
       }

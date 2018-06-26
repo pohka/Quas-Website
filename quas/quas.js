@@ -87,20 +87,43 @@ class Quas{
     //diff the vdom
     else if(comp.isMounted()){
       let newVDOM = comp.render();
-      
+
       //root tag is different
-      if(newVDOM[0] != comp.vdom[0]){
-        let newDOM = Quas.createDOM(newVDOM, comp);
-        comp.dom.parentNode.replaceChild(newDOM, comp.dom);
-        comp.dom = newDOM;
-      }
-      else{
-        Quas.diffVDOM(comp, comp.dom.parentNode, comp.dom, comp.vdom, newVDOM);
+      let hasDiff = this.diffRootVDOM(comp, comp.vdom, newVDOM);
+
+      if(!hasDiff){
+        this.diffVDOM(comp, comp.dom.parentNode, comp.dom, comp.vdom, newVDOM);
       }
       comp.vdom = newVDOM;
     }
 
     this.state = "ready";
+  }
+
+  static diffRootVDOM(comp, vdom, newVDOM){
+    let hasDiff = false;
+    if(newVDOM[0] != comp.vdom[0] || //diff tags
+      Object.keys(vdom[1]).length != Object.keys(newVDOM[1]).length){ //diff attr count
+      hasDiff = true;
+    }
+
+    //diff attrs value
+    if(!hasDiff){
+      for(let key in vdom[1]){
+        if(!(newVDOM[1].hasOwnProperty(key) && vdom[1][key] == newVDOM[1][key])){
+          hasDiff = true;
+          break;
+        }
+      }
+    }
+
+    //swap out the root dom
+    if(hasDiff){
+      let newDOM = Quas.createDOM(newVDOM, comp);
+      comp.dom.parentNode.replaceChild(newDOM, comp.dom);
+      comp.dom = newDOM;
+    }
+    return hasDiff;
   }
 
   static diffVDOM(comp, parent, dom, vdom, newVDOM){
@@ -313,9 +336,6 @@ class Quas{
         }
       }
     }
-//    if(Quas.hasRouter && comp.onPush){
-  //    Router.addPushListener(comp);
-  //  }
   }
 
   /**
