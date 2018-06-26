@@ -30,14 +30,14 @@ function ready(){
         case : "/docs"
       },
       {
-        path : "/other/components",
+        path : "/download",
         title : "Download",
         case : "/download"
       }
     ]
   };
 
-  Router.add({
+  Router.map({
     id : "index",
     path : "/",
     title : "Quas",
@@ -67,7 +67,7 @@ function ready(){
     ]
   });
 
-  Router.add({
+  Router.map({
     id : "download",
     path : "/download",
     title : "Download",
@@ -95,7 +95,7 @@ function ready(){
   ];
 
 
-  Router.add({
+  Router.map({
     id : "docs",
     path : "/docs/:page",
     comps : [

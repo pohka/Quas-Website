@@ -10,7 +10,7 @@ Quas.export(
 
 
     static genItem(page){
-      let path = Router.convertDynamicPath(DocsNav.path, { page : page.path });
+      let path = Router.convertToDynamicPath(DocsNav.path, { page : page.path });
       let isActive = (Router.currentRoute.fullpath == path);
       if(isActive){
         document.title = page.title;

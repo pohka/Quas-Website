@@ -1,13 +1,14 @@
 Quas.export(
   //handling of the mapping and changing the page
   class Router{
-
-    static add(data){
+    //add a route
+    static map(data){
       this.setFullPathToChildRoutes(data.children, data.path);
       data.fullpath = data.path;
       this.routes.push(data);
     }
 
+    //sets the fullpath for an array of routes
     static setFullPathToChildRoutes(children, parentPath){
       if(!children){
         return;
@@ -19,10 +20,13 @@ Quas.export(
       }
     }
 
+    //sets the 404 route
     static setRoute404(route){
       this.route404 = route;
     }
 
+    //returns an object of url params if the paths were matching
+    // docs/:page == docs/setup
     static matchingRoutePath(routeFullpath, path){
       let a = routeFullpath.split("/");
       let b = path.split("/");
@@ -46,7 +50,10 @@ Quas.export(
       return params;
     }
 
-    static convertDynamicPath(path, params){
+    //converts a path using the params
+    // ("/profile/:user", {user:"john"}) => /profile/john
+    // ("/about", {}) => "/about"
+    static convertToDynamicPath(path, params){
       for(let i in params){
         let exp = new RegExp(":"+i, "g");
         path = path.replace(exp, params[i]);
@@ -54,7 +61,7 @@ Quas.export(
       return path;
     }
 
-
+    //loads the route based on the current url
     static load(){
       let path = window.location.pathname;
 
@@ -65,7 +72,6 @@ Quas.export(
       }
 
       if(route){
-        console.log("found route");
         if(route.title){
           document.title = route.title;
         }
@@ -92,6 +98,7 @@ Quas.export(
       }
     }
 
+    //sets the document meta data, using the data from routes
     static setMetaData(data){
       let head = document.getElementsByTagName('head')[0];
       for(let i=0; i<data.length; i++){
@@ -105,39 +112,40 @@ Quas.export(
             key = a;
           }
           meta.setAttribute(key, data[i][a]);
-
         }
         head.appendChild(meta);
       }
     }
 
+    //adds an alias, will load the to page but without changing the url
     static addAlias(alias){
       this.aliases.push(alias);
     }
 
+    //adds a redirect, will load the to page but and changes the url
     static addRedirect(redirect){
       this.redirects.push(redirect);
     }
 
+    //finds a mapped route by the path
     static findRouteByPath(path){
       let route;
       for(let i=0; i<this.redirects.length; i++){
         let params = this.matchingRoutePath(this.redirects[i].from, path);
         if(params){
-          let nextPath = this.convertDynamicPath(this.redirects[i].to, params);
+          let nextPath = this.convertToDynamicPath(this.redirects[i].to, params);
           window.history.replaceState('','',window.origin + nextPath);
           route = this.findRouteByPath(nextPath);
         }
       }
-
 
       if(!route){
         let from;
         for(let i=0; i<this.aliases.length; i++){
           let params = this.matchingRoutePath(this.aliases[i].from, path);
           if(params){
-            path = this.convertDynamicPath(this.aliases[i].to, params);
-            from = this.convertDynamicPath(this.aliases[i].from, params);
+            path = this.convertToDynamicPath(this.aliases[i].to, params);
+            from = this.convertToDynamicPath(this.aliases[i].from, params);
             break;
           }
         }
@@ -153,6 +161,7 @@ Quas.export(
       return route;
     }
 
+    //recusively loops through children
     static findRouteByPathLoop(path, routes, parentComps){
       for(let i=0; i<routes.length; i++){
         //found match
@@ -175,7 +184,7 @@ Quas.export(
           }
 
           if(Object.keys(match).length > 0){
-            clone.fullpath = this.convertDynamicPath(clone.fullpath, match);
+            clone.fullpath = this.convertToDynamicPath(clone.fullpath, match);
           }
           clone.params = match;
 
@@ -205,6 +214,8 @@ Quas.export(
       }
     }
 
+    //clones the data from route into a lighter object
+    //this will have all the route values except comps and children
     static routeToInfo(route){
       let info = {};
       for(let k in route){
@@ -215,6 +226,7 @@ Quas.export(
       return info;
     }
 
+    //finds and returns the routeInfo with the matching id
     static getRouteInfoByID(id, routes){
       if(!routes){
         routes = this.routes;
@@ -233,6 +245,7 @@ Quas.export(
       }
     }
 
+    //finds and returns the routeInfo with a matching fullpath
     static getRouteInfoByPath(path, routes){
       if(!routes){
         routes = this.routes;
@@ -256,7 +269,7 @@ Quas.export(
       //find route
       let info = this.getRouteInfoByID(routeID);
       if(info){
-        let path = this.convertDynamicPath(info.fullpath, params);
+        let path = this.convertToDynamicPath(info.fullpath, params);
         let route = this.findRouteByPath(path);
         this.push(route);
       }
@@ -266,7 +279,7 @@ Quas.export(
       }
     }
 
-     //push a new page by the id in Router.paths
+     //push a new route
      static push(route, isPopstate){
        //404
        if(!route){
@@ -344,7 +357,7 @@ Quas.export(
        }
     }
 
-
+    //initalization
     static init(){
       this.routes = [];
       this.aliases = [];
@@ -352,10 +365,11 @@ Quas.export(
       this.currentRoute;
       this.comps = []; //all the current instances of components
 
-     window.addEventListener("popstate", function(e) {
-       let route = Router.findRouteByPath(e.target.location.pathname);
-       Router.push(route, true);
-     });
+      //handle back and forward buttons
+       window.addEventListener("popstate", function(e) {
+         let route = Router.findRouteByPath(e.target.location.pathname);
+         Router.push(route, true);
+       });
     }
   }
 );
