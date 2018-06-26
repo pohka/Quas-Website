@@ -29,10 +29,6 @@ Quas.export(
       .catch(error => console.error(error));
     }
 
-    static addVDOM(vdom){
-      return vdom;
-    }
-
     render(){
       if(!this.props.loaded){
         return (
@@ -49,7 +45,7 @@ Quas.export(
       else{
         return (
           <quas>
-            <div class="docs-content" q-bind-for=[DocsBody.addVDOM,this.props.content]></div>
+            <div class="docs-content" q-append=this.props.content></div>
           </quas>
         );
       }

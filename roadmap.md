@@ -8,7 +8,6 @@
 * import Quas.Router (import main modules)
 * static comps, dont diff vdom when rerendering
 * vdom events use promises so you can use this keyword
-* q-append (append an array of vdoms)
 * lazy loading routes
   * if you have a large web app it can be quicker to have certain parts in their own bundle and load them afterwards when requested. This is so we don't have to load a single massive bundle
 * scroll behaviour (options)

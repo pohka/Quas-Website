@@ -552,7 +552,9 @@ class Quas{
     params.splice(0,2);
     let children = [];
 
-    if(command === "foreach"){
+    //creates multiple child nodes of the given type
+    //q-for-li=["item 1","item 2"]
+    if(command === "for"){
       for(let i in data){
         let vdom = [params[0], {}, []];
         if(params.length == 1){
@@ -561,16 +563,24 @@ class Quas{
         }
       }
     }
+    //calls a function and passes the variable as a param
     else if(command === "bind"){
       if(params[0] === undefined){
         let vdom = data[0](data[1]);
         parentVDOM[2].push(vdom);
       }
+      //bind-for, call the function for each variable in the array
       else if(params[0] === "for"){
         for(let o in data[1]){
           let vdom = data[0](data[1][o]);
           parentVDOM[2].push(vdom);
         }
+      }
+    }
+    //appends an array of vdoms to as a child of this node
+    else if(command == "append"){
+      for(let i=0; i<data.length; i++){
+        parentVDOM[2].push(data[i]);
       }
     }
     else{
