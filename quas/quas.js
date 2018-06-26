@@ -10,6 +10,7 @@ class Component{
     else{
       this.props = {}
     }
+    this.pure = false;
   }
   /**
     Sets a property and rerenders the component
@@ -70,7 +71,7 @@ class Quas{
     }
 
     //diff the vdom
-    else if(comp.isMounted()){
+    else if(comp.isMounted() && !comp.pure){
       let newVDOM = comp.render();
 
       //root tag is different

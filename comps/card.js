@@ -4,6 +4,7 @@ Quas.export(
   class Card extends Component{
     constructor(props){
       super(props);
+      this.pure = true;
     }
 
     render(){

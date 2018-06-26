@@ -7,7 +7,6 @@
   * scroll tracker
 * import Quas.Router (import main modules)
 * static comps, dont diff vdom when rerendering
-* vdom events use promises so you can use this keyword
 * lazy loading routes
   * if you have a large web app it can be quicker to have certain parts in their own bundle and load them afterwards when requested. This is so we don't have to load a single massive bundle
 * scroll behaviour (options)
@@ -30,5 +29,5 @@
 * router with url values e.g. /video?w=123
 
 ## routing features to add
-* onBeforePush() - check permissions before loading
+* onBeforePush() - e.g. navigating away but the current page has input data
 * fetch data and then navigate if no error

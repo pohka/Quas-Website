@@ -45,7 +45,8 @@ Quas.export(
       else{
         return (
           <quas>
-            <div class="docs-content" q-append=this.props.content></div>
+            <div class="docs-content" q-append=this.props.content>
+            </div>
           </quas>
         );
       }

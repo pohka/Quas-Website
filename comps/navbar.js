@@ -22,7 +22,7 @@ Quas.export(
     }
 
     render(){
-    //  console.log("rendering navbar");
+      console.log("rendering navbar");
       return (
         <quas>
           <nav>
