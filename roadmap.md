@@ -6,7 +6,6 @@
 * decide what other functionality within quas needs to be separated into its own module
   * scroll tracker
 * import Quas.Router (import main modules)
-* static comps, dont diff vdom when rerendering
 * lazy loading routes
   * if you have a large web app it can be quicker to have certain parts in their own bundle and load them afterwards when requested. This is so we don't have to load a single massive bundle
 * scroll behaviour (options)
@@ -15,9 +14,13 @@
   * save scroll anchor
   * is component visible
 
+## important stuff
+* api gen
+* import Quas.Router
+* Quas.hasModule("Router");
+
 ## DOCS
   * onclick-onscroll=function(){} - multiple events with same function
-  * fix router with pushing href with no matching id
 
 ## Known Issues
 * highlighter:
@@ -29,5 +32,5 @@
 * router with url values e.g. /video?w=123
 
 ## routing features to add
-* onBeforePush() - e.g. navigating away but the current page has input data
+* onBeforePush() - e.g. user navigates away but the current page has input data that they might not want to lose
 * fetch data and then navigate if no error
