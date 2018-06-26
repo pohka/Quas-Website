@@ -31,7 +31,6 @@
 * test if unmounting and rendering the component again will mess up vdom synced with dom
 * router aliases with dynamic urls e.g. /other/:page
 * ensure async load meta data can be crawled by search engine
-* /docs/ permission is denied
 
 ## routing features to add
 * onBeforePush() - check permissions before loading
