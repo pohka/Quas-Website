@@ -18,11 +18,11 @@ Quas.export(
     }
 
     onPush(route){
-      console.log("pushing");
+      console.log("push", route.fullpath);
     }
 
     render(){
-      console.log("rendering navbar");
+    //  console.log("rendering navbar");
       return (
         <quas>
           <nav>

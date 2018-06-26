@@ -263,7 +263,7 @@ Quas.export(
     }
 
      //push a new page by the id in Router.paths
-     static push(route){
+     static push(route, isPopstate){
        //404
        if(!route){
          if(!this.route404){ //no action if 404 route is not set
@@ -275,9 +275,11 @@ Quas.export(
          }
        }
 
+       if(!isPopstate){
+         let newUrl = window.origin + route.fullpath;
+         window.history.pushState('','',newUrl);
+       }
 
-       let newUrl = window.origin + route.fullpath;
-       window.history.pushState('','',newUrl);
 
        if(route.title){
          document.title = route.title;
@@ -345,13 +347,11 @@ Quas.export(
       this.redirects = [];
       this.currentRoute;
       this.comps = []; //all the current instances of components
-      window.addEventListener("popstate", function(e) {
-        let route = Router.findRouteByPath(e.target.location.pathname);
-        if(!route){
-          route = this.route404;
-        }
-        Router.push(route);
-      });
+
+     window.addEventListener("popstate", function(e) {
+       let route = Router.findRouteByPath(e.target.location.pathname);
+       Router.push(route, true);
+     });
     }
   }
 );

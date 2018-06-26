@@ -24,7 +24,7 @@ Quas.export(
     }
 
     render(){
-      console.log("rendering docs nav");
+    //  console.log("rendering docs nav");
       return (
         <quas>
           <div class="docs-nav-con">
