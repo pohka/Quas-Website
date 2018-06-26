@@ -122,18 +122,22 @@ Quas.export(
     static findRouteByPath(path){
       let route;
       for(let i=0; i<this.redirects.length; i++){
-        if(this.redirects[i].from == path){
-          window.history.replaceState('','',window.origin + this.redirects[i].to);
-          route = this.findRouteByPath(this.redirects[i].to);
+        let params = this.matchingRoutePath(this.redirects[i].from, path);
+        if(params){
+          let nextPath = this.convertDynamicPath(this.redirects[i].to, params);
+          window.history.replaceState('','',window.origin + nextPath);
+          route = this.findRouteByPath(nextPath);
         }
       }
+
 
       if(!route){
         let from;
         for(let i=0; i<this.aliases.length; i++){
-          if(this.aliases[i].from == path){
-            path = this.aliases[i].to;
-            from = this.aliases[i].from;
+          let params = this.matchingRoutePath(this.aliases[i].from, path);
+          if(params){
+            path = this.convertDynamicPath(this.aliases[i].to, params);
+            from = this.convertDynamicPath(this.aliases[i].from, params);
             break;
           }
         }
@@ -152,7 +156,7 @@ Quas.export(
     static findRouteByPathLoop(path, routes, parentComps){
       for(let i=0; i<routes.length; i++){
         //found match
-        let match = this.matchingRoutePath(routes[i].fullpath, path)
+        let match = this.matchingRoutePath(routes[i].fullpath, path);
         if(match){
           //clone the route so we can append the parentComps
           let clone = {};

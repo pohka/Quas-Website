@@ -27,10 +27,10 @@ function ready(){
       {
         path : "/docs/setup",
         title : "Docs",
-        case : "/docs/"
+        case : "/docs"
       },
       {
-        path : "/download",
+        path : "/other/components",
         title : "Download",
         case : "/download"
       }
@@ -127,8 +127,8 @@ function ready(){
   });
 
   Router.addRedirect({
-    from : "/other",
-    to : "/docs/setup"
+    from : "/other/:page",
+    to : "/docs/:page"
   });
 
   Router.load();

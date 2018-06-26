@@ -17,12 +17,6 @@ class Component{
     @param {String} key
     @param {?} value
 
-  setProp(k, v){
-    this.props[k] = v;
-    Quas.render(this);
-  }
-  */
-
   /**
     Sets multiple properties and rerenders the component
     e.g. comp.setProps({key:value});
@@ -36,17 +30,6 @@ class Component{
   }
 
 
-  /**
-    removes this component from the DOM tree
-  */
-  /*
-  remove(){
-    if(this.dom){
-      this.dom.parentNode.removeChild(this.dom);
-      this.dom = undefined;
-    }
-  }
-*/
   /*
     returns true if this component has been rendered
   */
@@ -55,8 +38,10 @@ class Component{
   }
 
   unmount(){
-    this.dom.remove();
-    this.dom = undefined;
+    if(this.dom){
+      this.dom.remove();
+      this.dom = undefined;
+    }
     this.vdom = undefined;
   }
 }
@@ -594,41 +579,6 @@ class Quas{
   }
 
   /**
-    Removes a component from the DOM tree
-
-    @param {Component} component
-
-  static remove(comp){
-    comp.dom.parentNode.removeChild(comp.dom);
-  }
-  */
-
-  /**
-    Find an element with a matching selector, within this components element in thr DOM tree
-
-    @param {Component} component
-    @param {String} selector
-
-    @return {HTMLDOMElement}
-
-  static findChild(comp, s){
-    return comp.dom.querySelector(s);
-  }
-  */
-
-  /**
-    Call a function for each child specified for the selector
-
-    @param {Component} component
-    @param {String} selector
-    @param {Function} callback
-
-  static eachChild(comp, s, func){
-    [].forEach.call(comp.dom.querySelectorAll(s), func);
-  }
-  */
-
-  /**
     Returns a json object with the browser info
     name - browser name,
     version - browser version,
@@ -864,61 +814,17 @@ class Quas{
     document.cookie = k + "=;expires=Thu, 01 Jan 1970 00:00:01 GMT;path=/";
   }
 
-  /**
-    Returns true if the component is rendered to the DOM tree
-
-    @param {Component} component
-
-    @return {Boolean}
-
-  static isMounted(comp){
-    return comp.dom !== undefined;
-  }
-  */
-
-  /**
-    Makes the function listen to a custom event
-    The data will be sent to the listeners when broadcasted
-
-    @param {String} eventName
-    @param {Function} callback
-
-  */
-  static addEventListener(eventName, callback){
-    if(Quas.events[eventName] === undefined){
-      Quas.events[eventName] = [];
-    }
-
-    Quas.events[eventName].push(callback);
-  }
-
-  /**
-    Broadcast a custom event to all the listeners
-    data is passed as the first parameter
-
-    @param {String} eventName
-    @param {OBJECT} data - (optional)
-  */
-  static broadcastEvent(e, data){
-    if(Quas.events[e] !== undefined){
-      for(let i in Quas.events[e]){
-        Quas.events[e][i](data);
-      }
-    }
-  }
-
   static hasRouter(){
     return (typeof Router !== "undefined");
   }
 }
 
-Quas.events = []; //all the custom events data
 Quas.trackingEls = {"enter" : [], "exit": []}; //all the scroll tracking events
 Quas.scrollKeys = {37: 1, 38: 1, 39: 1, 40: 1}; //Keys codes that can scroll
 Quas.scrollSafeZone = {"top": 0, "bottom" : 0}; //safezone padding for scroll listeners
 Quas.isScrollable = true; //true if scrolling is enabled
 Quas.customAttrs = {}; //custom attributes
-Quas.modules = {};
+Quas.modules = {}; //container for all the modules
 
 
 

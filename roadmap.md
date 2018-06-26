@@ -27,10 +27,8 @@
  * removes space character after a comment
  * doesn't highlight keyword with different delimiters
    * e.g. func(this) 'this' key word is never highlighted
-* rendering if parent is undefined
-* test if unmounting and rendering the component again will mess up vdom synced with dom
-* router aliases with dynamic urls e.g. /other/:page
 * ensure async load meta data can be crawled by search engine
+* router with url values e.g. /video?w=123
 
 ## routing features to add
 * onBeforePush() - check permissions before loading
