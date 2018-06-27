@@ -12,6 +12,7 @@ import Error404 from "/comps/404.js"
 import LandingBody from "/comps/landing-body.js"
 import DownloadBody from "/comps/download-body.js"
 import DocsBody from "/comps/docs-body.js"
+import APIBody from "/comps/api.js"
 
 //css
 import "/quas-site.css"
@@ -33,6 +34,11 @@ function ready(){
         path : "/download",
         title : "Download",
         case : "/download"
+      },
+      {
+        path : "/api/overview",
+        title : "API",
+        case : "/api/"
       }
     ]
   };
@@ -78,6 +84,24 @@ function ready(){
       },
       {
         comp : DownloadBody
+      }
+    ]
+  });
+
+  Router.map({
+    id : "api",
+    path : "/api/:id",
+    title : "API",
+    comps : [
+      {
+        comp : Navbar,
+        props : navbarProps
+      },
+      {
+        comp : APIBody,
+        props : {
+          path : "/docs/api.json"
+        }
       }
     ]
   });

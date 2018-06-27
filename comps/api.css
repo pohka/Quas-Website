@@ -1,0 +1,80 @@
+.api-con{
+  padding-top: 20px;
+  margin-left: 300px;
+  padding-left: 100px;
+  width: 900px;
+}
+
+.api-con p{
+  width: 700px;
+}
+
+.api-con h1{
+  text-align: left;
+}
+
+.api-nav{
+  position: fixed;
+  top: 60;
+  left: 0;
+  padding-top: 0px;
+  width: 300px;
+  background: var(--hover);
+  box-shadow:0 0 4px var(--shadow);
+  height: 100%;
+}
+
+
+
+.api-nav h3{
+  text-align: left;
+  margin-left: 10px;
+  padding: 10px;
+  margin-bottom: 0px;
+  border-bottom: 2px solid var(--pri);
+  margin-top: 20px;
+}
+
+.api-nav a{
+  display: block;
+  padding-left: 30px;
+  width: 100%;
+  line-height: 40px;
+  color: var(--text);
+  text-decoration: none;
+  cursor: pointer;
+  border-left: 6px solid transparent;
+  user-select: none;
+  margin-left: 10px;
+}
+
+
+.api-nav a:hover{
+	color: var(--pri2);
+	background: var(--hover2);
+	border-left: 6px solid var(--shadow);
+}
+
+.api-nav a[active="true"]{
+  border-left: 6px solid var(--pri) !important;
+  background: var(--hover2);
+}
+
+
+.api-extend{
+  font-size: 16px;
+}
+
+.api-extend a{
+  text-decoration: none;
+}
+
+.api-cls-overview{
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.col{
+  flex: 1 1 auto;
+  min-width: 100px;
+}
