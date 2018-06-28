@@ -18,7 +18,7 @@ Quas.export(
         <quas>
           <div class="api-nav">
             <h3>Classes</h3>
-            <div  q-bind-for=[APINav.gen,APIBody.docs]></div>
+            <div q-bind-for=[APINav.gen,APIBody.docs]></div>
           </div>
         </quas>
       );

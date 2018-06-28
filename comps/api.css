@@ -13,6 +13,73 @@
   text-align: left;
 }
 
+.api-con h2{
+  text-align: left;
+  margin-top: 70px;
+}
+
+.api-con h2:before{
+  content: "";
+  display: block;
+  height: 1px;
+  background: var(--border);
+  width: 100%;
+  margin-bottom: 70px;
+}
+
+.api-con h3{
+  text-align: left;
+  margin-bottom: 10px;
+  font-size: 20px;
+}
+
+.api-content{
+  margin-top: 100px;
+}
+
+.api-con ul{
+  padding: 0;
+  list-style-type: none;
+}
+
+.api-con li{
+  padding: 4px 20px;
+  width: 80%;
+  border-left: 3px solid var(--hover);
+}
+
+.api-props-table-con{
+  margin-left: 30px;
+}
+
+.api-content-item{
+  margin-bottom: 60px;
+  margin-left: 30px;
+}
+
+.api-content-item-info{
+  border-left: 2px solid var(--pri);
+  padding: 14px 18px;
+  background: var(--hover);
+}
+
+.api-content-item-info pre{
+  margin: 0px;
+  padding: 0px;
+}
+
+.api-content-item-info p{
+  margin: 0 0;
+}
+
+.api-content-item-return{
+  margin-top: 20px;
+}
+
+.api-returns{
+  font-weight: bold;
+}
+
 .api-nav{
   position: fixed;
   top: 60;

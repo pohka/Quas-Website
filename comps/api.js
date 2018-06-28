@@ -18,13 +18,13 @@ Quas.export(
         let info = {};
         for(let i in data){
           if(i != "docs"){
-            info[i] = data[i];
+            this.props[i] = data[i];
           }
         }
         //APIBody.overview = info,
         APIBody.docs = data.docs;
         this.setProps({
-          isLoaded : true
+          isLoaded : true,
         });
       }).catch((err) => console.error(err));
     }
@@ -39,17 +39,13 @@ Quas.export(
       }
       else{
         let urlparms = Router.currentRoute.params;
-        //console.log(urlparms);
         let pageID = urlparms.id;
-        //console.log("pageID:" + pageID);
-      //  let overview = this.props.overview;
-    //    let docs = this.props.docs;
         if(pageID == "overview"){
         return (
           <quas>
             <div class="api-con">
               <h1>Overview</h1>
-              <p>Version: </p>
+              <p>Version: {this.props.version}</p>
               {this.nav.render()}
             </div>
           </quas>
@@ -57,8 +53,8 @@ Quas.export(
         }
         else{
           let cls = APIBody.findDocByName(pageID);
-          let clsProps = APIBody.getListFromKey(cls, "props");
-          let clsFuncs = APIBody.getListFromKey(cls, "funcs");
+          let clsProps = APIBody.getNamesFromKey(cls, "props");
+          let clsFuncs = APIBody.getNamesFromKey(cls, "funcs");
           console.log(clsProps);
           //console.log(cls);
           return (
@@ -76,6 +72,8 @@ Quas.export(
                     <ul q-for-li=clsFuncs></ul>
                   </div>
                 </div>
+                <div class="api-content" q-append="{this.genContent(cls)}">
+                </div>
                 {this.nav.render()}
               </div>
             </quas>
@@ -84,7 +82,138 @@ Quas.export(
       }
     }
 
-    static getListFromKey(cls, key){
+    genContent(cls){
+      let doms = [];
+
+      if(cls.props.length > 0){
+        doms.push(
+          <quas>
+            <h2>Properties</h2>
+          </quas>
+        );
+
+        let tableRows = [(
+          <quas>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Description</th>
+            </tr>
+          </quas>
+        )];
+
+        for(let i=0; i<cls.props.length; i++){
+
+          tableRows.push(
+            <quas>
+              <tr>
+                <td>{cls.props[i].name}</td>
+                <td>{cls.props[i].types.join(" | ")}</td>
+                <td>{cls.props[i].desc}</td>
+              </tr>
+            </quas>
+          )
+        }
+
+        doms.push(
+          <quas>
+            <div class="api-props-table-con">
+              <table q-append=tableRows></table>
+            </div>
+          </quas>
+        );
+      }
+
+
+      if(cls.funcs.length > 0){
+        doms.push(
+          <quas>
+            <h2>Methods</h2>
+          </quas>
+        );
+      }
+
+      for(let i=0; i<cls.funcs.length; i++){
+        let returnTypes = cls.funcs[i].return.join(" | ");
+
+        let returnVDOM;
+        if(returnTypes.length > 0){
+          returnVDOM = (
+            <quas>
+              <div class="api-content-item-return">
+                <span class="api-returns">Returns: </span> {returnTypes}
+              </div>
+            </quas>
+          );
+        }
+        else{
+          returnVDOM = "";
+        }
+
+        let paramNames = [];
+
+        let tableVDOM = [];
+        if(cls.funcs[i].params.length > 0){
+          let paramVDOMs = [];
+          paramVDOMs.push(
+            <quas>
+              <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Description</th>
+              </tr>
+            </quas>
+          );
+          for(let a=0; a<cls.funcs[i].params.length; a++){
+            paramNames.push(cls.funcs[i].params[a].name);
+            paramVDOMs.push(
+              <quas>
+                <tr>
+                  <td>{cls.funcs[i].params[a].name}</td>
+                  <td>{cls.funcs[i].params[a].types.join(" | ")}</td>
+                  <td>{cls.funcs[i].params[a].desc}</td>
+                </tr>
+              </quas>
+            );
+          }
+
+          tableVDOM = (
+            <quas>
+              <table q-append=paramVDOMs></table>
+            </quas>
+          );
+        }
+
+
+
+        let dom = (
+          <quas>
+            <div class="api-content-item">
+              <h3>{cls.funcs[i].name, "( " + paramNames.join(", ") +" )"}</h3>
+              <div class="api-content-item-info">
+                <pre>
+                <p>{cls.funcs[i].desc}</p>
+                </pre>
+                <div q-append=[tableVDOM]></div>
+                <div q-append=[returnVDOM]></div>
+              </div>
+            </div>
+          </quas>
+        );
+
+        //constructor should always be first
+        if(cls.funcs[i].name.toLowerCase() == "constructor"){
+          doms.splice(0, 0, dom);
+        }
+        else{
+          doms.push(dom);
+        }
+      }
+
+      return doms;
+    }
+
+    static getNamesFromKey(cls, key){
       let arr = [];
       for(let i=0; i<cls[key].length; i++){
         arr.push(cls[key][i].name);
