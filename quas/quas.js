@@ -327,7 +327,7 @@ class Quas{
         newChildren = newVDOM[2];
       }
       let change = 0;
-      for(let c=0; (newVDOM && c<newVDOM[2].length) || (vdom && c<vdom[2].length); c++){
+      for(let c=0; (newVDOM && newVDOM[2] && c<newVDOM[2].length) || (vdom && vdom[2] && c<vdom[2].length); c++){
         let nextOldChild;
         if(oldChildren){
           nextOldChild = oldChildren[c];

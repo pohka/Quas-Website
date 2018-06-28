@@ -4,10 +4,12 @@ Quas.export(
 
     static gen(item){
       let path = "/api/" + item.name.toLowerCase();
+      let isActive = (window.location.pathname == path);
+
       return(
         <quas>
           <div>
-            <a href="{path}" target="push">{item.name}</a>
+            <a href="{path}" target="push" active="{isActive}">{item.name}</a>
           </div>
         </quas>
       );

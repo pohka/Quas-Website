@@ -105,7 +105,6 @@
 .api-nav a{
   display: block;
   padding-left: 30px;
-  width: 100%;
   line-height: 40px;
   color: var(--text);
   text-decoration: none;
