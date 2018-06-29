@@ -1,9 +1,6 @@
 ## Road Map
 * API documentation
   * Dropdown for different API versions
-  * fix undefined descriptions
-  * show optional column in table
-  * static functions
   * search api
 * Pages
   * Home Page
@@ -27,7 +24,6 @@
 ## important stuff
 * api gen
 * import Quas.Router
-* Quas.hasModule("Router");
 
 ## DOCS
   * onclick-onscroll=function(){} - multiple events with same function

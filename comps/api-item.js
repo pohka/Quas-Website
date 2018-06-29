@@ -58,27 +58,54 @@ Quas.export(
 
       let tableVDOM = [];
       if(func.params.length > 0){
+
+        let hasOptional = false;
+        for(let a=0; a<func.params.length && !hasOptional; a++){
+          if(func.params[a].optional){
+            hasOptional= true;
+          }
+        }
+
+        let headings = ["Parameter", "Type", "Description"];
+        if(hasOptional){
+          headings.push("Optional");
+        }
+
         let paramVDOMs = [];
         paramVDOMs.push(
           <quas>
-            <tr>
-              <th>Parameter</th>
-              <th>Type</th>
-              <th>Description</th>
-            </tr>
+            <tr q-for-th=headings></tr>
           </quas>
         );
         for(let a=0; a<func.params.length; a++){
           paramNames.push(func.params[a].name);
-          paramVDOMs.push(
-            <quas>
-              <tr>
-                <td>{func.params[a].name}</td>
-                <td>{func.params[a].types.join(" | ")}</td>
-                <td>{func.params[a].desc}</td>
-              </tr>
-            </quas>
-          );
+          if(!hasOptional){
+            paramVDOMs.push(
+              <quas>
+                <tr>
+                  <td>{func.params[a].name}</td>
+                  <td>{func.params[a].types.join(" | ")}</td>
+                  <td>{func.params[a].desc}</td>
+                </tr>
+              </quas>
+            );
+          }
+          else{
+            let optionStr = "No";
+            if(func.params[a].optional){
+              optionStr = "Yes";
+            }
+            paramVDOMs.push(
+              <quas>
+                <tr>
+                  <td>{func.params[a].name}</td>
+                  <td>{func.params[a].types.join(" | ")}</td>
+                  <td>{func.params[a].desc}</td>
+                  <td>{optionStr}</td>
+                </tr>
+              </quas>
+            );
+          }
         }
 
         tableVDOM = (
