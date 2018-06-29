@@ -1,8 +1,44 @@
 
-Quas.export({
+Quas.export(
+  {
+    showCode : (e, comp) =>{
+      let funcName = e.target.attributes["data-func"].value;
+      let clsName = Router.currentRoute.params.id;
+      for(let i=0; i<APIBody.docs.length; i++){
+        if( APIBody.docs[i].type == "class" &&
+            APIBody.docs[i].name.toLowerCase() == clsName){
+              for(let a=0; a<APIBody.docs[i].funcs.length; a++){
+                  if(APIBody.docs[i].funcs[a].name == funcName){
+                    APIBody.docs[i].funcs[a].showCode= true;
+                    Quas.render(comp);
+                  }
+              }
+        }
+      }
+    },
+
     //generate an api block item for a function
     genItem : (func) => {
       let returnTypes = func.return.join(" | ");
+
+      let code = "";
+      if(func.showCode && func.code.length > 0){
+        code = (
+          <quas>
+            <pre class="api-code">
+              <code q-code-js="{func.code}"></code>
+            </pre>
+          </quas>
+        );
+      }
+      if(!func.showCode && func.code.length > 0){
+        let text = "</>"
+        code = (
+          <quas>
+            <div class="show-code" onclick=APIItem.showCode data-func="{func.name}">Code {text}</div>
+          </quas>
+        );
+      }
 
       let returnVDOM;
       if(returnTypes.length > 0){
@@ -64,6 +100,7 @@ Quas.export({
               </pre>
               <div q-append=[tableVDOM]></div>
               <div q-append=[returnVDOM]></div>
+              <div q-append=[code]></div>
             </div>
           </div>
         </quas>

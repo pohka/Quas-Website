@@ -34,6 +34,14 @@ Quas.export(
       }).catch((err) => console.error(err));
     }
 
+    onPush(){
+      for(let i=0; i<APIBody.docs.length; i++){
+        for(let a=0; a<APIBody.docs[i].funcs.length; a++){
+          APIBody.docs[i].funcs[a].showCode = false;
+        }
+      }
+    }
+
     onAfterPush(){
       Scroll.toHash(this.hashOffset);
     }

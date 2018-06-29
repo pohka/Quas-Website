@@ -1,6 +1,5 @@
 ## Road Map
 * API documentation generator
-  * code sample
   * Dropdown for different API versions
 * Pages
   * Home Page
@@ -20,6 +19,7 @@
   * remake transpiler
     * fix all the custom attrs
     * remove need of quas tags
+  * dealing events in child components
 
 
 ## important stuff
