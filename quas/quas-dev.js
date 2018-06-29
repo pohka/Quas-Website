@@ -3,8 +3,6 @@ This script is used for transpiling and bundling development builds
 For production use a static build and remember to remove links to this script
 */
 
-
-
 var Dev = {};
 
 //tags that require no closing tag
@@ -463,7 +461,7 @@ Dev.load = function(){
   else{
     mainFile = Dev.main;
   }
-  
+
   Quas.ajax({
     url : mainFile,
     type : "GET",

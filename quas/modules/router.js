@@ -1,14 +1,66 @@
 Quas.export(
-  //handling of the mapping and changing the page
+  /**
+    # module
+    ---
+    Handling of the mapping and changes on the page for a single page web app
+    ---
+
+    @prop {Array<Object>} routes - all of the mapped routes
+    @prop {Array<Object>} aliases - all of the aliases
+    @prop {Array<Object>} redirects - all of the redirects
+    @prop {Array<Object>} comps - all of the current instances of component
+    @prop {Object} currentRoute - the current route being displayed
+  */
   class Router{
-    //add a route
+    /**
+      ---
+      maps a route and sets the fullpath key for all the child routes
+      ---
+
+      @param {Object} routeData - data for this route
+
+      ```
+      Router.map({
+        path : "/home",
+        id : "home", //(optional) must be unique
+        title : "Home", //(optional)
+
+        //(optional) all of the components this route uses
+        comps : [
+          {
+            comp : Navbar, //name of class
+            props : {
+              options : ["item 1, item 2"]
+            }
+          }
+        ],
+        children : [], //(optional) child routes
+        meta : [ //(optional) meta data
+          {
+            name : "title",
+            content : "My Title"
+          },
+          {
+            name : "description",
+            content : "my description"
+          },
+        ]
+      });
+      ```
+    */
     static map(data){
       this.setFullPathToChildRoutes(data.children, data.path);
       data.fullpath = data.path;
       this.routes.push(data);
     }
 
-    //sets the fullpath for an array of routes
+    /*
+      Sets the fullpath for an array of routes
+      This is used with Router.map() to set the fullpath key in the route data
+
+      @param {Array<Object>} children - child nodes of the route
+      @param {String} parentPath - path of the parent node
+    */
     static setFullPathToChildRoutes(children, parentPath){
       if(!children){
         return;
@@ -20,13 +72,34 @@ Quas.export(
       }
     }
 
-    //sets the 404 route
+    /**
+      ---
+      Assigns the route for when a page is not found, known as a 404 error
+      ---
+
+      @param {Object} route - 404 route data
+    */
     static setRoute404(route){
       this.route404 = route;
     }
 
-    //returns an object of url params if the paths were matching
-    // docs/:page == docs/setup
+    /*
+      ---
+      Returns an object of url params if the paths were matching.
+      This will take into account dynamic paths for the routeFullpath
+
+      Example:
+      /docs/:page == /docs/setup
+      returns {page : "setup"}
+      ---
+
+      @param {String} routeFullpath - the fullpath key of the route
+      @param {String} path - the other path for comparisions
+
+      @return {Object|undefined}
+
+
+    */
     static matchingRoutePath(routeFullpath, path){
       let a = routeFullpath.split("/");
       let bInfo = path.split("#");
@@ -53,9 +126,27 @@ Quas.export(
       return params;
     }
 
-    //converts a path using the params
-    // ("/profile/:user", {user:"john"}) => /profile/john
-    // ("/about", {}) => "/about"
+    /**
+      ---
+      Converts a path using the params
+      ---
+
+      @param {String} path - A static or dynamic path
+      @param {Object} params - The parameters to pass to the path
+
+      @return {Object}
+
+      ```
+      //returns: /profile/john
+      Router.convertToDynamicPath("/profile/:user", {user:"john"});
+
+      //returns: /about
+      Router.convertToDynamicPath("/about", {user:"john"});
+
+      //returns: /about
+      Router.convertToDynamicPath("/about", {});
+      ```
+    */
     static convertToDynamicPath(path, params){
       for(let i in params){
         let exp = new RegExp(":"+i, "g");
@@ -67,7 +158,11 @@ Quas.export(
       return path;
     }
 
-    //loads the route based on the current url
+    /**
+      ---
+      loads the route based on the current url
+      ---
+    */
     static load(){
       let path = window.location.pathname;
 
@@ -104,7 +199,30 @@ Quas.export(
       }
     }
 
-    //sets the document meta data, using the data from routes
+    /**
+      ---
+      Sets the document meta data, using the data from routes
+      ---
+
+      @param {Array<Object>} metaData - The data to set
+
+      ```
+      Router.setMetaData([
+        {
+          name : "title",
+          content : "My Title"
+        },
+        {
+          prop : "og:title",
+          content : "My Title"
+        }
+      ]);
+
+      //results in:
+      // <meta name="title" content="My Title">
+      // <meta property="og:title" content="My Title">
+      ```
+    */
     static setMetaData(data){
       let head = document.getElementsByTagName('head')[0];
       for(let i=0; i<data.length; i++){
@@ -123,17 +241,71 @@ Quas.export(
       }
     }
 
-    //adds an alias, will load the to page but without changing the url
+    /**
+      ---
+      Adds a route alias, which will load the "to" page but without changing the url
+      ---
+
+      @param {Object} alias - the to and from data
+
+      ```
+      // "/other" will load "/home"
+      Router.addAlias({
+        from : "/other",
+        to : "/home"
+      });
+
+      // "/p/1234" will load "/post/1234"
+      Router.addAlias({
+        from : "/p/:id",
+        to : "/post/:id"
+      });
+      ```
+    */
     static addAlias(alias){
       this.aliases.push(alias);
     }
 
-    //adds a redirect, will load the to page but and changes the url
+    /**
+      ---
+      Adds a route redirect, which will load the "to" page and changes the url
+      ---
+
+      @param {String} redirect - the to and from data
+
+      ```
+      // "/oldPage" sets the url to "/home"
+      // and also loads "/home"
+      Router.addRedirect({
+        from : "/oldPage",
+        to : "/home"
+      });
+
+      // "/p/1234" sets the url to "/post/1234"
+      // and also loads "/post/1234"
+      Router.addAlias({
+        from : "/p/:id",
+        to : "/post/:id"
+      });
+      ```
+    */
     static addRedirect(redirect){
       this.redirects.push(redirect);
     }
 
-    //finds a mapped route by the path
+    /*
+      ---
+      Finds a mapped route by the path and returns it
+      ---
+
+      @param {String} path
+
+      @return {Object|undefined}
+
+      ```
+      Router.findRouteByPath("/home");
+      ```
+    */
     static findRouteByPath(path){
       let route;
       for(let i=0; i<this.redirects.length; i++){
@@ -167,7 +339,17 @@ Quas.export(
       return route;
     }
 
-    //recusively loops through children
+    /*
+      ---
+      Recusively loops through children, this is used by Router.findRouteByPath()
+      ---
+
+      @param {String} path
+      @param {Array<Object>} routes - the routes the search through
+      @param {Array<Object>} parentComps - the components the parent route uses
+
+      @return {Object|undefined}
+    */
     static findRouteByPathLoop(path, routes, parentComps){
       for(let i=0; i<routes.length; i++){
         //found match
@@ -220,8 +402,16 @@ Quas.export(
       }
     }
 
-    //clones the data from route into a lighter object
-    //this will have all the route values except comps and children
+    /*
+      ---
+      clones the data from a route into a lighter object which will be read only
+      the returned object will have all the route values except comps and children
+      ---
+
+      @param {Object} route
+
+      @return {Object}
+    */
     static routeToInfo(route){
       let info = {};
       for(let k in route){
@@ -232,7 +422,21 @@ Quas.export(
       return info;
     }
 
-    //finds and returns the routeInfo with the matching id
+    /**
+      ---
+      Finds and returns the routeInfo with the matching id. The routeInfo is a read only verison of the route data with every key except children and comps
+      ---
+
+      @param {String} id - route id
+      @param {Array<Object>} routes - (exclude) all of the routes
+
+      @return {Object|undefined}
+
+      ```
+      let homeRouteInfo = Router.getRouteInfoByID("home");
+      console.log(homeRouteInfo.fullpath);
+      ```
+    */
     static getRouteInfoByID(id, routes){
       if(!routes){
         routes = this.routes;
@@ -251,7 +455,15 @@ Quas.export(
       }
     }
 
-    //finds and returns the routeInfo with a matching fullpath
+    /**
+      ---
+      Finds and returns the routeInfo with the matching id. The routeInfo is a read only verison of the route data with every key except children and comps
+      ---
+
+      ```
+      let homeRouteInfo = Router.getRouteInfoByPath("/home");
+      ```
+    */
     static getRouteInfoByPath(path, routes){
       if(!routes){
         routes = this.routes;
@@ -270,7 +482,14 @@ Quas.export(
       }
     }
 
-    //push route by id
+    /**
+      ---
+      Push a route by id. By pushing it will load this matching route
+      ---
+
+      @param {String} routeID - Route ID
+      @param {Object} params - Route parameters
+    */
     static pushByID(routeID, params){
       //find route
       let info = this.getRouteInfoByID(routeID);
@@ -285,7 +504,15 @@ Quas.export(
       }
     }
 
-     //push a new route
+     /*
+      ---
+      Push a new route, loads 404 if route param is undefined
+      ---
+
+      @param {Object} route - a route object
+      @param {Boolean} isPopstate - (optional) set to  true if pushing from a history popstate
+
+    */
      static push(route, isPopstate){
        //404
        if(!route){

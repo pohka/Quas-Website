@@ -1,6 +1,10 @@
 ## Road Map
 * API documentation generator
   * Dropdown for different API versions
+  * alphabetical order of methods
+  * fix undefined descriptions
+  * show optional column in table
+  * exclude params
 * Pages
   * Home Page
   * Download Page
