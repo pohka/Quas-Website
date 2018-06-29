@@ -79,6 +79,7 @@ Quas.export(
             <quas>
               <div class="api-con">
                 {APIBody.genClassHeading(cls)}
+                <div q-append=navVDOM></div>
                 <p>{cls.desc}</p>
                 <div class="api-cls-overview">
                   <div class="col">
@@ -91,7 +92,7 @@ Quas.export(
                   </div>
                 </div>
                 <div class="api-content" q-append=clsContent></div>
-                <div q-append=navVDOM></div>
+
               </div>
             </quas>
           )

@@ -44,12 +44,12 @@ input::placeholder{
 }
 
 h1, h2, h3{
-	font-weight: normal;
+	font-weight: 500;
 	text-align: center;
 }
 
 h1{
-	font-size: 30px;
+	font-size: 34px;
 }
 
 a, a:visited{
@@ -172,6 +172,8 @@ th{
 	display: flex;
 }
 
+
+
 .docs-body-con{
 	margin: 0px 300px;
 	min-height: 100px;
@@ -192,6 +194,7 @@ th{
 	margin-top: 60px;
 	box-shadow: 0px 0px 4px var(--shadow);
 	overflow-y: auto;
+	animation: slidein .2s ease-in-out;
 }
 
 .docs-nav-list{
@@ -245,15 +248,32 @@ pre code{
 	tab-size: 2;
 }
 
+.docs-content h1, .docs-content h2, .docs-content h3{
+	text-align: left;
+}
+
+
 .docs-content h1{
-	margin-bottom: 30px;
+	margin-bottom: 20px;
 	margin-top: 44px;
-	font-size: 36px;
+	font-size: 42px;
+
 }
 
 .docs-content h2{
 	margin-top: 50px;
-	margin-bottom: 20px;
+	margin-bottom: 10px;
+	font-size: 30px;
+}
+
+.docs-content h2:before{
+	content : "";
+	height: 2px;
+	width: 100%;
+	display: block;
+	margin-bottom: 50px;
+
+	background: var(--shadow);
 }
 
 .docs-content p{

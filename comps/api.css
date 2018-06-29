@@ -118,6 +118,16 @@
   font-weight: bold;
 }
 
+@keyframes slidein {
+  from {
+    margin-left: -300px;
+  }
+}
+
+@keyframes slideout {
+  to {margin-left: -300px;}
+}
+
 .api-nav{
   position: fixed;
   top: 60;
@@ -127,7 +137,9 @@
   background: var(--hover);
   box-shadow:0 0 4px var(--shadow);
   height: 100%;
+  animation: slidein .2s ease-in-out;
 }
+
 
 
 
