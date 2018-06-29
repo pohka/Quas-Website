@@ -2,17 +2,29 @@
 Quas.export(
   class APINav extends Component{
 
-    static gen(item){
+    static gen(item, type){
       let path = "/api/" + item.name.toLowerCase();
       let isActive = (window.location.pathname == path);
+      if(item.type == type){
+        return(
+          <quas>
+            <div>
+              <a href="{path}" target="push" active="{isActive}">{item.name}</a>
+            </div>
+          </quas>
+        );
+      }
+      else{
+        return [];
+      }
+    }
 
-      return(
-        <quas>
-          <div>
-            <a href="{path}" target="push" active="{isActive}">{item.name}</a>
-          </div>
-        </quas>
-      );
+    static genCls(item){
+      return APINav.gen(item, "class");
+    }
+
+    static genModule(item){
+      return APINav.gen(item, "module");
     }
 
     render(){
@@ -20,7 +32,9 @@ Quas.export(
         <quas>
           <div class="api-nav">
             <h3>Classes</h3>
-            <div q-bind-for=[APINav.gen,APIBody.docs]></div>
+            <div q-bind-for=[APINav.genCls,APIBody.docs]></div>
+            <h3>Modules</h3>
+            <div q-bind-for=[APINav.genModule,APIBody.docs]></div>
           </div>
         </quas>
       );
