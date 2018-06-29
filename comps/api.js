@@ -1,4 +1,6 @@
 import Router from "/quas/modules/router.js"
+import Scroll from "/quas/modules/scroll.js"
+
 import APINav from "/comps/api-nav.js"
 import APIItem from "/comps/api-item.js"
 import "/comps/api.css"
@@ -11,6 +13,7 @@ Quas.export(
       this.nav = new APINav();
       this.props.isLoaded = false;
       this.fetchData(this.props.path);
+      this.hashOffset = -80;
     }
 
     fetchData(path){
@@ -27,7 +30,12 @@ Quas.export(
         this.setProps({
           isLoaded : true,
         });
+        Scroll.toHash(this.hashOffset);
       }).catch((err) => console.error(err));
+    }
+
+    onAfterPush(){
+      Scroll.toHash(this.hashOffset);
     }
 
     render(){
@@ -40,6 +48,7 @@ Quas.export(
       }
       else{
         let urlparms = Router.currentRoute.params;
+        console.log("params:" , urlparms);
         let pageID = urlparms.id;
         let navVDOM = [this.nav.render()];
 
@@ -56,8 +65,6 @@ Quas.export(
         }
         else{
           let cls = APIBody.findDocByName(pageID);
-          let clsProps = APIBody.getNamesFromKey(cls, "props");
-          let clsFuncs = APIBody.getNamesFromKey(cls, "funcs");
           let clsContent = APIBody.genContent(cls);
 
           return (
@@ -67,12 +74,12 @@ Quas.export(
                 <p>{cls.desc}</p>
                 <div class="api-cls-overview">
                   <div class="col">
-                    <h4>Properties</h4>
-                    <ul q-for-li=clsProps></ul>
+                    <h4>Methods</h4>
+                    <ul q-bind-for=[APIBody.genOverviewFuncListItem,cls.funcs]></ul>
                   </div>
                   <div class="col">
-                    <h4>Methods</h4>
-                    <ul q-for-li=clsFuncs></ul>
+                    <h4>Properties</h4>
+                    <ul q-bind-for=[APIBody.genOverviewPropListItem,cls.props]></ul>
                   </div>
                 </div>
                 <div class="api-content" q-append=clsContent></div>
@@ -82,6 +89,22 @@ Quas.export(
           )
         }
       }
+    }
+
+    static genOverviewFuncListItem(func){
+      return(
+        <quas>
+          <li><a href="#{func.name}" target="push">{func.name}</a></li>
+        </quas>
+      );
+    }
+
+    static genOverviewPropListItem(prop){
+      return(
+        <quas>
+          <li><a href="#properties" target="push">{prop.name}</a></li>
+        </quas>
+      );
     }
 
     static genContent(cls){
@@ -111,14 +134,7 @@ Quas.export(
       return vdoms;
     }
 
-    static getNamesFromKey(cls, key){
-      let arr = [];
-      for(let i=0; i<cls[key].length; i++){
-        arr.push(cls[key][i].name);
-      }
-      return arr;
-    }
-
+    //generates the heading of a class
     static genClassHeading(cls){
       if(cls.super && cls.super != ""){
         let c = cls.super.toLowerCase();
@@ -141,6 +157,7 @@ Quas.export(
       }
     }
 
+    //find the documentation data by class name
     static findDocByName(name){
       for(let i=0; i<this.docs.length; i++){
         if(this.docs[i].name.toLowerCase() == name){

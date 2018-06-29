@@ -1,7 +1,7 @@
 ## Road Map
 * API documentation generator
-  * navigate to heading with #heading
   * click overview items to navigate to heading
+  * code sample
   * Dropdown for different API versions
 * Pages
   * Home Page

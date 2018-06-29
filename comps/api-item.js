@@ -57,7 +57,7 @@ Quas.export({
       return (
         <quas>
           <div class="api-content-item">
-            <h3>{func.name, "( " + paramNames.join(", ") +" )"}</h3>
+            <h3 id="{func.name}">{func.name, "( " + paramNames.join(", ") +" )"}</h3>
             <div class="api-content-item-info">
               <pre>
               <p>{func.desc}</p>
@@ -74,7 +74,7 @@ Quas.export({
     genHeading : (text) => {
       return (
         <quas>
-          <h2>{text}</h2>
+          <h2 id="{text}">{text}</h2>
         </quas>
       );
     },

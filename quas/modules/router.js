@@ -29,13 +29,16 @@ Quas.export(
     // docs/:page == docs/setup
     static matchingRoutePath(routeFullpath, path){
       let a = routeFullpath.split("/");
-      let b = path.split("/");
-
+      let bInfo = path.split("#");
+      let b = bInfo[0].split("/");
       if(a.length != b.length){
         return;
       }
 
       let params = {};
+      if(bInfo.length > 1){
+        params.hash = bInfo[1];
+      }
 
       for(let i=0; i<a.length; i++){
         if(a[i].charAt(0) == ":"){
@@ -57,6 +60,9 @@ Quas.export(
       for(let i in params){
         let exp = new RegExp(":"+i, "g");
         path = path.replace(exp, params[i]);
+      }
+      if(params.hash){
+        path += "#" + params.hash;
       }
       return path;
     }
@@ -354,6 +360,12 @@ Quas.export(
        this.comps = newComps;
        for(let i=0; i<reuseComps.length; i++){
          this.comps.push(reuseComps[i]);
+       }
+
+       for(let r=0; r<this.comps.length; r++){
+         if(typeof this.comps[r].onAfterPush === "function"){
+           this.comps[r].onAfterPush();
+         }
        }
     }
 
