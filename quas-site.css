@@ -231,6 +231,7 @@ th{
 
 pre{
 	min-height: auto;
+	white-space: pre-wrap;
 }
 
 pre code{

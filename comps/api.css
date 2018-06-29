@@ -2,12 +2,12 @@
   padding-top: 20px;
   margin-left: 300px;
   padding-left: 100px;
-  width: 900px;
+  width: 800px;
   padding-bottom: 300px;
 }
 
-.api-con p{
-  width: 700px;
+.api-con pre{
+
 }
 
 .api-con h1{
@@ -34,19 +34,33 @@
   font-size: 20px;
 }
 
+.api-con h4{
+  margin-bottom: 8px;
+}
+
 .api-content{
   margin-top: 100px;
 }
 
 .api-con ul{
+  margin-top: 0px;
   padding: 0;
   list-style-type: none;
 }
 
-.api-con li{
-  padding: 4px 20px;
+.api-con li a{
+  display: block;
+  padding: 5px 20px;
   width: 80%;
   border-left: 3px solid var(--hover);
+  color: black;
+  text-decoration: none;
+}
+
+.api-con li a:hover{
+  border-color: var(--pri);
+  background: var(--hover);
+  transition: 0.2s;
 }
 
 .api-props-table-con{
@@ -67,10 +81,6 @@
 .api-content-item-info pre{
   margin: 0px;
   padding: 0px;
-}
-
-.api-content-item-info p{
-  margin: 0 0;
 }
 
 .api-content-item-return{
@@ -117,7 +127,6 @@
 
 
 .api-nav a:hover{
-	color: var(--pri2);
 	background: var(--hover2);
 	border-left: 6px solid var(--shadow);
 }

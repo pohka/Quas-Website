@@ -8,7 +8,7 @@ Quas.export({
       if(el != null){
         let y = el.offsetTop;
         if(offset){
-          y -= offset;
+          y += offset;
         }
         window.scrollTo(0, y);
       }

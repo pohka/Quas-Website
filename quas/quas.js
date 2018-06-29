@@ -463,8 +463,7 @@ class Quas{
     if(Quas.hasRouter() && tag == "a" && attrs.target == "push"){
       //add on click eventlistener
       el.addEventListener("click", function(e){
-        let target = e.target.getAttribute("target");
-        if(target && target == "push"){
+        if(this.target && this.target == "push"){
           e.preventDefault();
           let path = this.href.replace(window.location.origin, "");
           let route = Router.findRouteByPath(path);
