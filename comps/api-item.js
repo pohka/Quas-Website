@@ -93,7 +93,9 @@ Quas.export(
       return (
         <quas>
           <div class="api-content-item">
-            <h3 id="{func.name}">{func.name, "( " + paramNames.join(", ") +" )"}</h3>
+            <h3 id="{func.name}" isStatic="{func.isStatic}">
+              {func.name, "( " + paramNames.join(", ") +" )"}
+            </h3>
             <div class="api-content-item-info">
               <pre>
               <p>{func.desc}</p>

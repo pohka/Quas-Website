@@ -3,7 +3,6 @@
   * Dropdown for different API versions
   * fix undefined descriptions
   * show optional column in table
-  * exclude params
   * static functions
   * search api
 * Pages

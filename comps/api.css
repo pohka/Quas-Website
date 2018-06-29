@@ -99,6 +99,11 @@
   margin-left: 30px;
 }
 
+.api-content-item h3[isStatic="true"]:before{
+  content: "static ";
+  color: var(--pri);
+}
+
 .api-content-item-info{
   border-left: 2px solid var(--pri);
   padding: 14px 18px;
