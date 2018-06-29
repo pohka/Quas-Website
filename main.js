@@ -31,14 +31,14 @@ function ready(){
         case : "/docs"
       },
       {
-        path : "/download",
-        title : "Download",
-        case : "/download"
-      },
-      {
         path : "/api/overview",
         title : "API",
         case : "/api/"
+      },
+      {
+        path : "/download",
+        title : "Download",
+        case : "/download"
       }
     ]
   };

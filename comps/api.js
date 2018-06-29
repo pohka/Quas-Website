@@ -27,6 +27,7 @@ Quas.export(
         }
         //APIBody.overview = info,
         APIBody.docs = data.docs;
+        APIBody.sortDocs();
         this.setProps({
           isLoaded : true,
         });
@@ -98,6 +99,24 @@ Quas.export(
           )
         }
       }
+    }
+
+    //orders all the data alphabetically
+    static sortDocs(){
+      APIBody.docs = APIBody.docs.sort((a, b) => {
+        return a.name.localeCompare(b.name)
+      });
+      for(let i=0; i<APIBody.docs.length; i++){
+        APIBody.docs[i].funcs = APIBody.docs[i].funcs.sort();
+        APIBody.docs[i].funcs = APIBody.sortKey(APIBody.docs[i].funcs, "name");
+        APIBody.docs[i].props = APIBody.sortKey(APIBody.docs[i].props, "name");
+      }
+    }
+
+    static sortKey(arr, key){
+      return arr.sort((a, b) => {
+        return a[key].localeCompare(b[key]);
+      });
     }
 
     static genOverviewFuncListItem(func){
