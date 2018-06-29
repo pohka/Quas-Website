@@ -12,6 +12,8 @@
 
   @prop {Object} props - All the properties for this component
   @prop {Boolean} isPure - If true the component won't update once mounted
+  @prop {DOMElement} dom - Root DOMElement
+  @prop {Array} vdom - Virtual dom for this component
 */
 
 class Component{
@@ -90,24 +92,31 @@ class Component{
   ---
   Super class for all components
   ---
+
+  @prop {Object} modules - all of the imported modules
+  @prop {Array<Object>} customAttrs - the registered custom attributes
 */
 class Quas{
   /**
     # func
     ---
-    Mounts a component to the DOM tree
+    Mounts a component to the DOM tree, however if the Component is already mounted it will update the component
     ---
 
     @param {Component} component - component to mount
     @param {String|DOMElement} parent - the parent node
 
+
     ```
     //mount using the query selector (#id, .class, tag)
     Quas.render(myComp, "#app");
 
-    //mount using a DOM Element
+    //alternatively mount using a DOM Element
     let el = document.querySelector("#app");
     Quas.render(myComp, el);
+
+    //update the component
+    Quas.render(myComp);
     ```
   */
   static render(comp, parent){
@@ -460,7 +469,7 @@ class Quas{
     }
 
     //link target = push
-    if(Quas.hasRouter() && tag == "a" && attrs.target == "push"){
+    if(Quas.hasModule("Router") && tag == "a" && attrs.target == "push"){
       //add on click eventlistener
       el.addEventListener("click", function(e){
         if(this.target && this.target == "push"){
@@ -495,17 +504,19 @@ class Quas{
     An asynchronous HTTP request (AJAX)
 
     format of request object:
-    url : "myfile.php",
-    type : "GET|POST",
-    data : {
-      key : "value"
-    },
-    return : "json|xml",
-    success : (result)=>{},
-    error : (Error) => {}
+    {
+      url : "myfile.php",
+      type : "GET|POST",
+      data : {
+        key : "value"
+      },
+      return : "json|xml",
+      success : (result)=>{},
+      error : (Error) => {}
+    }
     ---
 
-    @param {OBJECT} requestData - request data
+    @param {Object} requestData - request data
 
     ```
     //most basic use to log the contents of a file
@@ -630,8 +641,8 @@ class Quas{
     ---
 
     @param {String} url - url to the resource
-    @param {String} type - (optional) text, json, blob, buff
-    @param {Object} reqestData - (optional) data for the request
+    @param {String} type - (optional) text, json, blob, buffer
+    @param {Object} requestData - (optional) data for the request
 
 
     ```
@@ -742,14 +753,14 @@ class Quas{
     # func
     ---
     Returns an object with the browser info:
-    name - browser name,
-    version - browser version,
-    isMobile - true if a mobile browser
+      - name : browser name,
+      - version : browser version,
+      - isMobile : true if a mobile browser
 
     Note: the isMobile variable might not be 100% accurate
     ---
 
-    @return {OBJECT}
+    @return {Object}
   */
   static getBrowserInfo(){
     var ua=navigator.userAgent,tem,M=ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
@@ -773,11 +784,14 @@ class Quas{
   /**
     # func
     ---
-    Returns the data from the url in as an object
-    Example:
-      www.mysite.com/home?key=val&foo=bar => {key : "val", foo : "bar"}
+    Returns the data from the url in as an object, it will also decode the URI
     ---
-    @return {OBJECT}
+    @return {Object}
+
+    ```
+    //url: /home?key=val&foo=bar
+    //=> {key : "val", foo : "bar"}
+    ```
   */
   static getUrlValues(){
     let str = window.location.search;
@@ -811,21 +825,20 @@ class Quas{
 
     ```
     //url: /home
-
     Quas.setUrlValues({
       name:"john"
     });
-    //urL: /home?name=john
+    //updated: /home?name=john
 
     Quas.setUrlValues({
       name:""
     });
-    //urL: /home
+    //updated: /home
 
     Quas.setUrlValues({
       search :"the mouse"
     });
-    //url: /home?search=the%20mouse
+    //updated: /home?search=the%20mouse
     ```
   */
   static setUrlValues(newVals, reload){
@@ -1020,13 +1033,13 @@ class Quas{
   /**
   # func
   ---
-  returns true if using the router module
+  Returns true if using the router module
   ---
 
   @return {Boolean}
   */
-  static hasRouter(){
-    return (typeof Router !== "undefined");
+  static hasModule(name){
+    return (typeof Quas.modules[name] !== "undefined");
   }
 }
 
