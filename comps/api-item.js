@@ -5,7 +5,7 @@ Quas.export(
       let funcName = e.target.attributes["data-func"].value;
       let clsName = Router.currentRoute.params.id;
       for(let i=0; i<APIBody.docs.length; i++){
-        if( APIBody.docs[i].type == "class" &&
+        if( (APIBody.docs[i].type != "function") &&
             APIBody.docs[i].name.toLowerCase() == clsName){
               for(let a=0; a<APIBody.docs[i].funcs.length; a++){
                   if(APIBody.docs[i].funcs[a].name == funcName){

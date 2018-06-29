@@ -90,7 +90,7 @@ class Component{
 /**
   # class
   ---
-  Super class for all components
+  Main Library
   ---
 
   @prop {Object} modules - all of the imported modules

@@ -6,7 +6,7 @@
   Asyncronously loading files
 
   adds custom attribute for "q-async" which currently just loads images
-  --
+  ---
 
 
   ```

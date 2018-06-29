@@ -1,16 +1,16 @@
 ## Road Map
-* API documentation generator
+* API documentation
   * Dropdown for different API versions
   * alphabetical order of methods
   * fix undefined descriptions
   * show optional column in table
   * exclude params
+  * static functions
+  * search api
 * Pages
   * Home Page
   * Download Page
 * Quas
-  * decide what other functionality within quas needs to be separated into its own module
-    * scroll tracker
   * import Quas.Router (import main modules)
   * lazy loading routes
     * if you have a large web app it can be quicker to have certain parts in their own bundle and load them afterwards when requested. This is so we don't have to load a single massive bundle

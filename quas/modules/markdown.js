@@ -26,6 +26,9 @@ Quas.export({
     ---
     Parses markdown text and returns a virtual dom
     ---
+
+    @param {String} text - plain text
+    @return {Array}
   */
   parseToVDOM : (text)=>{
     let vdoms = [];
