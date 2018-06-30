@@ -20,6 +20,201 @@ Dev.imports = {
 
 Dev.bundle = {};
 
+Dev.transpileHTML = (html) => {
+  let inQuote = false;
+  let quoteType;
+  let inTag = true;
+  let tags = [];
+  let quoteRegex = /"(.*?)"|`(.*?)`|'(.*?)'/;
+  let char, lastChar = "";
+  let tagContent = "";
+  let insideTag = false;
+  let vdom = [];
+
+  console.log(html.length);
+
+  for(let i=0; i<html.length; i++){
+
+    char = html.charAt(i);
+    if(!inQuote && lastChar != "\\" && char.match(quoteRegex)){
+      inQuote = true;
+      quoteType = char;
+    }
+
+    if(!inQuote){
+      //s tag
+      if(char == "<"){
+        insideTag = true;
+        tagContent = "";
+      }
+      //end tag
+      else if(char == ">"){
+        insideTag = false;
+        let tagVDOM = Dev.tagStringToVDOM(tagContent);
+        if(tagVDOM){
+          vdom.push(tagVDOM);
+        }
+      }
+      //inside tag
+      else{
+        tagContent += char;
+      }
+    }
+
+    lastChar = char;
+  }
+  console.log("vdom:",vdom);
+  return "1";
+}
+
+Dev.tagStringToVDOM = (str) =>{
+  str = str.trim();
+  //return undefined if closing tag
+  if(str.charAt(0) == "/"){
+    return;
+  }
+
+  //split by space but no in quotes
+  let arr = str.match(/(?:[^\s+"]+|"[^"]*")+/g);
+  let tagName = arr[0];
+  let vdom = [tagName, {}, []];
+
+  //get all the attrs
+  for(let i=1; i<arr.length; i++){
+    let attr = arr[i].split("=");
+    let key = attr[0];
+    let val = "";
+    if(attr[1]){
+      let match = attr[1].match(/"(.*?)"/);
+      if(match){
+        val  = match[1];
+      }
+    }
+    vdom[1][key] = val;
+  }
+  return vdom;
+}
+
+Dev.calcTagDepthChange = (line) => {
+  //ignore all text in quotes
+
+ let quoteRegex = /"(.*?)"|`(.*?)`|'(.*?)'/;
+ line = line.split(quoteRegex).join("");
+
+  let count = 0;
+  let curLineWithoutQuotes = line.split(quoteRegex).join("");
+  let tags = curLineWithoutQuotes.match(/<.*?>/g);
+  if(tags){
+    for(let t=0; t<tags.length; t++){
+      let tagName = tags[t].substr(1).split(/\s/)[0];
+      //dont count for when no closing tag is required
+      if(Dev.noClosingTag.indexOf(tagName) == -1){
+        if(tags[t].charAt(1) == "/"){
+          count -= 1;
+        }
+        else{
+          count += 1;
+        }
+      }
+    }
+  }
+  return count;
+}
+
+
+Dev.transpile = (bundle) => {
+  let lines = bundle.split("\n");
+
+  let inCommentBlock = false;
+  let result = "";
+  let quoteRegex = /"(.*?)"|`(.*?)`|'(.*?)'/;
+  let hasCommentBlockChange;
+  let inHtmlBlock = false;
+  let hasHtmlBlockChanged = false;
+  let htmlText = "";
+  let vdom;
+  let depth = 0;
+
+
+  for(let i=0; i<lines.length; i++){
+    let lineContents = lines[i].split(quoteRegex).join(" ");
+    let hasCommentBlockChange = false;
+    let curLine = "";
+
+    //remove comment block
+    if(!inCommentBlock && lineContents.indexOf("/*") > -1){
+      let arr = lines[i].split("/*");
+      curLine += arr[0];
+      inCommentBlock = true;
+      hasCommentBlockChange = true;
+    }
+    if(inCommentBlock && lineContents.indexOf("*/") > -1){
+      let arr = lines[i].split("*/");
+      curLine += " " + arr[1];
+      inCommentBlock = false;
+      hasCommentBlockChange = true;
+    }
+
+    //no code blocks, so just use the raw line
+    if(!hasCommentBlockChange){
+      curLine = lines[i];
+    }
+
+    if(!inCommentBlock){
+      //remove end of line comment
+      curLine = curLine.split("//")[0];
+
+      //find start of html parse
+      if(!inHtmlBlock && curLine.indexOf("#<") > -1){
+        depth = 0;
+        inHtmlBlock = true;
+        //add js to result
+        let arr = curLine.split("#<");
+        result += arr[0];
+        htmlString = "";
+
+        curLine = "<" + arr[1];
+        hasHtmlBlockChanged = true;
+      }
+
+      if(inHtmlBlock){
+        htmlString += curLine;
+        let curLineWithoutQuotes = curLine.split(quoteRegex).join("");
+        depth += Dev.calcTagDepthChange(curLineWithoutQuotes);
+        console.log("depth:" + depth);
+        if(depth <= 0 && !hasHtmlBlockChanged){
+          result += Dev.transpileHTML(htmlString);
+          //htmlString = "";
+          inHtmlBlock = false;
+        }
+        if(hasHtmlBlockChanged){
+          hasHtmlBlockChanged = false;
+        }
+      }
+
+      else {
+        result += curLine + "\n";
+      }
+
+      //result += "\n";
+    }
+
+    //find end of html parse
+    //replace
+
+  }
+  return result;
+}
+
+
+
+//<div id="wow">   returns: div
+Dev.getTagName = (str) => {
+  str = str.trim();
+  return str.substr(1, str.length-2).trim().split(/\s/)[0];
+}
+
+
 /**
   Returns the bundle as as javascript valid code
   The returned string will have all the HTML syntax transpiled to a render info array
@@ -30,6 +225,7 @@ Dev.bundle = {};
   @return {String}
 */
 Dev.parseBundle = function(bundle){
+  return Dev.transpile(bundle);
   let lines = bundle.split("\n");
   let open = -1;
   let html = "";
