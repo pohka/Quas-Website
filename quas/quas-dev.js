@@ -481,9 +481,16 @@ Dev.transpile = (bundle) => {
           htmlString += curLine
         }
 
-
+        //end of html block
         if(!inMultiLineTag && depth <= 0 && !hasHtmlBlockChanged){
           result += Dev.transpileHTML(htmlString);
+          let els = lines[i].split(/\<\/.*?\>/);
+          if(els.length > 1){
+            result += els[1];
+          }
+          else{
+            result += els[0];
+          }
           inHtmlBlock = false;
         }
         if(hasHtmlBlockChanged){

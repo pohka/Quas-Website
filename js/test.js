@@ -1,6 +1,5 @@
 function test(name){
-  return #<span>{name} from here? \>\></span>
-  ;
+  return #<span>{name} from here? \>\></span>;
 }
 
 function ready(){
@@ -9,7 +8,6 @@ function ready(){
 
     current problems:
     - not escaping \< \> properly (using both)
-    - not including text after root closing tag
   */
   console.log("ready");
   var name = "john";
