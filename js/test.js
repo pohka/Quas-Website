@@ -6,10 +6,10 @@ function ready(){
   */
   console.log("ready");
   let a = (
-    #<div id="myid" class="sss">
-      <br>
-      <span id="test"><br></span>
+    #<div id="myid" class="sss">test
+      <span>aa aa </span>after
     </div>
   );
-  console.log(a);
+  let dom  = Quas.createDOM(a);
+  document.querySelector("#app").append(dom);
 }

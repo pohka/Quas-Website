@@ -24,6 +24,18 @@ const VDOM = {
   },
   addChild : (vdom, childNode) => {
     vdom[2].push(childNode);
+  },
+  getLastChild : (vdom) => {
+    return vdom[2][vdom[2].length-1];
+  },
+  createNode : (tag, attrs, children) => {
+    if(!attrs){
+      attrs = {};
+    }
+    if(!children){
+      children = []
+    }
+    return [tag, attrs, children];
   }
 }
 
@@ -67,6 +79,7 @@ Dev.transpileRecur = (html, isRoot) =>{
   let char, lastChar = "";
   let tagContent = "";
   let insideTag = false;
+  let hasEndedTag = false;
   let children = [];
   let tagDepth = 0;
   let text = "";
@@ -80,6 +93,7 @@ Dev.transpileRecur = (html, isRoot) =>{
   let depth = 0;
 
   for(let i=0; i<html.length; i++){
+    hasEndedTag = false;
 
     char = html.charAt(i);
     if(!inQuote && lastChar != "\\" && char.match(quoteRegex)){
@@ -95,10 +109,10 @@ Dev.transpileRecur = (html, isRoot) =>{
         state = states.insideTag;
         tagContent = "";
 
-        //add text node
-        text = text.trim();
-        if(text.length > 0){
-          children.push([text]);
+        //add text node before new child node
+        let trimmed = text.trim();
+        if(trimmed.length > 0){
+          VDOM.addChild(parent, text);
           text = "";
         }
       }
@@ -106,9 +120,11 @@ Dev.transpileRecur = (html, isRoot) =>{
       else if(char == ">"){
         let tagVDOM = Dev.tagStringToVDOM(tagContent);
         state = states.other;
+        hasEndedTag = true;
 
-        //is opening tag
+        //end of opening tag
         if(tagVDOM){
+
           if(Dev.requiresClosingTag(VDOM.tag(tagVDOM))){
             depth++;
             //add root tag
@@ -128,13 +144,24 @@ Dev.transpileRecur = (html, isRoot) =>{
             VDOM.addChild(parent, tagVDOM);
           }
         }
-        //closing tag
+        //end of closing tag
         else{
           let tagName = tagContent.substr(tagContent.indexOf("/") + 1).trim();
           console.log("closing tag: " + tagName, Dev.requiresClosingTag(tagName));
+
+          console.log(text.length);
           //set parent to parent node
           if(Dev.requiresClosingTag(tagName)){
+
+            //add text node before end of node
+            let trimmed = text.trim();
+            if(trimmed.length > 0){
+              VDOM.addChild(parent, text);
+              text = "";
+            }
+
             depth -= 1;
+
             //end of root tag
             if(depth == 0){
               break;
@@ -142,15 +169,10 @@ Dev.transpileRecur = (html, isRoot) =>{
             else{
               parent = root;
               for(let d=1; d<depth; d++){
-                parent = parent[2][parent[2].length-1]; //last child
+                parent = VDOM.getLastChild(parent); //last child
               }
             }
           }
-
-          //no closing tag needed
-          //else{
-          //  VDOM.addChild(parent, tagVDOM);
-          //}
         }
       }
 
@@ -158,6 +180,11 @@ Dev.transpileRecur = (html, isRoot) =>{
       else if(state == states.insideTag){
         tagContent += char;
       }
+    }
+
+    //keep track of text between tags
+    if(state == states.other && !hasEndedTag){
+      text += char;
     }
 
     lastChar = char;
