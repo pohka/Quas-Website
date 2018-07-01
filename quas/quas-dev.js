@@ -58,9 +58,9 @@ Dev.imports = {
 Dev.bundle = {};
 
 Dev.transpileHTML = (html) => {
-  console.log("html:" + html);
+//  console.log("html:" + html);
   let res = Dev.transpileRecur(html);
-  console.log(res);
+//  console.log(res);
   return JSON.stringify(res);
 
   /*
@@ -147,9 +147,7 @@ Dev.transpileRecur = (html, isRoot) =>{
         //end of closing tag
         else{
           let tagName = tagContent.substr(tagContent.indexOf("/") + 1).trim();
-          console.log("closing tag: " + tagName, Dev.requiresClosingTag(tagName));
 
-          console.log(text.length);
           //set parent to parent node
           if(Dev.requiresClosingTag(tagName)){
 
@@ -232,6 +230,8 @@ Dev.calcTagDepthChange = (line) => {
   let count = 0;
   let curLineWithoutQuotes = line.split(quoteRegex).join("");
   let tags = curLineWithoutQuotes.match(/<.*?>/g);
+
+
   if(tags){
     for(let t=0; t<tags.length; t++){
       let tagName = tags[t].substr(1, tags[t].length-2).split(/\s/)[0];
@@ -265,6 +265,9 @@ Dev.transpile = (bundle) => {
   let htmlText = "";
   let vdom;
   let depth = 0;
+
+  let tagContent = "";
+  let inMultiLineTag = false;
 
 
   for(let i=0; i<lines.length; i++){
@@ -310,15 +313,73 @@ Dev.transpile = (bundle) => {
 
       if(inHtmlBlock){
 
-        htmlString += curLine;
+      //  htmlString += curLine;
+      //console.log("before replac32");
+        let curLineNoQuotes = curLine.replace(new RegExp(quoteRegex, "g"), "");
+        //console.log("after");
+        let change = 0;
 
-        let curLineWithoutQuotes = curLine.split(quoteRegex).join("");
-        //console.log("change:" + Dev.calcTagDepthChange(curLineWithoutQuotes));
-        depth += Dev.calcTagDepthChange(curLineWithoutQuotes);
-        console.log("depth:" + depth, curLine);
-        if(depth <= 0 && !hasHtmlBlockChanged){
+        let openBrackets = curLineNoQuotes.match(/</g);
+        if(openBrackets != null){
+          change += openBrackets.length;
+        }
+        let closeBrackets = curLineNoQuotes.match(/>/g);
+        if(closeBrackets != null){
+          change -= closeBrackets.length;
+        }
+
+        //has at least 1 full tag on this line
+        if(change == 0 && openBrackets && closeBrackets){
+          let tags = curLineNoQuotes.match(/<.*?>/g);
+
+          if(tags){
+            for(let t=0; t<tags.length; t++){
+              let tagName = tags[t].substr(1, tags[t].length-2).split(/\s/)[0];
+              //dont count for when no closing tag is required
+              if(Dev.requiresClosingTag(tagName)){
+                //is closing
+                if(tags[t].charAt(1) == "/"){
+                  //if using closing tag when no required
+                  if(Dev.requiresClosingTag(tagName.substr(1))){
+                    depth -= 1;
+                  }
+                }
+                //is opening
+                else{
+                  depth += 1;
+                }
+              }
+            }
+          }
+          htmlString += curLine;
+        }
+        else if(change > 0){
+          tagContent = Dev.getStringAfterLastOpenBraket(curLine);
+          inMultiLineTag = true;
+        }
+        //in multiline tag
+        else if(inMultiLineTag){
+
+          //end of multiline
+          if(change < 0){
+            tagContent += curLine;
+            inMultiLineTag = false;
+            htmlString += tagContent;
+            tagContent = "";
+            depth += 1;
+          }
+          //within multiline tag, but not ending on this line
+          else{
+            tagContent += curLine;
+          }
+        }
+        else if(!inMultiLineTag && change == 0){
+          htmlString += curLine
+        }
+
+
+        if(!inMultiLineTag && depth <= 0 && !hasHtmlBlockChanged){
           result += Dev.transpileHTML(htmlString);
-          //htmlString = "";
           inHtmlBlock = false;
         }
         if(hasHtmlBlockChanged){
@@ -329,15 +390,38 @@ Dev.transpile = (bundle) => {
       else {
         result += curLine + "\n";
       }
-
-      //result += "\n";
     }
-
-    //find end of html parse
-    //replace
-
   }
   return result;
+}
+
+Dev.getStringAfterLastOpenBraket = (line) => {
+  let indexOfLastBracket = -1;
+  let inQuote = false;
+  let quoteType;
+  let char;
+  let lastChar = "";
+  let quote = /"|`|'/;
+
+  for(let i=0; i<line.length; i++){
+    char = line.charAt(i);
+
+
+    if(!inQuote && char.match(quote)){
+      quoteType = char;
+      inQuote = true;
+    }
+    else if(inQuote && quoteType == char && lastChar != "\\"){
+      inQuote = false;
+    }
+    else if(!inQuote && char == "<"){
+      indexOfLastBracket = i;
+    }
+
+    lastChar = char;
+  }
+
+  return line.substr(indexOfLastBracket);
 }
 
 
