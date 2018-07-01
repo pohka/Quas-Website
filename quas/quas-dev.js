@@ -3,7 +3,32 @@ This script is used for transpiling and bundling development builds
 For production use a static build and remember to remove links to this script
 */
 
-var Dev = {};
+//structure of vdom
+// ["tag", { key, "val" }, []]
+// [ tag, attrs, children]
+const VDOM = {
+  tag : (vdom) => {
+    return vdom[0];
+  },
+  attrs : (vdom) => {
+    return vdom[1];
+  },
+  childNodes : (vdom) => {
+    return vdom[2];
+  },
+  getAttr : (vdom, key) => {
+    return vdom[1][key];
+  },
+  setAttr : (vdom, key, val) => {
+    vdom[1][key] = val;
+  },
+  addChild : (vdom, childNode) => {
+    vdom[2].push(childNode);
+  }
+}
+
+
+const Dev = {};
 
 //tags that require no closing tag
 Dev.noClosingTag = ["img", "source", "br", "hr", "area", "track", "link", "col", "meta", "base", "embed", "param", "input"];
@@ -21,17 +46,38 @@ Dev.imports = {
 Dev.bundle = {};
 
 Dev.transpileHTML = (html) => {
+  console.log("html:" + html);
+  let res = Dev.transpileRecur(html);
+  console.log(res);
+  return JSON.stringify(res);
+
+  /*
+  note:
+  - make a seperate func for parsing the root
+  - and another for the children
+  */
+}
+
+Dev.transpileRecur = (html, isRoot) =>{
   let inQuote = false;
   let quoteType;
-  let inTag = true;
-  let tags = [];
+//  let inTag = false;
+//  let tags = [];
   let quoteRegex = /"(.*?)"|`(.*?)`|'(.*?)'/;
   let char, lastChar = "";
   let tagContent = "";
   let insideTag = false;
-  let vdom = [];
-
-  console.log(html.length);
+  let children = [];
+  let tagDepth = 0;
+  let text = "";
+  let parent;
+  let root;
+  const states = Object.freeze({
+      other : 0,
+      insideTag : 1,
+    });
+  let state  = states.other;
+  let depth = 0;
 
   for(let i=0; i<html.length; i++){
 
@@ -41,30 +87,87 @@ Dev.transpileHTML = (html) => {
       quoteType = char;
     }
 
+    //parse tags
     if(!inQuote){
-      //s tag
+      //start of tag
       if(char == "<"){
-        insideTag = true;
+        //insideTag = true;
+        state = states.insideTag;
         tagContent = "";
-      }
-      //end tag
-      else if(char == ">"){
-        insideTag = false;
-        let tagVDOM = Dev.tagStringToVDOM(tagContent);
-        if(tagVDOM){
-          vdom.push(tagVDOM);
+
+        //add text node
+        text = text.trim();
+        if(text.length > 0){
+          children.push([text]);
+          text = "";
         }
       }
-      //inside tag
-      else{
+      //end of tag
+      else if(char == ">"){
+        let tagVDOM = Dev.tagStringToVDOM(tagContent);
+        state = states.other;
+
+        //is opening tag
+        if(tagVDOM){
+          if(Dev.requiresClosingTag(VDOM.tag(tagVDOM))){
+            depth++;
+            //add root tag
+            if(!root){
+              root = tagVDOM
+              parent = root;
+            }
+            //add child tag and set new parent
+            else{
+              VDOM.addChild(parent, tagVDOM);
+              parent = parent[2][parent[2].length-1];
+            }
+          }
+          //no closing tag required
+          else{
+            //console.log(Dev.requiresClosingTag(VDOM.tag(tagVDOM)));
+            VDOM.addChild(parent, tagVDOM);
+          }
+        }
+        //closing tag
+        else{
+          let tagName = tagContent.substr(tagContent.indexOf("/") + 1).trim();
+          console.log("closing tag: " + tagName, Dev.requiresClosingTag(tagName));
+          //set parent to parent node
+          if(Dev.requiresClosingTag(tagName)){
+            depth -= 1;
+            //end of root tag
+            if(depth == 0){
+              break;
+            }
+            else{
+              parent = root;
+              for(let d=1; d<depth; d++){
+                parent = parent[2][parent[2].length-1]; //last child
+              }
+            }
+          }
+
+          //no closing tag needed
+          //else{
+          //  VDOM.addChild(parent, tagVDOM);
+          //}
+        }
+      }
+
+      //inside tag text e.g. div id="myID"
+      else if(state == states.insideTag){
         tagContent += char;
       }
     }
 
     lastChar = char;
   }
-  console.log("vdom:",vdom);
-  return "1";
+
+  return root;
+}
+
+Dev.requiresClosingTag = (tagName) => {
+  return (Dev.noClosingTag.indexOf(tagName) == -1);
 }
 
 Dev.tagStringToVDOM = (str) =>{
@@ -97,20 +200,21 @@ Dev.tagStringToVDOM = (str) =>{
 
 Dev.calcTagDepthChange = (line) => {
   //ignore all text in quotes
-
  let quoteRegex = /"(.*?)"|`(.*?)`|'(.*?)'/;
  line = line.split(quoteRegex).join("");
-
   let count = 0;
   let curLineWithoutQuotes = line.split(quoteRegex).join("");
   let tags = curLineWithoutQuotes.match(/<.*?>/g);
   if(tags){
     for(let t=0; t<tags.length; t++){
-      let tagName = tags[t].substr(1).split(/\s/)[0];
+      let tagName = tags[t].substr(1, tags[t].length-2).split(/\s/)[0];
       //dont count for when no closing tag is required
-      if(Dev.noClosingTag.indexOf(tagName) == -1){
+      if(Dev.requiresClosingTag(tagName)){
         if(tags[t].charAt(1) == "/"){
-          count -= 1;
+          //if using closing tag when no required
+          if(Dev.requiresClosingTag(tagName.substr(1))){
+            count -= 1;
+          }
         }
         else{
           count += 1;
@@ -178,10 +282,13 @@ Dev.transpile = (bundle) => {
       }
 
       if(inHtmlBlock){
+
         htmlString += curLine;
+
         let curLineWithoutQuotes = curLine.split(quoteRegex).join("");
+        //console.log("change:" + Dev.calcTagDepthChange(curLineWithoutQuotes));
         depth += Dev.calcTagDepthChange(curLineWithoutQuotes);
-        console.log("depth:" + depth);
+        console.log("depth:" + depth, curLine);
         if(depth <= 0 && !hasHtmlBlockChanged){
           result += Dev.transpileHTML(htmlString);
           //htmlString = "";

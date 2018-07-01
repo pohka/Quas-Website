@@ -6,8 +6,9 @@ function ready(){
   */
   console.log("ready");
   let a = (
-    #<div id="myid">
-      hello
+    #<div id="myid" class="sss">
+      <br>
+      <span id="test"><br></span>
     </div>
   );
   console.log(a);
