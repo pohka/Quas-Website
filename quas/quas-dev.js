@@ -59,7 +59,7 @@ Dev.bundle = {};
 
 Dev.transpileHTML = (html) => {
   let res = Dev.transpileRecur(html);
-  let str = Dev.stringifyVDOM(res, 1, true);
+  let str = Dev.stringifyVDOM(res, 1);
   console.log(str);
   return str;
 }
@@ -72,9 +72,10 @@ Dev.tabs = (num) => {
   return s;
 }
 
-Dev.stringifyVDOM = (vdom, tabs, isRoot) => {
+Dev.stringifyVDOM = (vdom, tabs) => {
   if(!Array.isArray(vdom)){
-    return Dev.tabs(tabs) + "\"" + vdom + "\"";
+    let res = Dev.parseProps2(vdom.trimExcess())
+    return Dev.tabs(tabs) + res;
   }
   console.log(vdom);
   let str = "";
@@ -86,7 +87,7 @@ Dev.stringifyVDOM = (vdom, tabs, isRoot) => {
   let attrCount = Object.keys(vdom[1]).length;
   let count = 0;
   for(let a in vdom[1]){
-    str += Dev.tabs(tabs + 2) + a + ":\"" + vdom[1][a] + "\"";
+    str += Dev.tabs(tabs + 2) + a + ":" + Dev.parseProps2(vdom[1][a]);
     count++;
     if(count != attrCount){
       str += ",\n";
@@ -150,8 +151,8 @@ Dev.transpileRecur = (html) =>{
         //add text node before new child node
         let trimmed = text.trim();
         if(trimmed.length > 0){
-          let parsedText = Dev.parseProps2(text);
-          VDOM.addChild(parent, parsedText);
+        //  let parsedText = Dev.parseProps2(text);
+          VDOM.addChild(parent, text);
           text = "";
         }
       }
@@ -193,8 +194,7 @@ Dev.transpileRecur = (html) =>{
             //add text node before end of node
             let trimmed = text.trim();
             if(trimmed.length > 0){
-              let parsedText = Dev.parseProps2(text);
-              VDOM.addChild(parent, parsedText);
+              VDOM.addChild(parent, text);
               text = "";
             }
 
@@ -236,22 +236,37 @@ Dev.transpileRecur = (html) =>{
 }
 
 Dev.parseProps2 = (text) => {
-  return text;
   let char,
       lastChar = "",
       fullText = "",
       propText = "",
-      inProp = false;
+      inProp = false,
+      openIndex = -1,
+      startsWithProp = false,
+      endsWithProp = false;
   for(let i=0; i<text.length; i++){
     let char = text.charAt(i);
     if(!inProp && char == "{"  && lastChar != "\\"){
+      openIndex = i;
       //fullText = fullText.slice(0, -1);
       inProp = true;
     }
     else if(inProp && char == "}" && lastChar != "\\"){
       //fullText = fullText.slice(0, -1);
       inProp = false;
-      fullText += "\"+" + propText + "+\"";
+      if(openIndex > 1){
+        fullText += "\"+"
+      }
+      else{
+        startsWithProp = true;
+      }
+      fullText += propText;
+      if(i != text.length-1){
+        fullText += "+\"";
+      }
+      else{
+        endsWithProp = true;
+      }
       propText = "";
     }
     else if(inProp){
@@ -261,6 +276,12 @@ Dev.parseProps2 = (text) => {
       fullText += char;
     }
     lastChar = char;
+  }
+  if(!startsWithProp){
+    fullText = "\"" + fullText;
+  }
+  if(!endsWithProp){
+    fullText += "\"";
   }
   return fullText;
 }

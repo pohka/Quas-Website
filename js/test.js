@@ -1,4 +1,6 @@
-
+function test(name){
+  return ["span", {}, [name + "1234"]];
+}
 
 function ready(){
   /*
@@ -6,12 +8,11 @@ function ready(){
   */
   console.log("ready");
   var name = "john";
+  var age= 12;
   let a = (
     #<div id="myid" class="sss">
-      <div class="myrealllllllllllly long xcklass name is here"
-      id="test">
-        name: {name} doe
-      </div> after
+      <div class="is{age}"id="test">{name}<br>age: {age}</div>
+       after
     </div>
   );
   console.log(a);
