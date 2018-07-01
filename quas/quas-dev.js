@@ -59,6 +59,7 @@ Dev.bundle = {};
 
 Dev.transpileHTML = (html) => {
   let res = Dev.transpileRecur(html);
+  console.log(res);
   let str = Dev.stringifyVDOM(res, 1);
   console.log(str);
   return str;
@@ -74,6 +75,7 @@ Dev.tabs = (num) => {
 
 Dev.stringifyVDOM = (vdom, tabs) => {
   if(!Array.isArray(vdom)){
+    console.log("before trim:" + vdom);
     let res = Dev.parseProps2(vdom.trimExcess())
     return Dev.tabs(tabs) + res;
   }
@@ -151,10 +153,9 @@ Dev.transpileRecur = (html) =>{
         //add text node before new child node
         let trimmed = text.trim();
         if(trimmed.length > 0){
-        //  let parsedText = Dev.parseProps2(text);
           VDOM.addChild(parent, text);
-          text = "";
         }
+        text = "";
       }
       //end of tag
       else if(char == ">" && lastChar != "\\"){
@@ -195,8 +196,8 @@ Dev.transpileRecur = (html) =>{
             let trimmed = text.trim();
             if(trimmed.length > 0){
               VDOM.addChild(parent, text);
-              text = "";
             }
+            text = "";
 
             depth -= 1;
 
@@ -248,12 +249,11 @@ Dev.parseProps2 = (text) => {
     let char = text.charAt(i);
     if(!inProp && char == "{"  && lastChar != "\\"){
       openIndex = i;
-      //fullText = fullText.slice(0, -1);
       inProp = true;
     }
     else if(inProp && char == "}" && lastChar != "\\"){
-      //fullText = fullText.slice(0, -1);
       inProp = false;
+
       if(openIndex > 1){
         fullText += "\"+"
       }
@@ -837,17 +837,19 @@ Dev.parseProps = function(str){
 String.prototype.trimExcess = function(){
   let end = "";
   let start = "";
+  console.log("str:", this);
 
-  if(this.charAt(0) === " "){
+  if(this.charAt(0) == " "){
     start = " ";
   }
-  if(this.charAt(this.length-1) === " "){
+  if(this.charAt(this.length-1) == " "){
     end = " ";
   }
-  let removedSpace = this.replace(/[\n\r]+|[\s]{2,}/g, '');
-  if(removedSpace === ""){
+  let removedSpace = this.replace(/[\n\r]+|[\s]{2,}/g, ' ');
+  if(removedSpace == ""){
     return "";
   }
+  console.log("res:", (start + removedSpace + end));
   return start + removedSpace + end;
 }
 
