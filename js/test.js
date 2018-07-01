@@ -7,10 +7,8 @@ function ready(){
   console.log("ready");
   let a = (
     #<div id="myid" class="sss">
-      abc
       <div class="myrealllllllllllly long xcklass name is here"
-        id="test">
-          123
+      id="test">ajaxstartsdacasd\<fre asdsds
       </div>
       after
     </div>

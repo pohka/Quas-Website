@@ -70,7 +70,7 @@ Dev.transpileHTML = (html) => {
   */
 }
 
-Dev.transpileRecur = (html, isRoot) =>{
+Dev.transpileRecur = (html) =>{
   let inQuote = false;
   let quoteType;
 //  let inTag = false;
@@ -80,11 +80,11 @@ Dev.transpileRecur = (html, isRoot) =>{
   let tagContent = "";
   let insideTag = false;
   let hasEndedTag = false;
-  let children = [];
-  let tagDepth = 0;
   let text = "";
   let parent;
   let root;
+  const escapeChars = ["<", ">"];
+
   const states = Object.freeze({
       other : 0,
       insideTag : 1,
@@ -101,11 +101,12 @@ Dev.transpileRecur = (html, isRoot) =>{
       quoteType = char;
     }
 
+    //console.log("opening tag:", char == "<" && lastChar != "\\");
+
     //parse tags
     if(!inQuote){
       //start of tag
-      if(char == "<"){
-        //insideTag = true;
+      if(char == "<" && lastChar != "\\"){
         state = states.insideTag;
         tagContent = "";
 
@@ -117,7 +118,7 @@ Dev.transpileRecur = (html, isRoot) =>{
         }
       }
       //end of tag
-      else if(char == ">"){
+      else if(char == ">" && lastChar != "\\"){
         let tagVDOM = Dev.tagStringToVDOM(tagContent);
         state = states.other;
         hasEndedTag = true;
@@ -182,6 +183,10 @@ Dev.transpileRecur = (html, isRoot) =>{
 
     //keep track of text between tags
     if(state == states.other && !hasEndedTag){
+      //check if escapable character
+      if(escapeChars.indexOf(char) > -1 && lastChar == "\\"){
+          text = text.slice(0, -1);
+      }
       text += char;
     }
 
@@ -248,6 +253,19 @@ Dev.calcTagDepthChange = (line) => {
         }
       }
     }
+  }
+  return count;
+}
+
+Dev.matchesForBracket = (str, type) =>{
+  let char, lastChar = "";
+  let count = 0;
+  for(let i=0; i<str.length; i++){
+    char = str.charAt(i);
+    if(lastChar != "\\" &&  char == type){
+      count++;
+    }
+    lastChar = char;
   }
   return count;
 }
@@ -319,17 +337,13 @@ Dev.transpile = (bundle) => {
         //console.log("after");
         let change = 0;
 
-        let openBrackets = curLineNoQuotes.match(/</g);
-        if(openBrackets != null){
-          change += openBrackets.length;
-        }
-        let closeBrackets = curLineNoQuotes.match(/>/g);
-        if(closeBrackets != null){
-          change -= closeBrackets.length;
-        }
+        let openBrackets = Dev.matchesForBracket(curLineNoQuotes, "<");
+        change += openBrackets;
+        let closeBrackets = Dev.matchesForBracket(curLineNoQuotes, ">");
+        change -= closeBrackets;
 
         //has at least 1 full tag on this line
-        if(change == 0 && openBrackets && closeBrackets){
+        if(change == 0 && openBrackets > 0 && closeBrackets > 0){
           let tags = curLineNoQuotes.match(/<.*?>/g);
 
           if(tags){
