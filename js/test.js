@@ -5,12 +5,13 @@ function ready(){
     comment block;
   */
   console.log("ready");
+  var name = "john";
   let a = (
     #<div id="myid" class="sss">
       <div class="myrealllllllllllly long xcklass name is here"
-      id="test">ajaxstartsdacasd\<fre asdsds
-      </div>
-      after
+      id="test">
+        name: {name} doe
+      </div> after
     </div>
   );
   console.log(a);

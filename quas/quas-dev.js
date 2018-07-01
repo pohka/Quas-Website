@@ -58,16 +58,55 @@ Dev.imports = {
 Dev.bundle = {};
 
 Dev.transpileHTML = (html) => {
-//  console.log("html:" + html);
   let res = Dev.transpileRecur(html);
-//  console.log(res);
-  return JSON.stringify(res);
+  let str = Dev.stringifyVDOM(res, 1, true);
+  console.log(str);
+  return str;
+}
 
-  /*
-  note:
-  - make a seperate func for parsing the root
-  - and another for the children
-  */
+Dev.tabs = (num) => {
+  let s = "";
+  for(let i=0; i<num; i++){
+    s += "  ";
+  }
+  return s;
+}
+
+Dev.stringifyVDOM = (vdom, tabs, isRoot) => {
+  if(!Array.isArray(vdom)){
+    return Dev.tabs(tabs) + "\"" + vdom + "\"";
+  }
+  console.log(vdom);
+  let str = "";
+  str += Dev.tabs(tabs) + "[\n";
+  str += Dev.tabs(tabs + 1) + "\"" + VDOM.tag(vdom) + "\",\n";
+
+  //attributes
+  str += Dev.tabs(tabs + 1) + "{\n";
+  let attrCount = Object.keys(vdom[1]).length;
+  let count = 0;
+  for(let a in vdom[1]){
+    str += Dev.tabs(tabs + 2) + a + ":\"" + vdom[1][a] + "\"";
+    count++;
+    if(count != attrCount){
+      str += ",\n";
+    }
+  }
+  str += "\n" + Dev.tabs(tabs + 1) + "},\n";
+
+  //child nodes
+  str += Dev.tabs(tabs + 1);
+  str += "[\n";
+  for(let i=0; i<vdom[2].length; i++){
+    str += Dev.stringifyVDOM(vdom[2][i], tabs+2);
+    if(i < vdom[2].length-1){
+      str +=  ",\n";
+    }
+  }
+  str += "\n" + Dev.tabs(tabs + 1) + "]"; //close child nodes
+  str += "\n" + Dev.tabs(tabs) + "]"; //close current node
+
+  return str;
 }
 
 Dev.transpileRecur = (html) =>{
@@ -101,8 +140,6 @@ Dev.transpileRecur = (html) =>{
       quoteType = char;
     }
 
-    //console.log("opening tag:", char == "<" && lastChar != "\\");
-
     //parse tags
     if(!inQuote){
       //start of tag
@@ -113,7 +150,8 @@ Dev.transpileRecur = (html) =>{
         //add text node before new child node
         let trimmed = text.trim();
         if(trimmed.length > 0){
-          VDOM.addChild(parent, text);
+          let parsedText = Dev.parseProps2(text);
+          VDOM.addChild(parent, parsedText);
           text = "";
         }
       }
@@ -155,7 +193,8 @@ Dev.transpileRecur = (html) =>{
             //add text node before end of node
             let trimmed = text.trim();
             if(trimmed.length > 0){
-              VDOM.addChild(parent, text);
+              let parsedText = Dev.parseProps2(text);
+              VDOM.addChild(parent, parsedText);
               text = "";
             }
 
@@ -196,11 +235,41 @@ Dev.transpileRecur = (html) =>{
   return root;
 }
 
+Dev.parseProps2 = (text) => {
+  return text;
+  let char,
+      lastChar = "",
+      fullText = "",
+      propText = "",
+      inProp = false;
+  for(let i=0; i<text.length; i++){
+    let char = text.charAt(i);
+    if(!inProp && char == "{"  && lastChar != "\\"){
+      //fullText = fullText.slice(0, -1);
+      inProp = true;
+    }
+    else if(inProp && char == "}" && lastChar != "\\"){
+      //fullText = fullText.slice(0, -1);
+      inProp = false;
+      fullText += "\"+" + propText + "+\"";
+      propText = "";
+    }
+    else if(inProp){
+      propText += char;
+    }
+    else{
+      fullText += char;
+    }
+    lastChar = char;
+  }
+  return fullText;
+}
+
 Dev.requiresClosingTag = (tagName) => {
   return (Dev.noClosingTag.indexOf(tagName) == -1);
 }
 
-Dev.tagStringToVDOM = (str) =>{
+Dev.tagStringToVDOM = (str) => {
   str = str.trim();
   //return undefined if closing tag
   if(str.charAt(0) == "/"){
