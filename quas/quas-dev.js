@@ -58,8 +58,9 @@ Dev.imports = {
 Dev.bundle = {};
 
 Dev.transpileHTML = (html) => {
+  console.log("html", html);
   let res = Dev.transpileRecur(html);
-  console.log(res);
+  console.log("res:",res);
   let str = Dev.stringifyVDOM(res, 1);
   console.log(str);
   return str;
@@ -162,6 +163,7 @@ Dev.transpileRecur = (html) =>{
         let tagVDOM = Dev.tagStringToVDOM(tagContent);
         state = states.other;
         hasEndedTag = true;
+        console.log(tagContent);
 
         //end of opening tag
         if(tagVDOM){
@@ -376,12 +378,14 @@ Dev.transpile = (bundle) => {
 
   let tagContent = "";
   let inMultiLineTag = false;
+  let prevLine = "";
 
 
   for(let i=0; i<lines.length; i++){
     let lineContents = lines[i].split(quoteRegex).join(" ");
     let hasCommentBlockChange = false;
     let curLine = "";
+
 
     //remove comment block
     if(!inCommentBlock && lineContents.indexOf("/*") > -1){
@@ -404,7 +408,8 @@ Dev.transpile = (bundle) => {
 
     if(!inCommentBlock){
       //remove end of line comment
-      curLine = curLine.split("//")[0];
+      curLine = prevLine.split("//")[0] + curLine.split("//")[0];
+      prevLine = "";
 
       //find start of html parse
       if(!inHtmlBlock && curLine.indexOf("#<") > -1){
@@ -466,9 +471,16 @@ Dev.transpile = (bundle) => {
 
           //end of multiline
           if(change < 0){
-            tagContent += curLine;
             inMultiLineTag = false;
-            htmlString += tagContent;
+            //split curline by end of multiLine tag
+            let arr = Dev.splitByEndMultiLineTag(curLine);
+            console.log("arr", arr);
+
+            //add tag content for multiline tag
+            htmlString += tagContent + arr[0] + ">";
+
+            //add the rest on the prevLine
+            prevLine = arr[1];
             tagContent = "";
             depth += 1;
           }
@@ -504,6 +516,28 @@ Dev.transpile = (bundle) => {
     }
   }
   return result;
+}
+
+Dev.splitByEndMultiLineTag = (line) => {
+  let inQuote = false;
+  let quoteType, char, lastChar = "";
+  for(let i=0; i<line.length; i++){
+    char = line.charAt(i);
+    if(lastChar != "\\"){
+      if(!inQuote && char.match(/"|'|`/)){
+        inQuote = true;
+        quoteType = char;
+      }
+      else if(inQuote && char == quoteType){
+        inQuote = false;
+      }
+      else if(char == ">" && lastChar != "\\"){
+        return [line.substr(0, i), line.substr(i+1)];
+      }
+    }
+
+    lastChar = char;
+  }
 }
 
 Dev.getStringAfterLastOpenBraket = (line) => {
