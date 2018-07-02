@@ -2,17 +2,15 @@
 Making your own component is as simple as making a new class which extends Component and giving it a render function. The render function should contain quas tags. The quas tags should be on seperate lines and everything between the opening and closing quas tag will use a html like syntax.
 
 ```js
-class MyFirstComponent extends Component{
+class Hello extends Component{
 	render(){
-		<quas>
-			<div>Hello World</div>
-		</quas>
+		return #<div>Hello World</div>
 	}
 }
 
 // starting point
 function ready(){
-	let myComponent = new MyFirstComponent();
+	let myComponent = new Hello();
 	Quas.render(myComponent, '#app'); //render to the body tag
 }
 ```

@@ -11,6 +11,22 @@
   @prop {Object} currentRoute - the current route being displayed
 */
 Quas.export({
+
+  //initalization
+  init : () => {
+    Router.routes = [];
+    Router.aliases = [];
+    Router.redirects = [];
+    Router.currentRoute;
+    Router.comps = []; //all the current instances of components
+
+    //handle back and forward buttons
+     window.addEventListener("popstate", function(e) {
+       let route = Router.findRouteByPath(e.target.location.pathname);
+       Router.push(route, true);
+     });
+  },
+
   /**
     ---
     maps a route and sets the fullpath key for all the child routes
@@ -593,20 +609,5 @@ Quas.export({
          Router.comps[r].onAfterPush();
        }
      }
-  },
-
-  //initalization
-  init : () => {
-    Router.routes = [];
-    Router.aliases = [];
-    Router.redirects = [];
-    Router.currentRoute;
-    Router.comps = []; //all the current instances of components
-
-    //handle back and forward buttons
-     window.addEventListener("popstate", function(e) {
-       let route = Router.findRouteByPath(e.target.location.pathname);
-       Router.push(route, true);
-     });
   }
 });

@@ -14,16 +14,16 @@ Quas.export({
     If you are using the Router module you must also call this in onAfterPush( )
     ---
 
-    @param {Number} offset - offset from the top of the element
+    @param {Number} offsetY - offset from the top of the element
   */
-  toHash : (offset) =>{
+  toHash : (offsetY) =>{
     let hash = window.location.hash;
     if(hash){
       let el = document.querySelector(hash);
       if(el != null){
         let y = el.offsetTop;
-        if(offset){
-          y += offset;
+        if(offsetY){
+          y += offsetY;
         }
         window.scrollTo(0, y);
       }

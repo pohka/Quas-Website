@@ -158,7 +158,9 @@ Dev.imports = {
 Dev.bundle = {};
 
 /*
-  transpiles a javascript file into valid syntax
+  ---
+  Transpiles a JavaScript file with HTML syntax into thr AST syntax
+  ---
 
   @param {String} fileContents
 
@@ -317,7 +319,13 @@ Dev.transpile = (bundle) => {
 }
 
 /*
-  takes a string with html syntax and returns a valid js array matching the vdom AST
+  ---
+  Takes a string with html syntax and returns a valid js array matching the vdom AST
+  ---
+
+  @param {String} html
+
+  @return {String}
 */
 Dev.transpileHTMLBlock = (html) => {
   let res = Dev.convertHTMLStringToVDOM(html);
@@ -326,7 +334,9 @@ Dev.transpileHTMLBlock = (html) => {
 
 
 /*
-  converts a html string to a vdom AST
+  ---
+  Converts a html string to a vdom AST
+  ---
 
   @param {String} html
 
@@ -466,7 +476,9 @@ Dev.convertHTMLStringToVDOM = (html) =>{
 
 
 /*
-  converts a vdom to string
+  ---
+  Converts a vdom AST to String
+  ---
 
   @param {AST} vdom
   @param {Number} startingTabs
@@ -523,7 +535,9 @@ Dev.tabs = (num) => {
 }
 
 /*
-  parses the props out a string for use with stringifyVDOM()
+  ---
+  Parses the props out a string for use with stringifyVDOM()
+  ---
 
   @param {String} text
 
@@ -580,7 +594,9 @@ Dev.parseProps = (text) => {
 }
 
 /*
-  returns true if the tag requires a closing tag
+  ---
+  Returns true if the tag requires a closing tag
+  ---
 
   @param {String} tag
 
@@ -593,8 +609,10 @@ Dev.requiresClosingTag = (tagName) => {
 
 
 /*
-  converts the text between tags to a vdom AST
+  ---
+  Converts the text between tags to a vdom AST
   e.g. div id="myid"   =>   ["div", { id : "myid" }, []]
+  ---
 
   @param {String} str
 
@@ -627,7 +645,9 @@ Dev.tagStringToVDOM = (str) => {
 }
 
 /*
-  splits a string by /\s+/ spaces, but not if the space(s) are in quotes
+  ---
+  Splits a string by /\s+/ spaces, but not if the space(s) are in quotes
+  ---
 
   @param {String} str
 
@@ -663,6 +683,15 @@ Dev.splitBySpaceButNotInQuotes = (str) => {
   return arr;
 }
 
+/*
+  ---
+  Calculates the HTML tag depth change of the currently line
+  ---
+
+  @param {String} line
+
+  @return {Number}
+*/
 Dev.calcTagDepthChange = (line) => {
   //ignore all text in quotes
  let quoteRegex = /"(.*?)"|`(.*?)`|'(.*?)'/;
@@ -692,6 +721,16 @@ Dev.calcTagDepthChange = (line) => {
   return count;
 }
 
+/*
+  ---
+  Countes the number of matches for a character with no escape
+  ---
+
+  @param {String} str
+  @param {String} type
+
+  @return {Number}
+*/
 Dev.matchesForBracket = (str, type) =>{
   let char, lastChar = "";
   let count = 0;
@@ -707,7 +746,9 @@ Dev.matchesForBracket = (str, type) =>{
 
 
 /*
-  splits a line by the first occurance of >
+  ---
+  Splits a line by the first occurance of >
+  ---
 
   @param {String} line
 
@@ -736,7 +777,9 @@ Dev.splitByEndMultiLineTag = (line) => {
 }
 
 /*
-  returns the string after <
+  ---
+  Returns the string after <
+  ---
 
   @param {String} line
 
@@ -775,7 +818,9 @@ Dev.getStringAfterLastOpenBraket = (line) => {
 
 
 /**
+  ---
   Returns a string with the excess white spacing removed, for use with text nodes
+  ---
 
   @return {String}
 */
@@ -798,7 +843,9 @@ String.prototype.trimExcess = function(){
 
 
 /**
+  ---
   Exports file(s) for a static build
+  ---
 
   @param {String[]} content
   @param {String} filename
@@ -818,7 +865,15 @@ Dev.exportToFile = function(content, filename){
   document.body.removeChild(element);
 }
 
-//imports a file
+/*
+  ---
+  Loads a file asynchronously and adds it to Dev.imports
+  ---
+
+  @param {String} path - path to the file
+  @param {String} type - extention of the file
+  @param {String} key - key name for the import in modules
+*/
 Dev.import = function(path, type, key){
   if(Dev.imports[type] === undefined){
     Dev.imports[type] = {
@@ -856,7 +911,13 @@ Dev.import = function(path, type, key){
   });
 }
 
-//concatanate and add the current imports
+/*
+  ---
+  Concatanates and adds the imported files to the head of the document
+  ---
+
+  @param {String} type - extention of the file
+*/
 Dev.addImports = function(type){
   let bundle = "";
   if(type == "js"){
@@ -915,7 +976,12 @@ Dev.addImports = function(type){
   }
 }
 
-//for development builds
+/*
+  ---
+  Dynamically loads the bundle.
+  This is only for development builds and will run much slower than a static export
+  ---
+*/
 Dev.load = function(){
   let mainFile;
   if(!Dev.main){
@@ -942,7 +1008,15 @@ Dev.load = function(){
   });
 }
 
-//checks a javascript file to see if it has any imports
+/*
+  ---
+  Checks a JavaScript file to see if it has any imports
+  ---
+
+  @param {String} filename - file path 
+  @param {String} file - file content
+  @param {String} key - key name for the import in modules
+*/
 Dev.parseImports = (filename, file, key) => {
   //check if this file key has already been imported
   for(let i=0; i<Dev.imports.js.content.length; i++){
@@ -1015,7 +1089,29 @@ Dev.parseImports = (filename, file, key) => {
   return hasImport;
 }
 
-//export the bundle
+/**
+  ---
+  Export the current bundle
+  ---
+
+  ```
+  //downloads both bundle.css and bundel.js
+  Dev.build();
+
+  //downloads both sample.css and sample.js
+  Dev.build("sample");
+
+  //downloads JavaScript bundle as bun.js
+  Dev.build("bun", "js");
+
+  //downloads Css bundle as mystyle.css
+  Dev.build("mystyle", "css");
+  ```
+
+  @param {String} fileOutName - (optional) name of the output file
+  @param {String} extentionName - (optional) js or css, by default it will do both
+
+*/
 Dev.build = function(filename, extention){
   if(!filename){
     var filename = "bundle";
@@ -1036,6 +1132,7 @@ Dev.build = function(filename, extention){
   }
 }
 
+//dynamicly load and build the project
 document.addEventListener("DOMContentLoaded", function(event) {
   Dev.load();
 });

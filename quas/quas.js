@@ -12,8 +12,8 @@
 
   @prop {Object} props - All the properties for this component
   @prop {Boolean} isPure - If true the component won't update once mounted
-  @prop {DOMElement} dom - Root DOMElement
-  @prop {Array} vdom - Virtual dom for this component
+  @prop {Element} dom - Root Element
+  @prop {AST} vdom - Virtual dom for this component
 */
 
 class Component{
@@ -56,7 +56,6 @@ class Component{
 
 
   /**
-    # func
     ---
     Returns true if this component has been mounted to the DOM tree
     ---
@@ -88,7 +87,7 @@ class Component{
 
 
 /**
-  # class
+  # class - Quas
   ---
   Main Library
   ---
@@ -98,13 +97,12 @@ class Component{
 */
 const Quas = {
   /**
-    # func
     ---
     Mounts a component to the DOM tree, however if the Component is already mounted it will update the component
     ---
 
     @param {Component} component - component to mount
-    @param {String|DOMElement} parent - the parent node
+    @param {String|Element} parent - the parent node
 
 
     ```
@@ -129,11 +127,11 @@ const Quas = {
     //first time rendering
     if(!comp.isMounted() && parent !== null && parent){
       comp.vdom = comp.render();
-      comp.dom = Quas.createDOM(comp.vdom, comp);
+      comp.dom = Quas.createElement(comp.vdom, comp);
       parent.appendChild(comp.dom);
     }
 
-    //diff the vdom
+    //diff the vdom if mounted and not pure
     else if(comp.isMounted() && !comp.isPure){
       let newVDOM = comp.render();
 
@@ -148,12 +146,14 @@ const Quas = {
   },
 
   /*
+    ---
     diffs the root virtual dom
     returns true if a difference was found
+    ---
 
      @param {Component} comp
-     @param {Array} currentVDOM
-     @param {Array} newVDOM
+     @param {AST} currentVDOM
+     @param {AST} newVDOM
 
      @return {Boolean}
   */
@@ -176,7 +176,7 @@ const Quas = {
 
     //swap out the root dom
     if(hasDiff){
-      let newDOM = Quas.createDOM(newVDOM, comp);
+      let newDOM = Quas.createElement(newVDOM, comp);
       comp.dom.parentNode.replaceChild(newDOM, comp.dom);
       comp.dom = newDOM;
     }
@@ -184,16 +184,18 @@ const Quas = {
   },
 
   /*
+    ---
     recursively diffs the virtual dom of a component
     returns:
     0 - if not change to the node
     1 - if added a node to the parent
     -1 - if this node was removed
+    ---
 
      @param {Component} component
-     @param {DOMElement} parentNode
-     @param {Array} currentVDOM
-     @param {Array} newVDOM
+     @param {Element} parentNode
+     @param {AST} currentVDOM
+     @param {AST} newVDOM
 
      @return {Number}
   */
@@ -221,14 +223,14 @@ const Quas = {
 
     //old vdom is text node and new vdom is not a text node
     else if(vdom && vdom.constructor == String && newVDOM.constructor != String){
-      let newDOM = Quas.createDOM(newVDOM, comp);
+      let newDOM = Quas.createElement(newVDOM, comp);
       parent.replaceChild(newDOM, dom);
       return returnVal;
     }
 
     //old vdom doesn't have this new dom element
     if(!vdom){
-      let newDOM = Quas.createDOM(newVDOM, comp);
+      let newDOM = Quas.createElement(newVDOM, comp);
       parent.appendChild(newDOM);
       returnVal = 1;
       return returnVal;
@@ -236,7 +238,7 @@ const Quas = {
     else{
       //diff tags
       if(vdom[0] != newVDOM[0]){
-        let newDOM = Quas.createDOM(newVDOM, comp);
+        let newDOM = Quas.createElement(newVDOM, comp);
         if(!dom){
           parent.appendChild(newDOM);
           returnVal = 1;
@@ -363,16 +365,16 @@ const Quas = {
     ---
 
     ```
-    Quas.createDOM(vdom, comp);
+    Quas.createElement(vdom, comp);
     ```
 
     @param {AST} vdom - description of the element
     @param {Component} component - the component of the vdom
-    @param {String|DOMElement|undefined} parent - (exclude) parent vdom node
+    @param {String|Element|undefined} parent - (exclude) parent vdom node
 
-    @return {DOMElement|String}
+    @return {Element|String}
   */
-  createDOM : (vdom, comp, parent) => {
+  createElement : (vdom, comp, parent) => {
     //if a text node
     if(vdom.constructor === String){
       if(!parent){
@@ -438,7 +440,7 @@ const Quas = {
     //children
     if(children !== undefined){
       for(let i in children){
-        let child = Quas.createDOM(children[i], comp, el);
+        let child = Quas.createElement(children[i], comp, el);
         if(child !== undefined){
           el.appendChild(child);
         }
@@ -647,13 +649,15 @@ const Quas = {
   },
 
   /*
+    ---
     Evaluates a custom attribute
+    ---
 
-    @param {String} key the key name of the attr
-    @param {String|?} data the value of the attr
-    @param {Array} parentVDOM the vdom of this node
-    @param {Component} component the componet of this custom attribute
-    @param {DOMElement} dom the com of the component
+    @param {String} key - the key name of the attr
+    @param {String|?} data - the value of the attr
+    @param {Array} parentVDOM - the vdom of this node
+    @param {Component} component - the componet of this custom attribute
+    @param {Element} dom - the com of the component
 
   */
   evalCustomAttr : (key, data, parentVDOM, comp, dom) => {
@@ -700,7 +704,6 @@ const Quas = {
   },
 
   /**
-    # func
     ---
     Returns an object with the browser info:
       - name : browser name,
@@ -732,15 +735,14 @@ const Quas = {
   },
 
   /**
-    # func
     ---
     Returns the data from the url in as an object, it will also decode the URI
     ---
     @return {Object}
 
     ```
-    //url: /home?key=val&foo=bar
-    //=> {key : "val", foo : "bar"}
+    // url: /home?key=val&foo=bar
+    // => {key : "val", foo : "bar"}
     ```
   */
   getUrlValues : () => {
@@ -760,7 +762,6 @@ const Quas = {
   },
 
   /**
-    # func
     ---
     Set or change variables in the url
     If the value == "" then the value is removed form the url
@@ -769,7 +770,7 @@ const Quas = {
     Note: values will be encoded so they are allowed to have spaces
     ---
 
-    @param {OBJECT} values - new url values
+    @param {Object} values - new url values
     @param {Boolean} reload - (optional)
 
 

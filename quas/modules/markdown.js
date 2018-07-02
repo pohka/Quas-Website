@@ -28,7 +28,8 @@ Quas.export({
     ---
 
     @param {String} text - plain text
-    @return {Array}
+
+    @return {Array<AST>}
   */
   parseToVDOM : (text)=>{
     let vdoms = [];

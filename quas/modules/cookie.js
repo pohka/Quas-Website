@@ -6,7 +6,6 @@
 */
 Quas.export({
   /**
-    # func
     ---
     Returns a cookie value by key
     ---
@@ -35,7 +34,6 @@ Quas.export({
   },
 
   /**
-  # func
   ---
   Sets a cookie
   ---
@@ -59,7 +57,6 @@ Quas.export({
   },
 
   /**
-    # func
     ---
     Removes a cookie by key
     ---

@@ -10,11 +10,9 @@
 
 
   ```
-  <quas>
-    <div>
+    #<div>
       <img q-async-imgsrc="/images/1.png"></img>
     </div>
-  </quas>
   ```
 */
 Quas.export({
