@@ -9,13 +9,11 @@ Quas.export(
 
     render(){
       return (
-        <quas>
-          <div class="card">
+          #<div class="card">
             <img src="/img/{this.props.img}">
             <h3>{this.props.title}</h3>
             <span>{this.props.text}</span>
           </div>
-        </quas>
       );
     }
 });

@@ -40,8 +40,7 @@ Quas.export(
 
     render(){
       return (
-        <quas>
-          <div>
+          #<div>
             //landing top
             <div class="landing-top">
               <img class="landing-logo" q-async-imgsrc="/img/logo_landing.png">
@@ -51,14 +50,13 @@ Quas.export(
               </div>
             </div>
             <h2 class="section-heading">Features</h2>
-            <div class="card-con" id="card-row-1">
-              {this.props.cards[0].render(), this.props.cards[1].render(), this.props.cards[2].render()} //must put them in array for multiple components
-            </div>
-            <div class="card-con" id="card-row-2">
-              {this.props.cards[3].render(), this.props.cards[4].render(), this.props.cards[5].render()} //must put them in array for multiple components
-            </div>
+            <div class="card-con" id="card-row-1">{
+              this.props.cards[0].render(), this.props.cards[1].render(), this.props.cards[2].render()
+            }</div>
+            <div class="card-con" id="card-row-2">{
+              this.props.cards[3].render(), this.props.cards[4].render(), this.props.cards[5].render()
+            }</div>
           </div>
-        </quas>
       );
     }
   }
