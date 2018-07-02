@@ -17,8 +17,6 @@ import APIBody from "/comps/api.js"
 import "/quas-site.css"
 
 
-
-
 function ready(){
   console.log("ready");
 

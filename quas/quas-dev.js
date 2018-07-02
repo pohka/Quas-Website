@@ -545,7 +545,7 @@ Dev.parseProps = (text) => {
     else if(inProp && char == "}" && lastChar != "\\"){
       inProp = false;
 
-      if(openIndex > 1){
+      if(openIndex >= 1){
         fullText += "\"+"
       }
       else{

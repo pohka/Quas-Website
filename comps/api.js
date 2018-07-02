@@ -112,7 +112,7 @@ Quas.export(
     }
 
     static genOverviewFuncListItem(func){
-      return #<li><a href="\#{func.name}" target="push">{func.name}</a></li>;
+      return #<li><a href="#{func.name}" target="push">{func.name}</a></li>;
     }
 
     static genOverviewPropListItem(prop){

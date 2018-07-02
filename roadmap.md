@@ -42,21 +42,7 @@
   * click
 * new transpiler:
   * arr.push(#<div>my item</div>); - this is not working
-  * #{func.name} not parsing for attrs
 
 ## routing features to add
 * onBeforePush() - e.g. user navigates away but the current page has input data that they might not want to lose
-* fetch data and then navigate if no error
-
-
-## issue
-transpile error:
-<quas>
-  <h1>
-    {cls.name}
-    <span>
-      extends
-      <a href="/api/{cls.super}" target="push">{cls.super}</a>
-    </span>
-  </h1>
-</quas>
+* fetch data and then navigate if no caught error
