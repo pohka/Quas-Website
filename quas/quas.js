@@ -356,89 +356,39 @@ class Quas{
     return returnVal;
   }
 
-  //todo: remove?
-  /*
-    # func
+  /**
     ---
-    Mounts the component in a custom place
-
-    rule options:
-    * prepend     - insert as the first child to the parent
-    * replace     - removes all the children and appends the element to the parent
-    * #id         - insert after a child with this id. You can also use any value query selector
-    * #id before  - insert before a child with this id
-
+    Creates a DOM Element using the vdom and adds it as a child to the parent.
+    When called the parent parameter should be undefined
     ---
 
-    @param {Component} component
-    @param {String|DOMElement} parent -
-    @param {String} rule - the custom rendering rule
+    ```
+    Quas.createDOM(vdom, comp);
+    ```
+
+    @param {AST} vdom - description of the element
+    @param {Component} component - the component of the vdom
+    @param {String|DOMElement|undefined} parent - (exclude) parent vdom node
+
+    @return {DOMElement|String}
   */
-  static renderCustom(comp, parent, target){
-    if(parent.constructor === String){
-      parent = document.querySelector(parent);
-    }
-    if(parent !== null){
-      comp.vdom = comp.render();
-      comp.dom = Quas.createDOM(comp.vdom, comp);
-      if(target === undefined){
-        parent.appendChild(comp.dom);
-      }
-      else if(target === "prepend"){
-        parent.insertBefore(comp.dom, parent.childNodes[0]);
-      }
-      else if(target === "replace"){
-        while(parent.hasChildNodes()){
-          parent.removeChild(parent.childNodes[0]);
-        }
-        parent.appendChild(comp.dom);
+  static createDOM(vdom, comp, parent){
+    //if a text node
+    if(vdom.constructor === String){
+      if(!parent){
+        return document.createTextNode(vdom);
       }
       else{
-        let arr = target.split(" ");
-        let sel = arr[0];
-        let before = (arr[1]!==undefined && arr[1]==="before");
-        let t = parent.querySelector(sel);
-
-        //after
-        if(!before){
-          t = t.nextSibling;
-        }
-
-        if(t !== null){
-          parent.insertBefore(comp.dom, t);
-        }
-        else{
-          parent.appendChild(comp.dom);
-        }
+        parent.appendChild(document.createTextNode(vdom));
+        return;
       }
     }
-  }
 
-  //todo: split into 2 functions: 1. create the DOM element, 2. add dom to parent
-  /**
-    Creates a DOM Element using the vdom and adds it as a child to the parent
-    returns the newly created element
-
-    @param {Array} vdom - description of the element
-    @param {Object} component - the component of the vdom
-    @param {String|DOMElement} parent - (exclude) parent vdom node
-
-    @return {DOMElement}
-  */
-  static createDOM(info, comp, parent){
-    //appending the text context
-    if(info.constructor === String){
-      info = info.replace(/--\/\(/g, ")"); //escape brakcet, must do a better solution
-      parent.appendChild(document.createTextNode(info));
-      return;
-    }
-
-    let tag = info[0];
-    let attrs = info[1];
-    let children = info[2];
-    let el = document.createElement(tag);
-
-
+    let tag = vdom[0];
+    let attrs = vdom[1];
+    let children = vdom[2];
+    let el = document.createElement(tag)
+    let root;
 
     //attributes
     for(let a in attrs){
@@ -446,7 +396,7 @@ class Quas{
       let prefix = a.substr(0,2);
       //custom attribute
       if(prefix === "q-"){
-        Quas.evalCustomAttr(a, attrs[a], info, comp, el);
+        Quas.evalCustomAttr(a, attrs[a], vdom, comp, el);
       }
       //event
       else if(prefix === "on"){

@@ -19,6 +19,9 @@
     * fix all the custom attrs
     * remove need of quas tags
   * dealing events in child components
+  * form handling
+  * handling of animations (entry and exit)
+  * keys, so components and list items don't do unnecessary rerender
 
 
 ## important stuff
