@@ -8,10 +8,10 @@ import Async from "/quas/modules/async.js"
 import Navbar from "/comps/navbar.js"
 // import DocsNav from "/comps/docs-nav.js"
 // import Body from "/comps/body.js"
-// import Error404 from "/comps/404.js"
+import Error404 from "/comps/404.js"
 //
 import LandingBody from "/comps/landing-body.js"
-// import DownloadBody from "/comps/download-body.js"
+import DownloadBody from "/comps/download-body.js"
 // import DocsBody from "/comps/docs-body.js"
 // import APIBody from "/comps/api.js"
 //
@@ -73,7 +73,7 @@ function ready(){
       }
     ]
   });
-  /*
+
   Router.map({
     id : "download",
     path : "/download",
@@ -88,7 +88,7 @@ function ready(){
       }
     ]
   });
-
+/*
   Router.map({
     id : "api",
     path : "/api/:id",
@@ -106,7 +106,7 @@ function ready(){
       }
     ]
   });
-
+*/
 
   let docsPages = [
     {
@@ -119,7 +119,7 @@ function ready(){
     }
   ];
 
-
+/*
   Router.map({
     id : "docs",
     path : "/docs/:page",
@@ -137,6 +137,7 @@ function ready(){
       }
     ]
   });
+*/
 
   Router.setRoute404({
     title : "404",
@@ -151,6 +152,7 @@ function ready(){
     ]
   });
 
+/*
   Router.addRedirect({
     from : "/other/:page",
     to : "/docs/:page"
