@@ -20,7 +20,7 @@ function ready(){
       before
       <div>
         My name is {name} and <br>my shoe size is {age}
-        but I am {(age+age)} <span> after {month}</span>
+        but I am {(age+age)} <span id="month"> after {month}</span>
       </div>
       //ignore me
       /*and me*/---

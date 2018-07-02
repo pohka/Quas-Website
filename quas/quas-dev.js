@@ -11,27 +11,112 @@ structure of vdom:
  [ tag, attrs, children]
  */
 const VDOM = {
+  /**
+    ---
+    returns the tag of the given vdom
+    ---
+
+    @param {AST} vdom
+
+    @return {String}
+  */
   tag : (vdom) => {
     return vdom[0];
   },
+  /**
+    ---
+    returns the attributes for the given vdom
+    ---
+
+    @param {AST} vdom
+
+    @return {Object}
+  */
   attrs : (vdom) => {
     return vdom[1];
   },
+
+  /**
+    ---
+    returns all the child nodes of the given vdom
+    ---
+
+    @param {AST} vdom
+
+    @return {Array<AST|String>}
+  */
   childNodes : (vdom) => {
     return vdom[2];
   },
+  /**
+    ---
+    returns the value of an attribute
+    ---
+
+    @param {AST} vdom
+    @param {String} key
+
+    @return  {String}
+  */
   getAttr : (vdom, key) => {
     return vdom[1][key];
   },
+  /**
+    ---
+    Sets an attribute on the given vdom
+    ---
+
+    ```
+    let myVDom = VDOM.createNode("div");
+    VDOM.setAttr(myVDom, "class", "myclass");
+    ```
+
+    @param {AST} vdom
+    @param {String} key
+    @param {String} value
+  */
   setAttr : (vdom, key, val) => {
     vdom[1][key] = val;
   },
+  /**
+    ---
+    Adds a child node to the given AST
+    ---
+
+    @param {AST} vdom
+    @param {AST|String} child
+  */
   addChild : (vdom, childNode) => {
     vdom[2].push(childNode);
   },
+  /**
+    ---
+    returns the last child node of the given AST
+    ---
+
+    @param {AST} vdom
+
+    @return {AST|String}
+  */
   getLastChild : (vdom) => {
     return vdom[2][vdom[2].length-1];
   },
+  /**
+    ---
+    creates a vdom AST
+    ---
+
+    ```
+    //equivilant of: <div id="myid"></div>
+    VDOM.createNode("div", { id : "myid" });
+    ```
+
+    @param {String} tag
+    @param {Object} attributes - (optional)
+    @param {Array<Object>} children - (optional)
+
+    @return {AST}
+  */
   createNode : (tag, attrs, children) => {
     if(!attrs){
       attrs = {};
@@ -40,6 +125,19 @@ const VDOM = {
       children = []
     }
     return [tag, attrs, children];
+  },
+
+  /**
+    ---
+    returns true if the vdom node passed is a text node
+    ---
+
+    @param {AST|String} vdom
+
+    @return {Boolean}
+  */
+  isTextNode : (vdom) => {
+    return !Array.isArray(vdom);
   }
 }
 
@@ -128,11 +226,7 @@ Dev.transpile = (bundle) => {
       }
 
       if(inHtmlBlock){
-
-      //  htmlString += curLine;
-      //console.log("before replac32");
         let curLineNoQuotes = curLine.replace(new RegExp(quoteRegex, "g"), "");
-        //console.log("after");
         let change = 0;
 
         let openBrackets = Dev.matchesForBracket(curLineNoQuotes, "<");
@@ -389,10 +483,11 @@ Dev.stringifyVDOM = (vdom, tabs) => {
 
   //attributes
   str += Dev.tabs(tabs + 1) + "{\n";
-  let attrCount = Object.keys(vdom[1]).length;
+  let attrs = VDOM.attrs(vdom);
+  let attrCount = Object.keys(attrs).length;
   let count = 0;
-  for(let a in vdom[1]){
-    str += Dev.tabs(tabs + 2) + a + ":" + Dev.parseProps(vdom[1][a]);
+  for(let a in attrs){
+    str += Dev.tabs(tabs + 2) + a + ":" + Dev.parseProps(attrs[a]);
     count++;
     if(count != attrCount){
       str += ",\n";
@@ -401,11 +496,12 @@ Dev.stringifyVDOM = (vdom, tabs) => {
   str += "\n" + Dev.tabs(tabs + 1) + "},\n";
 
   //child nodes
+  let children = VDOM.childNodes(vdom);
   str += Dev.tabs(tabs + 1);
   str += "[\n";
-  for(let i=0; i<vdom[2].length; i++){
-    str += Dev.stringifyVDOM(vdom[2][i], tabs+2);
-    if(i < vdom[2].length-1){
+  for(let i=0; i<children.length; i++){
+    str += Dev.stringifyVDOM(children[i], tabs+2);
+    if(i < children.length-1){
       str +=  ",\n";
     }
   }
@@ -523,7 +619,7 @@ Dev.tagStringToVDOM = (str) => {
       //remove quotes
       val = attr[1].substr(1, attr[1].length-2);
     }
-    vdom[1][key] = val;
+    VDOM.attrs(vdom)[key] = val;
   }
   return vdom;
 }
