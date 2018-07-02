@@ -4,7 +4,7 @@ For production use a static build and remember to remove links to this script
 */
 
 /*
-  Object to help manipulate the Abstract Syntax Tree data of the vdom
+  Object to help manipulate the (AST) Abstract Syntax Tree data of the vdom
 
 structure of vdom:
  ["tag", { key, "val" }, []]
@@ -59,58 +59,184 @@ Dev.imports = {
 
 Dev.bundle = {};
 
-Dev.transpileHTML = (html) => {
-  let res = Dev.transpileRecur(html);
-  let str = Dev.stringifyVDOM(res, 1);
-  return str;
-}
+/*
+  transpiles a javascript file into valid syntax
 
-Dev.tabs = (num) => {
-  let s = "";
-  for(let i=0; i<num; i++){
-    s += "  ";
-  }
-  return s;
-}
+  @param {String} fileContents
 
-Dev.stringifyVDOM = (vdom, tabs) => {
-  if(!Array.isArray(vdom)){
-    let res = Dev.parseProps(vdom.trimExcess())
-    return Dev.tabs(tabs) + res;
-  }
-  let str = "";
-  str += Dev.tabs(tabs) + "[\n";
-  str += Dev.tabs(tabs + 1) + "\"" + VDOM.tag(vdom) + "\",\n";
+  @return {String}
+*/
+Dev.transpile = (bundle) => {
+  let lines = bundle.split("\n");
 
-  //attributes
-  str += Dev.tabs(tabs + 1) + "{\n";
-  let attrCount = Object.keys(vdom[1]).length;
-  let count = 0;
-  for(let a in vdom[1]){
-    str += Dev.tabs(tabs + 2) + a + ":" + Dev.parseProps(vdom[1][a]);
-    count++;
-    if(count != attrCount){
-      str += ",\n";
+  let inCommentBlock = false;
+  let result = "";
+  let quoteRegex = /"(.*?)"|`(.*?)`|'(.*?)'/;
+  let hasCommentBlockChange;
+  let inHtmlBlock = false;
+  let hasHtmlBlockChanged = false;
+  let htmlText = "";
+  let vdom;
+  let depth = 0;
+
+  let tagContent = "";
+  let inMultiLineTag = false;
+  let prevLine = "";
+
+
+  for(let i=0; i<lines.length; i++){
+    let lineContents = lines[i].split(quoteRegex).join(" ");
+    let hasCommentBlockChange = false;
+    let curLine = "";
+
+
+    //remove comment block
+    if(!inCommentBlock && lineContents.indexOf("/*") > -1){
+      let arr = lines[i].split("/*");
+      curLine += arr[0];
+      inCommentBlock = true;
+      hasCommentBlockChange = true;
+    }
+    if(inCommentBlock && lineContents.indexOf("*/") > -1){
+      let arr = lines[i].split("*/");
+      curLine += " " + arr[1];
+      inCommentBlock = false;
+      hasCommentBlockChange = true;
+    }
+
+    //no code blocks, so just use the raw line
+    if(!hasCommentBlockChange){
+      curLine = lines[i];
+    }
+
+    if(!inCommentBlock){
+      //remove end of line comment
+      curLine = prevLine.split("//")[0] + curLine.split("//")[0];
+      prevLine = "";
+
+      //find start of html parse
+      if(!inHtmlBlock && curLine.indexOf("#<") > -1){
+        depth = 0;
+        inHtmlBlock = true;
+        //add js to result
+        let arr = curLine.split("#<");
+        result += arr[0];
+        htmlString = "";
+
+        curLine = "<" + arr[1];
+        hasHtmlBlockChanged = true;
+      }
+
+      if(inHtmlBlock){
+
+      //  htmlString += curLine;
+      //console.log("before replac32");
+        let curLineNoQuotes = curLine.replace(new RegExp(quoteRegex, "g"), "");
+        //console.log("after");
+        let change = 0;
+
+        let openBrackets = Dev.matchesForBracket(curLineNoQuotes, "<");
+        change += openBrackets;
+        let closeBrackets = Dev.matchesForBracket(curLineNoQuotes, ">");
+        change -= closeBrackets;
+
+        //has at least 1 full tag on this line
+        if(change == 0 && openBrackets > 0 && closeBrackets > 0){
+          let tags = curLineNoQuotes.match(/<.*?>/g);
+
+          if(tags){
+            for(let t=0; t<tags.length; t++){
+              let tagName = tags[t].substr(1, tags[t].length-2).split(/\s/)[0];
+              //dont count for when no closing tag is required
+              if(Dev.requiresClosingTag(tagName)){
+                //is closing
+                if(tags[t].charAt(1) == "/"){
+                  //if using closing tag when no required
+                  if(Dev.requiresClosingTag(tagName.substr(1))){
+                    depth -= 1;
+                  }
+                }
+                //is opening
+                else{
+                  depth += 1;
+                }
+              }
+            }
+          }
+          htmlString += curLine;
+        }
+        else if(change > 0){
+          tagContent = Dev.getStringAfterLastOpenBraket(curLine);
+          inMultiLineTag = true;
+        }
+        //in multiline tag
+        else if(inMultiLineTag){
+
+          //end of multiline
+          if(change < 0){
+            inMultiLineTag = false;
+            //split curline by end of multiLine tag
+            let arr = Dev.splitByEndMultiLineTag(curLine);
+
+            //add tag content for multiline tag
+            htmlString += tagContent + arr[0] + ">";
+
+            //add the rest on the prevLine
+            prevLine = arr[1];
+            tagContent = "";
+            depth += 1;
+          }
+          //within multiline tag, but not ending on this line
+          else{
+            tagContent += curLine;
+          }
+        }
+        else if(!inMultiLineTag && change == 0){
+          htmlString += curLine
+        }
+
+        //end of html block
+        if(!inMultiLineTag && depth <= 0 && !hasHtmlBlockChanged){
+          result += Dev.transpileHTMLBlock(htmlString);
+          let els = lines[i].split(/\<\/.*?\>/);
+          if(els.length > 1){
+            result += els[1];
+          }
+          else{
+            result += els[0];
+          }
+          inHtmlBlock = false;
+        }
+        if(hasHtmlBlockChanged){
+          hasHtmlBlockChanged = false;
+        }
+      }
+
+      else {
+        result += curLine + "\n";
+      }
     }
   }
-  str += "\n" + Dev.tabs(tabs + 1) + "},\n";
-
-  //child nodes
-  str += Dev.tabs(tabs + 1);
-  str += "[\n";
-  for(let i=0; i<vdom[2].length; i++){
-    str += Dev.stringifyVDOM(vdom[2][i], tabs+2);
-    if(i < vdom[2].length-1){
-      str +=  ",\n";
-    }
-  }
-  str += "\n" + Dev.tabs(tabs + 1) + "]"; //close child nodes
-  str += "\n" + Dev.tabs(tabs) + "]"; //close current node
-
-  return str;
+  return result;
 }
 
-Dev.transpileRecur = (html) =>{
+/*
+  takes a string with html syntax and returns a valid js array matching the vdom AST
+*/
+Dev.transpileHTMLBlock = (html) => {
+  let res = Dev.convertHTMLStringToVDOM(html);
+  return Dev.stringifyVDOM(res, 1);
+}
+
+
+/*
+  converts a html string to a vdom AST
+
+  @param {String} html
+
+  @return {AST}
+*/
+Dev.convertHTMLStringToVDOM = (html) =>{
   let inQuote = false;
   let quoteType;
   let char, lastChar = "";
@@ -243,6 +369,68 @@ Dev.transpileRecur = (html) =>{
   return root;
 }
 
+
+/*
+  converts a vdom to string
+
+  @param {AST} vdom
+  @param {Number} startingTabs
+
+  @return {String}
+*/
+Dev.stringifyVDOM = (vdom, tabs) => {
+  if(!Array.isArray(vdom)){
+    let res = Dev.parseProps(vdom.trimExcess())
+    return Dev.tabs(tabs) + res;
+  }
+  let str = "";
+  str += Dev.tabs(tabs) + "[\n";
+  str += Dev.tabs(tabs + 1) + "\"" + VDOM.tag(vdom) + "\",\n";
+
+  //attributes
+  str += Dev.tabs(tabs + 1) + "{\n";
+  let attrCount = Object.keys(vdom[1]).length;
+  let count = 0;
+  for(let a in vdom[1]){
+    str += Dev.tabs(tabs + 2) + a + ":" + Dev.parseProps(vdom[1][a]);
+    count++;
+    if(count != attrCount){
+      str += ",\n";
+    }
+  }
+  str += "\n" + Dev.tabs(tabs + 1) + "},\n";
+
+  //child nodes
+  str += Dev.tabs(tabs + 1);
+  str += "[\n";
+  for(let i=0; i<vdom[2].length; i++){
+    str += Dev.stringifyVDOM(vdom[2][i], tabs+2);
+    if(i < vdom[2].length-1){
+      str +=  ",\n";
+    }
+  }
+  str += "\n" + Dev.tabs(tabs + 1) + "]"; //close child nodes
+  str += "\n" + Dev.tabs(tabs) + "]"; //close current node
+
+  return str;
+}
+
+//helper function for stringifyVDOM() for creating tabs
+Dev.tabs = (num) => {
+  let s = "";
+  for(let i=0; i<num; i++){
+    s += "  ";
+  }
+  return s;
+}
+
+/*
+  parses the props out a string for use with stringifyVDOM()
+
+  @param {String} text
+
+  @return {String}
+*/
 Dev.parseProps = (text) => {
   let char,
       lastChar = "",
@@ -293,10 +481,60 @@ Dev.parseProps = (text) => {
   return fullText;
 }
 
+/*
+  returns true if the tag requires a closing tag
+
+  @param {String} tag
+
+  @param {Boolean}
+*/
 Dev.requiresClosingTag = (tagName) => {
   return (Dev.noClosingTag.indexOf(tagName) == -1);
 }
 
+
+
+/*
+  converts the text between tags to a vdom AST
+  e.g. div id="myid"   =>   ["div", { id : "myid" }, []]
+
+  @param {String} str
+
+  @return {AST}
+*/
+Dev.tagStringToVDOM = (str) => {
+  str = str.trim();
+  //return undefined if closing tag
+  if(str.charAt(0) == "/"){
+    return;
+  }
+
+  //split by space but no in quotes
+  let arr = Dev.splitBySpaceButNotInQuotes(str);
+  let tagName = arr[0];
+  let vdom = [tagName, {}, []];
+
+  //get all the attrs
+  for(let i=1; i<arr.length; i++){
+    let attr = arr[i].split("=");
+    let key = attr[0];
+    let val = "";
+    if(attr[1]){
+      //remove quotes
+      val = attr[1].substr(1, attr[1].length-2);
+    }
+    vdom[1][key] = val;
+  }
+  return vdom;
+}
+
+/*
+  splits a string by /\s+/ spaces, but not if the space(s) are in quotes
+
+  @param {String} str
+
+  @return {Array}
+*/
 Dev.splitBySpaceButNotInQuotes = (str) => {
   let inQuote = false;
   let quoteType, char, lastChar = "";
@@ -325,32 +563,6 @@ Dev.splitBySpaceButNotInQuotes = (str) => {
   }
   arr.push(el);
   return arr;
-}
-
-Dev.tagStringToVDOM = (str) => {
-  str = str.trim();
-  //return undefined if closing tag
-  if(str.charAt(0) == "/"){
-    return;
-  }
-
-  //split by space but no in quotes
-  let arr = Dev.splitBySpaceButNotInQuotes(str);
-  let tagName = arr[0];
-  let vdom = [tagName, {}, []];
-
-  //get all the attrs
-  for(let i=1; i<arr.length; i++){
-    let attr = arr[i].split("=");
-    let key = attr[0];
-    let val = "";
-    if(attr[1]){
-      //remove quotes
-      val = attr[1].substr(1, attr[1].length-2);
-    }
-    vdom[1][key] = val;
-  }
-  return vdom;
 }
 
 Dev.calcTagDepthChange = (line) => {
@@ -396,160 +608,13 @@ Dev.matchesForBracket = (str, type) =>{
 }
 
 
-Dev.transpile = (bundle) => {
-  let lines = bundle.split("\n");
+/*
+  splits a line by the first occurance of >
 
-  let inCommentBlock = false;
-  let result = "";
-  let quoteRegex = /"(.*?)"|`(.*?)`|'(.*?)'/;
-  let hasCommentBlockChange;
-  let inHtmlBlock = false;
-  let hasHtmlBlockChanged = false;
-  let htmlText = "";
-  let vdom;
-  let depth = 0;
+  @param {String} line
 
-  let tagContent = "";
-  let inMultiLineTag = false;
-  let prevLine = "";
-
-
-  for(let i=0; i<lines.length; i++){
-    let lineContents = lines[i].split(quoteRegex).join(" ");
-    let hasCommentBlockChange = false;
-    let curLine = "";
-
-
-    //remove comment block
-    if(!inCommentBlock && lineContents.indexOf("/*") > -1){
-      let arr = lines[i].split("/*");
-      curLine += arr[0];
-      inCommentBlock = true;
-      hasCommentBlockChange = true;
-    }
-    if(inCommentBlock && lineContents.indexOf("*/") > -1){
-      let arr = lines[i].split("*/");
-      curLine += " " + arr[1];
-      inCommentBlock = false;
-      hasCommentBlockChange = true;
-    }
-
-    //no code blocks, so just use the raw line
-    if(!hasCommentBlockChange){
-      curLine = lines[i];
-    }
-
-    if(!inCommentBlock){
-      //remove end of line comment
-      curLine = prevLine.split("//")[0] + curLine.split("//")[0];
-      prevLine = "";
-
-      //find start of html parse
-      if(!inHtmlBlock && curLine.indexOf("#<") > -1){
-        depth = 0;
-        inHtmlBlock = true;
-        //add js to result
-        let arr = curLine.split("#<");
-        result += arr[0];
-        htmlString = "";
-
-        curLine = "<" + arr[1];
-        hasHtmlBlockChanged = true;
-      }
-
-      if(inHtmlBlock){
-
-      //  htmlString += curLine;
-      //console.log("before replac32");
-        let curLineNoQuotes = curLine.replace(new RegExp(quoteRegex, "g"), "");
-        //console.log("after");
-        let change = 0;
-
-        let openBrackets = Dev.matchesForBracket(curLineNoQuotes, "<");
-        change += openBrackets;
-        let closeBrackets = Dev.matchesForBracket(curLineNoQuotes, ">");
-        change -= closeBrackets;
-
-        //has at least 1 full tag on this line
-        if(change == 0 && openBrackets > 0 && closeBrackets > 0){
-          let tags = curLineNoQuotes.match(/<.*?>/g);
-
-          if(tags){
-            for(let t=0; t<tags.length; t++){
-              let tagName = tags[t].substr(1, tags[t].length-2).split(/\s/)[0];
-              //dont count for when no closing tag is required
-              if(Dev.requiresClosingTag(tagName)){
-                //is closing
-                if(tags[t].charAt(1) == "/"){
-                  //if using closing tag when no required
-                  if(Dev.requiresClosingTag(tagName.substr(1))){
-                    depth -= 1;
-                  }
-                }
-                //is opening
-                else{
-                  depth += 1;
-                }
-              }
-            }
-          }
-          htmlString += curLine;
-        }
-        else if(change > 0){
-          tagContent = Dev.getStringAfterLastOpenBraket(curLine);
-          inMultiLineTag = true;
-        }
-        //in multiline tag
-        else if(inMultiLineTag){
-
-          //end of multiline
-          if(change < 0){
-            inMultiLineTag = false;
-            //split curline by end of multiLine tag
-            let arr = Dev.splitByEndMultiLineTag(curLine);
-
-            //add tag content for multiline tag
-            htmlString += tagContent + arr[0] + ">";
-
-            //add the rest on the prevLine
-            prevLine = arr[1];
-            tagContent = "";
-            depth += 1;
-          }
-          //within multiline tag, but not ending on this line
-          else{
-            tagContent += curLine;
-          }
-        }
-        else if(!inMultiLineTag && change == 0){
-          htmlString += curLine
-        }
-
-        //end of html block
-        if(!inMultiLineTag && depth <= 0 && !hasHtmlBlockChanged){
-          result += Dev.transpileHTML(htmlString);
-          let els = lines[i].split(/\<\/.*?\>/);
-          if(els.length > 1){
-            result += els[1];
-          }
-          else{
-            result += els[0];
-          }
-          inHtmlBlock = false;
-        }
-        if(hasHtmlBlockChanged){
-          hasHtmlBlockChanged = false;
-        }
-      }
-
-      else {
-        result += curLine + "\n";
-      }
-    }
-  }
-  return result;
-}
-
+  @return {Array}
+*/
 Dev.splitByEndMultiLineTag = (line) => {
   let inQuote = false;
   let quoteType, char, lastChar = "";
@@ -572,6 +637,13 @@ Dev.splitByEndMultiLineTag = (line) => {
   }
 }
 
+/*
+  returns the string after <
+
+  @param {String} line
+
+  @return {String}
+*/
 Dev.getStringAfterLastOpenBraket = (line) => {
   let indexOfLastBracket = -1;
   let inQuote = false;
@@ -591,7 +663,7 @@ Dev.getStringAfterLastOpenBraket = (line) => {
     else if(inQuote && quoteType == char && lastChar != "\\"){
       inQuote = false;
     }
-    else if(!inQuote && char == "<"){
+    else if(!inQuote && char == "<" && lastChar != "\\"){
       indexOfLastBracket = i;
     }
 
@@ -605,22 +677,7 @@ Dev.getStringAfterLastOpenBraket = (line) => {
 
 
 /**
-  Returns the bundle as as javascript valid code
-  The returned string will have all the HTML syntax transpiled to a render info array
-  which is valid JavaScript syntax
-
-  @param {Array} bundle
-
-  @return {String}
-*/
-Dev.parseBundle = function(bundle){
-  return Dev.transpile(bundle);
-}
-
-
-
-/**
-  Returns a string with the excess white spacing removed
+  Returns a string with the excess white spacing removed, for use with text nodes
 
   @return {String}
 */
@@ -737,7 +794,7 @@ Dev.addImports = function(type){
     //e.g. const Card = Quas.modules["Card"];
     bundle += keys;
 
-    bundle = Dev.parseBundle(bundle);
+    bundle = Dev.transpile(bundle);
     Dev.bundle.js = bundle;
     bundle += "\nif(typeof ready==='function'){ready();}";
 
@@ -789,9 +846,6 @@ Dev.load = function(){
 
 //checks a javascript file to see if it has any imports
 Dev.parseImports = (filename, file, key) => {
-//  if(key === undefined){
-//  }
-
   //check if this file key has already been imported
   for(let i=0; i<Dev.imports.js.content.length; i++){
     if(Dev.imports.js.content[i].key == key){
