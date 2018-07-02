@@ -3,9 +3,13 @@ This script is used for transpiling and bundling development builds
 For production use a static build and remember to remove links to this script
 */
 
-//structure of vdom
-// ["tag", { key, "val" }, []]
-// [ tag, attrs, children]
+/*
+  Object to help manipulate the Abstract Syntax Tree data of the vdom
+
+structure of vdom:
+ ["tag", { key, "val" }, []]
+ [ tag, attrs, children]
+ */
 const VDOM = {
   tag : (vdom) => {
     return vdom[0];
@@ -45,8 +49,6 @@ const Dev = {};
 //tags that require no closing tag
 Dev.noClosingTag = ["img", "source", "br", "hr", "area", "track", "link", "col", "meta", "base", "embed", "param", "input"];
 
-
-
 //all he imported files
 Dev.imports = {
   "js" : {
@@ -59,7 +61,6 @@ Dev.bundle = {};
 
 Dev.transpileHTML = (html) => {
   let res = Dev.transpileRecur(html);
-  console.log("res:", res);
   let str = Dev.stringifyVDOM(res, 1);
   return str;
 }
@@ -74,7 +75,7 @@ Dev.tabs = (num) => {
 
 Dev.stringifyVDOM = (vdom, tabs) => {
   if(!Array.isArray(vdom)){
-    let res = Dev.parseProps2(vdom.trimExcess())
+    let res = Dev.parseProps(vdom.trimExcess())
     return Dev.tabs(tabs) + res;
   }
   let str = "";
@@ -86,7 +87,7 @@ Dev.stringifyVDOM = (vdom, tabs) => {
   let attrCount = Object.keys(vdom[1]).length;
   let count = 0;
   for(let a in vdom[1]){
-    str += Dev.tabs(tabs + 2) + a + ":" + Dev.parseProps2(vdom[1][a]);
+    str += Dev.tabs(tabs + 2) + a + ":" + Dev.parseProps(vdom[1][a]);
     count++;
     if(count != attrCount){
       str += ",\n";
@@ -157,7 +158,6 @@ Dev.transpileRecur = (html) =>{
       //end of tag
       else if(char == ">" && lastChar != "\\"){
         let tagVDOM = Dev.tagStringToVDOM(tagContent);
-        console.log(tagVDOM);
         state = states.other;
         hasEndedTag = true;
 
@@ -234,7 +234,6 @@ Dev.transpileRecur = (html) =>{
     }
 
     if(inQuote && !changedToQuote && char == quoteType && lastChar != "\\"){
-      console.log("closing quote:" + tagContent);
       inQuote =false;
     }
 
@@ -244,7 +243,7 @@ Dev.transpileRecur = (html) =>{
   return root;
 }
 
-Dev.parseProps2 = (text) => {
+Dev.parseProps = (text) => {
   let char,
       lastChar = "",
       fullText = "",
@@ -337,7 +336,6 @@ Dev.tagStringToVDOM = (str) => {
 
   //split by space but no in quotes
   let arr = Dev.splitBySpaceButNotInQuotes(str);
-  console.log("space split:", arr);
   let tagName = arr[0];
   let vdom = [tagName, {}, []];
 
@@ -605,12 +603,6 @@ Dev.getStringAfterLastOpenBraket = (line) => {
 
 
 
-//<div id="wow">   returns: div
-Dev.getTagName = (str) => {
-  str = str.trim();
-  return str.substr(1, str.length-2).trim().split(/\s/)[0];
-}
-
 
 /**
   Returns the bundle as as javascript valid code
@@ -623,286 +615,9 @@ Dev.getTagName = (str) => {
 */
 Dev.parseBundle = function(bundle){
   return Dev.transpile(bundle);
-  let lines = bundle.split("\n");
-  let open = -1;
-  let html = "";
-  let tagName = "quas";
-  let inRender = false;
-  for(let i=0; i<lines.length; i++){
-    //open tag
-    let openIndex = lines[i].indexOf("<"+tagName+">");
-    if(openIndex > -1){
-      html += lines[i].substr(openIndex += tagName.length + 2);
-      open = i;
-      lines.splice(i, 1);
-      i--;
-    }
-
-    //currently open
-    else if(open > -1){
-
-      //closed tag
-      let closeIndex = lines[i].indexOf("</"+tagName+">");
-      if(closeIndex > -1){
-        html += lines[i].substr(0, closeIndex);
-        let info = Dev.convertHTMLToVDOM(html);
-        lines[i] = info + lines[i].substr(closeIndex + tagName.length + 3);
-        open = -1;
-        html = "";
-      }
-      //still currently open
-      else{
-        //split by "//" out side of quotes
-        let match = lines[i].split(/(?=(?:[^"]*"[^"]*")*[^"]*$)\/\//g);
-        html += match[0];
-        lines.splice(i, 1);
-        i--;
-      }
-    }
-  }
-  bundle = lines.join("\n");
-  return bundle;
 }
 
-/**
-  Returns an array as a javascript valid styntax for the array with indentation
 
-  @param {Array} array
-  @param {Number} indentCount
-
-  @return {String}
-*/
-Dev.jsArr = function(arr, tab){
-  let str = "";
-  if(tab === undefined){
-    tab = 1;
-  }
-
-  for(let t=0; t<tab; t++){
-    str += "  ";
-  }
-  str += "[\n";
-  tab++;
-  for(let i=0; i<arr.length; i++){
-    for(let t=0; t<tab; t++){
-      str += "  ";
-    }
-    //tag
-    if(i == 0){
-      str += '"' + arr[i] + '",\n';
-    }
-
-    //attrs
-    else if(i == 1){
-      str += "{"
-      for(let key in arr[i]){
-        if(arr[i][key] === ""){
-          arr[i][key] = "\"\"";
-        }
-        str += "\"" + key + "\":" + Dev.parseProps(arr[i][key]) + ",";
-      }
-      //remove last comma, only if this element has attributes
-      if(Object.keys(arr[i]).length>0){
-        str = str.substr(0,str.length-1);
-      }
-      str += "}, \n";
-    }
-
-    //children
-    else if(i==2){
-      if(arr[2].length == 0){
-        str += "[]";
-      }
-      else{
-        str += "[\n";
-        tab++;
-        for(let j=0; j<arr[2].length; j++){
-          //child element
-          if(Array.isArray(arr[2][j])){
-            str += Dev.jsArr(arr[2][j], tab);
-
-            if(j != arr[2].length-1){
-              str += ",\n";
-            }
-          }
-          else{
-            for(let t=0; t<tab; t++){
-              str += "  ";
-            }
-
-            //function call prop
-            if(arr[2][j].match(/\(.*?\)/g)){
-              str += arr[2][j];
-            }
-            //text context
-            else{
-              str += '"'+ arr[2][j] + '"';
-            }
-            if(j != arr[2].length-1){
-              str += ",\n";
-            }
-          }
-        }
-
-        str += "\n";
-        for(let t=0; t<tab-1; t++){
-          str += "  ";
-        }
-        str += "]";
-        tab--;
-      }
-    }
-  }
-  str += "\n";
-  for(let t=0; t<tab-1; t++){
-    str += "  ";
-  }
-  str += "]";
-  return str;
-}
-
-/**
-  Convert HTML syntax to render info as a string
-  with JavaScript valid syntax for an array
-
-  @param {String} htmlString
-
-  @return {Sting}
-*/
-Dev.convertHTMLToVDOM = function(html){
-  let info;
-  let depth = 0;
-  let tagStart = -1;
-  let text = "";
-  for(let i=0; i<html.length; i++){
-    if(html[i] === "<"){
-      tagStart = i;
-      if(info!==undefined && text.trimExcess() !== ""){
-        let parent = info[2];
-        for(let d=1; d<depth; d++){
-            parent = parent[parent.length-1][2];
-        }
-
-        if(parent !== undefined){
-          //console.log(text);
-          let trimmedText = text.trimExcess();
-
-          //escaping round brackets
-          let matches =  trimmedText.match(/\\\)/g);
-          for(let i in matches){
-            let newStr = "--/(";
-            trimmedText = trimmedText.replace(matches[i], newStr);
-          }
-
-          let parseProps = Dev.parseProps(trimmedText);
-          parent.push(parseProps);
-        }
-        text = "";
-      }
-    }
-    else if(html[i] === ">"){
-      let tagContent = html.substr(tagStart+1, i - 1 - tagStart);
-      tagStart = -1;
-
-      //split by space but ignore spaces in quotes
-      let tagInfo = tagContent.split(/ +(?=(?:(?:[^"]*"){2})*[^"]*$)/g);
-
-      //this is a closing tag
-      if(tagInfo[0][0] === "/"){
-        depth--;
-      }
-      //opening tag
-      else{
-        let attrs = {};
-        let events = {};
-
-        for(let v=1; v<tagInfo.length; v++){
-          //events
-          if(tagInfo[v].substr(0,2) === "on"){
-            let arr = tagInfo[v].split("=");
-            if(arr[1] !== undefined){
-              attrs[arr[0]] = arr[1];
-            }
-          }
-          //attrs
-          else{
-            let arr = tagInfo[v].split("=");
-            if(arr[1] !== undefined){
-              attrs[arr[0]] = arr[1];
-            }
-            else{
-              attrs[arr[0]] = "";
-            }
-          }
-        }
-
-        //adding root
-        if(info === undefined){
-          info = [tagInfo[0], attrs, []];
-        }
-        else{
-          //find location to add this element
-          let parent = info[2];
-          for(let d=0; d<depth; d++){
-            if(d == depth-1){
-                parent.push([tagInfo[0], attrs, []]);
-            }
-            else{
-              parent = parent[parent.length-1][2];
-            }
-          }
-        }
-        if(Dev.noClosingTag.indexOf(tagInfo[0]) == -1){
-          depth++;
-        }
-      }
-    }
-    //text between tags
-    else if(tagStart == -1){
-      text += html[i];
-    }
-  }
-
-  return Dev.jsArr(info);
-}
-
-/**
-  Parses the props in the HTML syntax
-
-  @param {String} htmlString
-
-  @param {String}
-*/
-Dev.parseProps = function(str){
-  let matches =  str.match(/\{.*?\}/g);
-  let hasFunc = false;
-  for(let i in matches){
-
-  	let parsed = matches[i].replace("{", '"+');
-    parsed = parsed.replace("}", '+"');
-    let res = matches[i].substr(1,matches[i].length-2);
-
-    //ignore is using \}
-    let char = matches[i].charAt(matches[i].length-2);
-    if(char !== "\\"){
-      //function
-      if(res.match(/\(.*?\)/g)){
-        hasFunc=true;
-        return res;
-      }
-      else{
-      //text component
-        str = str.replace(matches[i], parsed);
-      }
-    }
-  }
-
-  if((str.indexOf("\"+") == 0 && str.indexOf("+\"") == str.length-3) || hasFunc){
-    return "\"" + str + "\"";
-  }
-
-  return str;
-}
 
 /**
   Returns a string with the excess white spacing removed

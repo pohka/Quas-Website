@@ -1,5 +1,5 @@
 function test(name){
-  let bracket = "<>";
+  let bracket = "</>";
   return #<span>{name} from here? \>{bracket}</span>;
 }
 
