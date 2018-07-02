@@ -58,11 +58,9 @@ Dev.imports = {
 Dev.bundle = {};
 
 Dev.transpileHTML = (html) => {
-  console.log("html", html);
   let res = Dev.transpileRecur(html);
-  console.log("res:",res);
+  console.log("res:", res);
   let str = Dev.stringifyVDOM(res, 1);
-  console.log(str);
   return str;
 }
 
@@ -76,11 +74,9 @@ Dev.tabs = (num) => {
 
 Dev.stringifyVDOM = (vdom, tabs) => {
   if(!Array.isArray(vdom)){
-    console.log("before trim:" + vdom);
     let res = Dev.parseProps2(vdom.trimExcess())
     return Dev.tabs(tabs) + res;
   }
-  console.log(vdom);
   let str = "";
   str += Dev.tabs(tabs) + "[\n";
   str += Dev.tabs(tabs + 1) + "\"" + VDOM.tag(vdom) + "\",\n";
@@ -116,9 +112,6 @@ Dev.stringifyVDOM = (vdom, tabs) => {
 Dev.transpileRecur = (html) =>{
   let inQuote = false;
   let quoteType;
-//  let inTag = false;
-//  let tags = [];
-  let quoteRegex = /"(.*?)"|`(.*?)`|'(.*?)'/;
   let char, lastChar = "";
   let tagContent = "";
   let insideTag = false;
@@ -127,6 +120,7 @@ Dev.transpileRecur = (html) =>{
   let parent;
   let root;
   const escapeChars = ["<", ">"];
+  let changedToQuote = false;
 
   const states = Object.freeze({
       other : 0,
@@ -137,11 +131,13 @@ Dev.transpileRecur = (html) =>{
 
   for(let i=0; i<html.length; i++){
     hasEndedTag = false;
+    changedToQuote = false;
 
     char = html.charAt(i);
-    if(!inQuote && lastChar != "\\" && char.match(quoteRegex)){
+    if(!inQuote && lastChar != "\\" && char.match(/"|'|`/)){
       inQuote = true;
       quoteType = char;
+      changedToQuote = true;
     }
 
     //parse tags
@@ -161,9 +157,9 @@ Dev.transpileRecur = (html) =>{
       //end of tag
       else if(char == ">" && lastChar != "\\"){
         let tagVDOM = Dev.tagStringToVDOM(tagContent);
+        console.log(tagVDOM);
         state = states.other;
         hasEndedTag = true;
-        console.log(tagContent);
 
         //end of opening tag
         if(tagVDOM){
@@ -232,6 +228,16 @@ Dev.transpileRecur = (html) =>{
       text += char;
     }
 
+
+    if(inQuote){
+      tagContent += char;
+    }
+
+    if(inQuote && !changedToQuote && char == quoteType && lastChar != "\\"){
+      console.log("closing quote:" + tagContent);
+      inQuote =false;
+    }
+
     lastChar = char;
   }
 
@@ -292,6 +298,36 @@ Dev.requiresClosingTag = (tagName) => {
   return (Dev.noClosingTag.indexOf(tagName) == -1);
 }
 
+Dev.splitBySpaceButNotInQuotes = (str) => {
+  let inQuote = false;
+  let quoteType, char, lastChar = "";
+  let lastCharWasSpace = false, charIsSpace;
+  let el = "";
+  let arr = [];
+  for(let i=0; i<str.length; i++){
+    char = str.charAt(i);
+    if(char.match(/"|'|`/) && lastChar != "\\"){
+      inQuote = !inQuote;
+    }
+
+    charIsSpace = (!inQuote && char.match(/\s/));
+
+    if(charIsSpace && !lastCharWasSpace){
+      arr.push(el);
+      el = "";
+    }
+
+    if(!charIsSpace){
+      el += char;
+    }
+
+    lastChar = char;
+    lastCharWasSpace = charIsSpace;
+  }
+  arr.push(el);
+  return arr;
+}
+
 Dev.tagStringToVDOM = (str) => {
   str = str.trim();
   //return undefined if closing tag
@@ -300,7 +336,8 @@ Dev.tagStringToVDOM = (str) => {
   }
 
   //split by space but no in quotes
-  let arr = str.match(/(?:[^\s+"]+|"[^"]*")+/g);
+  let arr = Dev.splitBySpaceButNotInQuotes(str);
+  console.log("space split:", arr);
   let tagName = arr[0];
   let vdom = [tagName, {}, []];
 
@@ -310,10 +347,8 @@ Dev.tagStringToVDOM = (str) => {
     let key = attr[0];
     let val = "";
     if(attr[1]){
-      let match = attr[1].match(/"(.*?)"/);
-      if(match){
-        val  = match[1];
-      }
+      //remove quotes
+      val = attr[1].substr(1, attr[1].length-2);
     }
     vdom[1][key] = val;
   }
@@ -474,7 +509,6 @@ Dev.transpile = (bundle) => {
             inMultiLineTag = false;
             //split curline by end of multiLine tag
             let arr = Dev.splitByEndMultiLineTag(curLine);
-            console.log("arr", arr);
 
             //add tag content for multiline tag
             htmlString += tagContent + arr[0] + ">";
@@ -878,7 +912,6 @@ Dev.parseProps = function(str){
 String.prototype.trimExcess = function(){
   let end = "";
   let start = "";
-  console.log("str:", this);
 
   if(this.charAt(0) == " "){
     start = " ";
@@ -890,7 +923,6 @@ String.prototype.trimExcess = function(){
   if(removedSpace == ""){
     return "";
   }
-  console.log("res:", (start + removedSpace + end));
   return start + removedSpace + end;
 }
 

@@ -9,14 +9,13 @@ function ready(){
 
     current problems:
     - not escaping \< \> properly (using both)
-    - not escaping \" when inQuote for tags
   */
   console.log("ready");
   var name = "john";
   var age= 12;
   var month = "August 21st";
   let a = (
-    #<div id="myid"
+    #<div id="m\"id"
     class="sss">
       before
       <div>
@@ -27,7 +26,7 @@ function ready(){
       /*and me*/---
       <div
       >{name}</div><span> after name </span>
-      <div class="is-{name.toUpperCase()}"id="test">{"is ",test(name)}</div>
+      <div class="is-{name.toUpperCase()}" id="test">{"is ",test(name)}</div>
        after
     </div>
   );
