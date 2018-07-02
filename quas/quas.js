@@ -96,7 +96,7 @@ class Component{
   @prop {Object} modules - all of the imported modules
   @prop {Array<Object>} customAttrs - the registered custom attributes
 */
-class Quas{
+const Quas = {
   /**
     # func
     ---
@@ -119,7 +119,7 @@ class Quas{
     Quas.render(myComp);
     ```
   */
-  static render(comp, parent){
+  render : (comp, parent) => {
     //if parent passed is a query selector string
     if(parent && parent.constructor === String){
       parent = document.querySelector(parent);
@@ -138,14 +138,14 @@ class Quas{
       let newVDOM = comp.render();
 
       //root tag is different
-      let hasDiff = this.diffRootVDOM(comp, comp.vdom, newVDOM);
+      let hasDiff = Quas.diffRootVDOM(comp, comp.vdom, newVDOM);
 
       if(!hasDiff){
-        this.diffVDOM(comp, comp.dom.parentNode, comp.dom, comp.vdom, newVDOM);
+        Quas.diffVDOM(comp, comp.dom.parentNode, comp.dom, comp.vdom, newVDOM);
       }
       comp.vdom = newVDOM;
     }
-  }
+  },
 
   /*
     diffs the root virtual dom
@@ -157,7 +157,7 @@ class Quas{
 
      @return {Boolean}
   */
-  static diffRootVDOM(comp, vdom, newVDOM){
+  diffRootVDOM : (comp, vdom, newVDOM) => {
     let hasDiff = false;
     if(newVDOM[0] != comp.vdom[0] || //diff tags
       Object.keys(vdom[1]).length != Object.keys(newVDOM[1]).length){ //diff attr count
@@ -181,7 +181,7 @@ class Quas{
       comp.dom = newDOM;
     }
     return hasDiff;
-  }
+  },
 
   /*
     recursively diffs the virtual dom of a component
@@ -197,7 +197,7 @@ class Quas{
 
      @return {Number}
   */
-  static diffVDOM(comp, parent, dom, vdom, newVDOM){
+  diffVDOM : (comp, parent, dom, vdom, newVDOM) => {
     let returnVal = 0;
 
     if(!newVDOM){
@@ -354,7 +354,7 @@ class Quas{
       }
     }
     return returnVal;
-  }
+  },
 
   /**
     ---
@@ -372,7 +372,7 @@ class Quas{
 
     @return {DOMElement|String}
   */
-  static createDOM(vdom, comp, parent){
+  createDOM : (vdom, comp, parent) => {
     //if a text node
     if(vdom.constructor === String){
       if(!parent){
@@ -446,7 +446,7 @@ class Quas{
     }
 
     return el;
-  }
+  },
 
   /**
     # func
@@ -511,7 +511,7 @@ class Quas{
     });
     ```
   */
-  static ajax(req){
+  ajax : (req) => {
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
@@ -579,7 +579,7 @@ class Quas{
         xhr.send();
       }
     }
-  }
+  },
 
 
 
@@ -626,7 +626,7 @@ class Quas{
       .catch((err) => console.error(err));
     ```
   */
-  static fetch(url, type, req) {
+  fetch : (url, type, req) => {
     return fetch(url, req)
       .then((response) => {
         if (!response.ok) return new Error(response);
@@ -644,7 +644,7 @@ class Quas{
           return response.arrayBuffer();
         }
     });
-  }
+  },
 
   /*
     Evaluates a custom attribute
@@ -656,7 +656,7 @@ class Quas{
     @param {DOMElement} dom the com of the component
 
   */
-  static evalCustomAttr(key, data, parentVDOM, comp, dom){
+  evalCustomAttr : (key, data, parentVDOM, comp, dom) => {
     let params = key.split("-");
 
     let command = params[1];
@@ -697,7 +697,7 @@ class Quas{
     else{
       Quas.customAttrs[command](params, data, parentVDOM, comp, dom);
     }
-  }
+  },
 
   /**
     # func
@@ -712,7 +712,7 @@ class Quas{
 
     @return {Object}
   */
-  static getBrowserInfo(){
+  getBrowserInfo : () => {
     var ua=navigator.userAgent,tem,M=ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
     if(/trident/i.test(M[1])){
         tem=/\brv[ :]+(\d+)/g.exec(ua) || [];
@@ -729,7 +729,7 @@ class Quas{
       version: M[1],
       isMobile : /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
     };
-  }
+  },
 
   /**
     # func
@@ -743,7 +743,7 @@ class Quas{
     //=> {key : "val", foo : "bar"}
     ```
   */
-  static getUrlValues(){
+  getUrlValues : () => {
     let str = window.location.search;
     if(str.charAt(0)=="?"){
       str = str.substr(1, str.length-1);
@@ -757,7 +757,7 @@ class Quas{
       }
     }
     return data;
-  }
+  },
 
   /**
     # func
@@ -791,7 +791,7 @@ class Quas{
     //updated: /home?search=the%20mouse
     ```
   */
-  static setUrlValues(newVals, reload){
+  setUrlValues : (newVals, reload) => {
     let data = Quas.getUrlValues();
     for(let key in newVals){
       data[key] = encodeURI(newVals[key]);
@@ -812,7 +812,7 @@ class Quas{
         window.history.pushState(newVals,'',newurl);
       }
     }
-  }
+  },
 
 
   /**
@@ -823,7 +823,7 @@ class Quas{
 
   @return {Boolean}
   */
-  static hasModule(name){
+  hasModule : (name) => {
     return (typeof Quas.modules[name] !== "undefined");
   }
 }
