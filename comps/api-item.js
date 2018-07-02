@@ -66,9 +66,7 @@ Quas.export(
         }
 
         let paramVDOMs = [];
-        paramVDOMs.push(
-          #<tr q-for-th="{headings}"></tr>
-        );
+        paramVDOMs.push(#<tr q-for-th="{headings}"></tr>);
         for(let a=0; a<func.params.length; a++){
           paramNames.push(func.params[a].name);
           if(!hasOptional){

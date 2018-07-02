@@ -40,8 +40,6 @@
   * problems with functions calls
 * site
   * click
-* new transpiler:
-  * arr.push(#<div>my item</div>); - this is not working
 
 ## routing features to add
 * onBeforePush() - e.g. user navigates away but the current page has input data that they might not want to lose

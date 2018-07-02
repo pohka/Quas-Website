@@ -256,6 +256,9 @@ Dev.transpile = (bundle) => {
                 }
               }
             }
+            if(tags.length > 1 && depth == 0){
+              hasHtmlBlockChanged = false;
+            }
           }
           htmlString += curLine;
         }
@@ -292,13 +295,12 @@ Dev.transpile = (bundle) => {
         //end of html block
         if(!inMultiLineTag && depth <= 0 && !hasHtmlBlockChanged){
           result += Dev.transpileHTMLBlock(htmlString);
-          let els = lines[i].split(/\<\/.*?\>/);
-          if(els.length > 1){
-            result += els[1];
+          let els = lines[i].split(/<\/.*?>/);
+          console.log(lines[i], "-", els);
+          if(els.length > 0){
+            result += els[els.length-1];
           }
-          else{
-            result += els[0];
-          }
+
           inHtmlBlock = false;
         }
         if(hasHtmlBlockChanged){
