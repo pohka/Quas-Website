@@ -213,14 +213,14 @@ Dev.transpile = (bundle) => {
 
 
     //remove comment block
-    if(!inCommentBlock && lineContents.indexOf("/*") > -1){
-      let arr = lines[i].split("/*");
+    if(!inCommentBlock && lineContents.indexOf(/\/\*(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)/) > -1){
+      let arr = lines[i].split(/\/\*(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)/);
       curLine += arr[0];
       inCommentBlock = true;
       hasCommentBlockChange = true;
     }
-    if(inCommentBlock && lineContents.indexOf("*/") > -1){
-      let arr = lines[i].split("*/");
+    if(inCommentBlock && lineContents.indexOf(/\*\/(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)/) > -1){
+      let arr = lines[i].split(/\*\/(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)/);
       curLine += " " + arr[1];
       inCommentBlock = false;
       hasCommentBlockChange = true;
@@ -545,10 +545,6 @@ Dev.tabs = (num) => {
     s += "  ";
   }
   return s;
-}
-
-Dev.parseSpecials = (val) => {
-  val.replace(/\/\//g, "\\\/\\\/");
 }
 
 /*

@@ -1,18 +1,18 @@
 //modules
 
 import Router from "/quas/modules/router.js"
-// import CodeHighlighter from "/modules/code-highlighter.js"
+import CodeHighlighter from "/modules/code-highlighter.js"
 import Async from "/quas/modules/async.js"
 //
 // //components
 import Navbar from "/comps/navbar.js"
-// import DocsNav from "/comps/docs-nav.js"
+import DocsNav from "/comps/docs-nav.js"
 // import Body from "/comps/body.js"
 import Error404 from "/comps/404.js"
 //
 import LandingBody from "/comps/landing-body.js"
 import DownloadBody from "/comps/download-body.js"
-// import DocsBody from "/comps/docs-body.js"
+import DocsBody from "/comps/docs-body.js"
 // import APIBody from "/comps/api.js"
 //
 // //css
@@ -119,7 +119,7 @@ function ready(){
     }
   ];
 
-/*
+
   Router.map({
     id : "docs",
     path : "/docs/:page",
@@ -137,7 +137,7 @@ function ready(){
       }
     ]
   });
-*/
+
 
   Router.setRoute404({
     title : "404",

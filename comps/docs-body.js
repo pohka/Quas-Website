@@ -32,22 +32,17 @@ Quas.export(
     render(){
       if(!this.props.loaded){
         return (
-          <quas>
-            <div class="docs-content">
-              <div class="placeholder placeholder-heading"></div>
-              <div class="placeholder placeholder-line"></div>
-              <div class="placeholder placeholder-line"></div>
-              <div class="placeholder placeholder-line"></div>
-            </div>
-          </quas>
+          #<div class="docs-content">
+            <div class="placeholder placeholder-heading"></div>
+            <div class="placeholder placeholder-line"></div>
+            <div class="placeholder placeholder-line"></div>
+            <div class="placeholder placeholder-line"></div>
+          </div>
         );
       }
       else{
         return (
-          <quas>
-            <div class="docs-content" q-append=this.props.content>
-            </div>
-          </quas>
+          #<div class="docs-content" q-append="{this.props.content}"></div>
         );
       }
     }

@@ -17,20 +17,16 @@ Quas.export(
       }
 
       return (
-        <quas>
-          <a href="{path}" target="push" class="docs-nav-item" active="{isActive}">{page.title}</a>
-        </quas>
+          #<a href="{path}" target="push" class="docs-nav-item" active="{isActive}">{page.title}</a>
       );
     }
 
     render(){
     //  console.log("rendering docs nav");
       return (
-        <quas>
-          <div class="docs-nav-con">
-            <div class="docs-nav-list" q-bind-for=[DocsNav.genItem,this.props.pages]></div>
-          </div>
-        </quas>
+        #<div class="docs-nav-con">
+          <div class="docs-nav-list" q-bind-for="{[DocsNav.genItem,this.props.pages]}"></div>
+        </div>
       );
 
     }
