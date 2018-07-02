@@ -7,11 +7,9 @@ Quas.export(
       let isActive = (window.location.pathname == path);
       if(item.type == type){
         return(
-          <quas>
-            <div>
-              <a href="{path}" target="push" active="{isActive}">{item.name}</a>
-            </div>
-          </quas>
+          #<div>
+            <a href="{path}" target="push" active="{isActive}">{item.name}</a>
+          </div>
         );
       }
       else{
@@ -29,14 +27,12 @@ Quas.export(
 
     render(){
       return(
-        <quas>
-          <div class="api-nav">
-            <h3>Classes</h3>
-            <div q-bind-for=[APINav.genCls,APIBody.docs]></div>
-            <h3>Modules</h3>
-            <div q-bind-for=[APINav.genModule,APIBody.docs]></div>
-          </div>
-        </quas>
+        #<div class="api-nav">
+          <h3>Classes</h3>
+          <div q-bind-for="{[APINav.genCls,APIBody.docs]}"></div>
+          <h3>Modules</h3>
+          <div q-bind-for="{[APINav.genModule,APIBody.docs]}"></div>
+        </div>
       );
     }
   }

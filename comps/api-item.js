@@ -24,30 +24,24 @@ Quas.export(
       let code = "";
       if(func.showCode && func.code.length > 0){
         code = (
-          <quas>
-            <pre class="api-code">
-              <code q-code-js="{func.code}"></code>
-            </pre>
-          </quas>
+          #<pre class="api-code">
+            <code q-code-js="{func.code}"></code>
+          </pre>
         );
       }
       if(!func.showCode && func.code.length > 0){
         let text = "</>"
         code = (
-          <quas>
-            <div class="show-code" onclick=APIItem.showCode data-func="{func.name}">Code {text}</div>
-          </quas>
+          #<div class="show-code" onclick="{APIItem.showCode}" data-func="{func.name}">Code {text}</div>
         );
       }
 
       let returnVDOM;
       if(returnTypes.length > 0){
         returnVDOM = (
-          <quas>
-            <div class="api-content-item-return">
-              <span class="api-returns">Returns: </span> {returnTypes}
-            </div>
-          </quas>
+          #<div class="api-content-item-return">
+            <span class="api-returns">Returns: </span> {returnTypes}
+          </div>
         );
       }
       else{
@@ -73,21 +67,17 @@ Quas.export(
 
         let paramVDOMs = [];
         paramVDOMs.push(
-          <quas>
-            <tr q-for-th=headings></tr>
-          </quas>
+          #<tr q-for-th="{headings}"></tr>
         );
         for(let a=0; a<func.params.length; a++){
           paramNames.push(func.params[a].name);
           if(!hasOptional){
             paramVDOMs.push(
-              <quas>
-                <tr>
-                  <td>{func.params[a].name}</td>
-                  <td>{func.params[a].types.join(" | ")}</td>
-                  <td>{func.params[a].desc}</td>
-                </tr>
-              </quas>
+              #<tr>
+                <td>{func.params[a].name}</td>
+                <td>{func.params[a].types.join(" | ")}</td>
+                <td>{func.params[a].desc}</td>
+              </tr>
             );
           }
           else{
@@ -96,85 +86,67 @@ Quas.export(
               optionStr = "Yes";
             }
             paramVDOMs.push(
-              <quas>
-                <tr>
-                  <td>{func.params[a].name}</td>
-                  <td>{func.params[a].types.join(" | ")}</td>
-                  <td>{func.params[a].desc}</td>
-                  <td>{optionStr}</td>
-                </tr>
-              </quas>
+              #<tr>
+                <td>{func.params[a].name}</td>
+                <td>{func.params[a].types.join(" | ")}</td>
+                <td>{func.params[a].desc}</td>
+                <td>{optionStr}</td>
+              </tr>
             );
           }
         }
 
-        tableVDOM = (
-          <quas>
-            <table q-append=paramVDOMs></table>
-          </quas>
-        );
+        tableVDOM = #<table q-append="{paramVDOMs}"></table>;
       }
 
 
 
       return (
-        <quas>
-          <div class="api-content-item">
-            <h3 id="{func.name}" isStatic="{func.isStatic}">
-              {func.name, "( " + paramNames.join(", ") +" )"}
-            </h3>
-            <div class="api-content-item-info">
-              <pre>
-              <p>{func.desc}</p>
-              </pre>
-              <div q-append=[tableVDOM]></div>
-              <div q-append=[returnVDOM]></div>
-              <div q-append=[code]></div>
-            </div>
+        #<div class="api-content-item">
+          <h3 id="{func.name}" isStatic="{func.isStatic}">
+            {func.name, "( " + paramNames.join(", ") +" )"}
+          </h3>
+          <div class="api-content-item-info">
+            <pre>
+            <p>{func.desc}</p>
+            </pre>
+            <div q-append="{[tableVDOM]}"></div>
+            <div q-append="{[returnVDOM]}"></div>
+            <div q-append="{[code]}"></div>
           </div>
-        </quas>
+        </div>
       );
     },
 
     //generates a heading
     genHeading : (text) => {
-      return (
-        <quas>
-          <h2 id="{text}">{text}</h2>
-        </quas>
-      );
+      return #<h2 id="{text}">{text}</h2>;
     },
 
     //generate the props table
     genPropsTable : (props) => {
       let tableRows = [(
-        <quas>
-          <tr>
+          #<tr>
             <th>Name</th>
             <th>Type</th>
             <th>Description</th>
           </tr>
-        </quas>
       )];
 
       for(let i=0; i<props.length; i++){
         tableRows.push(
-          <quas>
-            <tr>
-              <td>{props[i].name}</td>
-              <td>{props[i].types.join(" | ")}</td>
-              <td>{props[i].desc}</td>
-            </tr>
-          </quas>
+          #<tr>
+            <td>{props[i].name}</td>
+            <td>{props[i].types.join(" | ")}</td>
+            <td>{props[i].desc}</td>
+          </tr>
         )
       }
 
       return (
-        <quas>
-          <div class="api-props-table-con">
-            <table q-append=tableRows></table>
-          </div>
-        </quas>
+        #<div class="api-props-table-con">
+          <table q-append="{tableRows}"></table>
+        </div>
       );
     }
   }

@@ -157,30 +157,6 @@ Dev.imports = {
 
 Dev.bundle = {};
 
-Dev.splitByNotInQuotes = (deli, line) => {
-  let len = deli.length;
-  let arr = [];
-  let el = "";
-  for(let i=0; i<=line.length-len; i++){
-  	console.log("comparing: "+ line.substr(i,len), line.substr(i,len) == deli);
-
-    if(line.substr(i,len) == deli){
-      //el += line.charAt(i+1);
-      el.slice(0, -len);
-      arr.push(el);
-      el = "";
-      i += len -1;
-    }
-    else{
-      el += line.charAt(i);
-    }
-  }
-  if(el.length > 0){
-    arr.push(el);
-  }
-  return arr;
-}
-
 /*
   transpiles a javascript file into valid syntax
 
@@ -423,7 +399,6 @@ Dev.convertHTMLStringToVDOM = (html) =>{
           }
           //no closing tag required
           else{
-            //console.log(Dev.requiresClosingTag(VDOM.tag(tagVDOM)));
             VDOM.addChild(parent, tagVDOM);
           }
         }
@@ -497,7 +472,6 @@ Dev.convertHTMLStringToVDOM = (html) =>{
   @return {String}
 */
 Dev.stringifyVDOM = (vdom, tabs) => {
-  console.log("bfore stringify", vdom);
   if(!Array.isArray(vdom)){
     let res = Dev.parseProps(vdom.trimExcess())
     return Dev.tabs(tabs) + res;
@@ -534,7 +508,6 @@ Dev.stringifyVDOM = (vdom, tabs) => {
   str += "\n" + Dev.tabs(tabs + 1) + "]"; //close child nodes
   str += "\n" + Dev.tabs(tabs) + "]"; //close current node
 
-  console.log("after stringify", str);
   return str;
 }
 
@@ -645,9 +618,6 @@ Dev.tagStringToVDOM = (str) => {
     if(attr[1]){
       //remove quotes
       val = attr[1].substr(1, attr[1].length-2);
-      if(val.match("/\/")){
-        console.log("BUUUUUUUUUUUUUUUUUUUUG");
-      }
     }
     VDOM.attrs(vdom)[key] = val;
   }

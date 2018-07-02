@@ -13,7 +13,7 @@ import Error404 from "/comps/404.js"
 import LandingBody from "/comps/landing-body.js"
 import DownloadBody from "/comps/download-body.js"
 import DocsBody from "/comps/docs-body.js"
-// import APIBody from "/comps/api.js"
+import APIBody from "/comps/api.js"
 //
 // //css
 import "/quas-site.css"
@@ -88,7 +88,7 @@ function ready(){
       }
     ]
   });
-/*
+
   Router.map({
     id : "api",
     path : "/api/:id",
@@ -106,7 +106,6 @@ function ready(){
       }
     ]
   });
-*/
 
   let docsPages = [
     {
@@ -152,12 +151,11 @@ function ready(){
     ]
   });
 
-/*
+
   Router.addRedirect({
     from : "/other/:page",
     to : "/docs/:page"
   });
-  */
 
   Router.load();
 }

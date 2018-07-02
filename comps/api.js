@@ -49,11 +49,7 @@ Quas.export(
 
     render(){
       if(!this.props.isLoaded){
-        return (
-          <quas>
-            <h1>Loading</h1>
-          </quas>
-        );
+        return #<h1>Loading</h1>;
       }
       else{
         let urlparms = Router.currentRoute.params;
@@ -63,13 +59,11 @@ Quas.export(
 
         if(pageID == "overview"){
           return (
-            <quas>
-              <div class="api-con">
-                <h1>Overview</h1>
-                <div q-append=navVDOM></div>
-                <p>{"Version: ", this.props.version}</p>
-              </div>
-            </quas>
+            #<div class="api-con">
+              <h1>Overview</h1>
+              <div q-append="{navVDOM}"></div>
+              <p>{"Version: ", this.props.version}</p>
+            </div>
           );
         }
         else{
@@ -77,25 +71,23 @@ Quas.export(
           let clsContent = APIBody.genContent(cls);
 
           return (
-            <quas>
-              <div class="api-con">
-                {APIBody.genClassHeading(cls)}
-                <div q-append=navVDOM></div>
-                <p>{cls.desc}</p>
-                <div class="api-cls-overview">
-                  <div class="col">
-                    <h4>Methods</h4>
-                    <ul q-bind-for=[APIBody.genOverviewFuncListItem,cls.funcs]></ul>
-                  </div>
-                  <div class="col">
-                    <h4>Properties</h4>
-                    <ul q-bind-for=[APIBody.genOverviewPropListItem,cls.props]></ul>
-                  </div>
+            #<div class="api-con">
+              <div>{APIBody.genClassHeading(cls)}</div>
+              <div q-append="{navVDOM}"></div>
+              <p>{cls.desc}</p>
+              <div class="api-cls-overview">
+                <div class="col">
+                  <h4>Methods</h4>
+                  <ul q-bind-for="{[APIBody.genOverviewFuncListItem,cls.funcs]}"></ul>
                 </div>
-                <div class="api-content" q-append=clsContent></div>
-
+                <div class="col">
+                  <h4>Properties</h4>
+                  <ul q-bind-for="{[APIBody.genOverviewPropListItem,cls.props]}"></ul>
+                </div>
               </div>
-            </quas>
+              <div class="api-content" q-append="{clsContent}"></div>
+
+            </div>
           )
         }
       }
@@ -120,19 +112,11 @@ Quas.export(
     }
 
     static genOverviewFuncListItem(func){
-      return(
-        <quas>
-          <li><a href="#{func.name}" target="push">{func.name}</a></li>
-        </quas>
-      );
+      return #<li><a href="\#{func.name}" target="push">{func.name}</a></li>;
     }
 
     static genOverviewPropListItem(prop){
-      return(
-        <quas>
-          <li><a href="#properties" target="push">{prop.name}</a></li>
-        </quas>
-      );
+      return #<li><a href="#properties" target="push">{prop.name}</a></li>;
     }
 
     static genContent(cls){
@@ -167,21 +151,15 @@ Quas.export(
       if(cls.super && cls.super != ""){
         let c = cls.super.toLowerCase();
         return (
-          <quas>
-            <h1>
-              {cls.name} <span class="api-extend">extends
-                <a href="/api/{c}" target="push">{cls.super}</a>
-              </span>
-            </h1>
-          </quas>
+          #<h1>
+            {cls.name} <span class="api-extend">extends
+              <a href="/api/{c}" target="push">{cls.super}</a>
+            </span>
+          </h1>
         );
       }
       else{
-        return(
-          <quas>
-            <h1>{cls.name}</h1>
-          </quas>
-        )
+        return #<h1>{cls.name}</h1>;
       }
     }
 
