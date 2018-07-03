@@ -38,6 +38,10 @@ Quas.export(
       ];
     }
 
+    static clicked(){
+      console.log("clicked");
+    }
+
     render(){
       return (
           #<div>
@@ -45,7 +49,7 @@ Quas.export(
             <div class="landing-top">
               <img class="landing-logo" q-async-imgsrc="/img/logo_landing.png">
               <div class="landing-desc">
-                <h1>Quas.js</h1>
+                <h1 on-click="{LandingBody.clicked}">Quas.js</h1>
                 <h2>A progressive JavaScript UI library</h2>
               </div>
             </div>

@@ -7,8 +7,8 @@ For production use a static build and remember to remove links to this script
   Object to help manipulate the (AST) Abstract Syntax Tree data of the vdom
 
 structure of vdom:
- ["tag", { key, "val" }, []]
- [ tag, attrs, children]
+ ["tag", { key, "val" }, [], []]
+ [ tag, attrs, children, customAttrs]
  */
 const VDOM = {
   /**
@@ -48,36 +48,7 @@ const VDOM = {
   childNodes : (vdom) => {
     return vdom[2];
   },
-  /**
-    ---
-    returns the value of an attribute
-    ---
 
-    @param {AST} vdom
-    @param {String} key
-
-    @return  {String}
-  */
-  getAttr : (vdom, key) => {
-    return vdom[1][key];
-  },
-  /**
-    ---
-    Sets an attribute on the given vdom
-    ---
-
-    ```
-    let myVDom = VDOM.createNode("div");
-    VDOM.setAttr(myVDom, "class", "myclass");
-    ```
-
-    @param {AST} vdom
-    @param {String} key
-    @param {String} value
-  */
-  setAttr : (vdom, key, val) => {
-    vdom[1][key] = val;
-  },
   /**
     ---
     Adds a child node to the given AST
@@ -114,17 +85,21 @@ const VDOM = {
     @param {String} tag
     @param {Object} attributes - (optional)
     @param {Array<Object>} children - (optional)
+    @param {Map<String,?>} customAttrs - (optional) key, value
 
     @return {AST}
   */
-  createNode : (tag, attrs, children) => {
+  createNode : (tag, attrs, children, customAttrs) => {
     if(!attrs){
       attrs = {};
     }
     if(!children){
-      children = []
+      children = [];
     }
-    return [tag, attrs, children];
+    if(!customAttrs){
+      customAttrs = new Map();
+    }
+    return [tag, attrs, children, customAttrs];
   },
 
   /**
@@ -138,6 +113,26 @@ const VDOM = {
   */
   isTextNode : (vdom) => {
     return !Array.isArray(vdom);
+  },
+
+  /**
+  ---
+  returns the custom attributes for the given vdom AST
+  ---
+
+  @param {AST} - vdom
+
+  @return {Array<Object>}
+  */
+  customAttrs : (vdom) => {
+    return vdom[3];
+  },
+
+  addCustomAttr : (vdom, key, val) => {
+    vdom[3].push({
+      key : key,
+      val : val
+    });
   }
 }
 
@@ -298,7 +293,6 @@ Dev.transpile = (bundle) => {
         if(!inMultiLineTag && depth <= 0 && !hasHtmlBlockChanged){
           result += Dev.transpileHTMLBlock(htmlString);
           let els = lines[i].split(/<\/.*?>/);
-          console.log(lines[i], "-", els);
           if(els.length > 0){
             result += els[els.length-1];
           }
@@ -519,7 +513,44 @@ Dev.stringifyVDOM = (vdom, tabs) => {
       str +=  ",\n";
     }
   }
-  str += "\n" + Dev.tabs(tabs + 1) + "]"; //close child nodes
+  str += "\n" + Dev.tabs(tabs + 1) + "],\n"; //close child nodes
+
+
+  //custom attributes
+  str += Dev.tabs(tabs + 1) + "[\n";
+  //let customAttrs = VDOM.customAttrs(vdom);
+  //let customAttrCount = vdom[3].size;
+  //count = 0;
+  // vdom[3].forEach((val, key) => {
+  //   let parsedVal = Dev.parseProps(val);
+  //   str += Dev.tabs(tabs + 2) + "\"" + key + "\":" + parsedVal;
+  //   count++;
+  //   if(count != customAttrCount){
+  //     str += ",\n";
+  //   }
+  // });
+  let customAttrs = VDOM.customAttrs(vdom);
+  for(let i=0; i<customAttrs.length; i++){
+    let parsedVal = Dev.parseProps(customAttrs[i].val);
+    str += Dev.tabs(tabs + 2) + "{\n";
+    str += Dev.tabs(tabs + 3) + "key: \"" + customAttrs[i].key + "\",\n";
+    str += Dev.tabs(tabs + 3) + "val: " + parsedVal;
+    str += Dev.tabs(tabs + 2) + "}";
+    if(i < customAttrs.length){
+      str += ",\n";
+    }
+  }
+
+  // for(let a in customAttrs){
+  //   let val = Dev.parseProps(customAttrs[a]);
+  //   str += Dev.tabs(tabs + 2) + "\"" + a + "\":" + val;
+  //   count++;
+  //   if(count != customAttrCount){
+  //     str += ",\n";
+  //   }
+  // }
+  str += "\n" + Dev.tabs(tabs + 1) + "]\n"; //end of custom attrs
+
   str += "\n" + Dev.tabs(tabs) + "]"; //close current node
 
   return str;
@@ -628,7 +659,7 @@ Dev.tagStringToVDOM = (str) => {
   //split by space but no in quotes
   let arr = Dev.splitBySpaceButNotInQuotes(str);
   let tagName = arr[0];
-  let vdom = [tagName, {}, []];
+  let vdom = [tagName, {}, [], []];
 
   //get all the attrs
   for(let i=1; i<arr.length; i++){
@@ -639,7 +670,12 @@ Dev.tagStringToVDOM = (str) => {
       //remove quotes
       val = attr[1].substr(1, attr[1].length-2);
     }
-    VDOM.attrs(vdom)[key] = val;
+    if(key.substr(0,2) == "q-"){
+      VDOM.addCustomAttr(vdom, key, val);
+    }
+    else{
+      VDOM.attrs(vdom)[key] = val;
+    }
   }
   return vdom;
 }
@@ -1013,7 +1049,7 @@ Dev.load = function(){
   Checks a JavaScript file to see if it has any imports
   ---
 
-  @param {String} filename - file path 
+  @param {String} filename - file path
   @param {String} file - file content
   @param {String} key - key name for the import in modules
 */

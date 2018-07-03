@@ -14,6 +14,7 @@
   @prop {Boolean} isPure - If true the component won't update once mounted
   @prop {Element} dom - Root Element
   @prop {AST} vdom - Virtual dom for this component
+  @prop {Object} events - all of the event listener functions
 */
 
 class Component{
@@ -250,6 +251,12 @@ const Quas = {
       }
       //same tag
       else{
+
+        //eval all custom attributes
+        for(let a=0; a<vdom[3].length; a++){
+          Quas.evalCustomAttr(vdom[3][a].key, vdom[3][a].val, vdom, comp);
+        }
+
         //clone attrs to keep track of newly added attrs
         let newAttrs = {};
         for(let a in newVDOM[1]){
@@ -258,13 +265,12 @@ const Quas = {
 
         for(let a in vdom[1]){
           let prefix = a.substr(0,2);
-          let isCustomAttr = (prefix == "q-");
           let isEvent = (prefix == "on");
 
           //removed attribute a
           if(newVDOM[1][a] === undefined){
             if(isEvent){
-              let eventNames = a.substr(2).split("-on");
+              let eventNames = a.substr(3).split("-");
               for(let e in eventNames){
                 dom.removeEventListener(eventNames[e], comp.events[eventNames[e]]);
                 delete comp.events[eventNames[e]];
@@ -275,16 +281,11 @@ const Quas = {
             }
           }
           else{
-
-            //custom attr
-            if(isCustomAttr){
-              Quas.evalCustomAttr(a, newVDOM[1][a], newVDOM, comp, dom);
-            }
             //diff attribute value
-            else if(vdom[1][a] != newVDOM[1][a]){
+            if(vdom[1][a] != newVDOM[1][a]){
               //event
               if(isEvent){
-                let eventNames = a.substr(2).split("-on");
+                let eventNames = a.substr(3).split("-");
                 for(let e in eventNames){
                   if(vdom[1][a] != newVDOM[1][a]){
                     dom.removeEventListener(eventNames[e], comp.events[eventNames[e]]);
@@ -307,11 +308,10 @@ const Quas = {
         for(let a in newAttrs){
           if(a != 0){
             let prefix = a.substr(0,2);
-            let isCustomAttr = (prefix == "q-");
             let isEvent = (prefix == "on");
 
             if(isEvent){
-              let eventNames = a.substr(2).split("-on");
+              let eventNames = a.substr(3).split("-");
               for(let e in eventNames){
                 comp.events[eventNames[e]] = (mouseEvent)=>{
                   newAttrs[a](mouseEvent, comp);
@@ -389,20 +389,26 @@ const Quas = {
     let tag = vdom[0];
     let attrs = vdom[1];
     let children = vdom[2];
+    let root, action;
+
+    //evaluate all the custom attrs
+    for(let a=0; a<vdom[3].length; a++){
+      action = Quas.evalCustomAttr(vdom[3][a].key, vdom[3][a].val, vdom, comp);
+      if(action == -1){
+        return;
+      }
+    }
+
     let el = document.createElement(tag)
-    let root;
 
     //attributes
     for(let a in attrs){
 
       let prefix = a.substr(0,2);
-      //custom attribute
-      if(prefix === "q-"){
-        Quas.evalCustomAttr(a, attrs[a], vdom, comp, el);
-      }
+
       //event
-      else if(prefix === "on"){
-        let eventNames = a.substr(2).split("-on");
+      if(prefix == "on"){
+        let eventNames = a.substr(3).split("-");
         if(!comp.events){
           comp.events = {};
         }
@@ -414,7 +420,7 @@ const Quas = {
           el.addEventListener(eventNames[i], comp.events[eventNames[i]]);
         }
       }
-      //attr
+      //basic attr
       else{
         el.setAttribute(a, attrs[a]);
       }
@@ -650,7 +656,10 @@ const Quas = {
 
   /*
     ---
-    Evaluates a custom attribute
+    Evaluates a custom attribute and returns the action to take
+    -1 : don't render the current vdom node
+    0 : do nothing
+
     ---
 
     @param {String} key - the key name of the attr
@@ -659,8 +668,11 @@ const Quas = {
     @param {Component} component - the componet of this custom attribute
     @param {Element} dom - the com of the component
 
+    @return {Number}
+
+
   */
-  evalCustomAttr : (key, data, parentVDOM, comp, dom) => {
+  evalCustomAttr : (key, data, parentVDOM, comp) => {
     let params = key.split("-");
 
     let command = params[1];
@@ -676,6 +688,12 @@ const Quas = {
           vdom[2].push(data[i]);
           parentVDOM[2].push(vdom);
         }
+      }
+    }
+    else if(command == "if"){
+      console.log("value:" + (data));
+      if(data != true){
+        return -1;
       }
     }
     //calls a function and passes the variable as a param
@@ -699,8 +717,9 @@ const Quas = {
       }
     }
     else{
-      Quas.customAttrs[command](params, data, parentVDOM, comp, dom);
+      return Quas.customAttrs[command](params, data, parentVDOM, comp);
     }
+    return 0;
   },
 
   /**

@@ -7,6 +7,7 @@ import Async from "/quas/modules/async.js"
 import Navbar from "/comps/navbar.js"
 import DocsNav from "/comps/docs-nav.js"
 import Error404 from "/comps/404.js"
+import TestComp from "/comps/testcomp.js"
 
 import LandingBody from "/comps/landing-body.js"
 import DownloadBody from "/comps/download-body.js"
@@ -36,9 +37,27 @@ function ready(){
         path : "/download",
         title : "Download",
         case : "/download"
+      },
+      {
+        path : "/test",
+        title : "Test",
+        case : "/test"
       }
     ]
   };
+
+  Router.map({
+    path : "/test",
+    comps : [
+      {
+        comp : Navbar,
+        props : navbarProps
+      },
+      {
+        comp : TestComp
+      }
+    ]
+  });
 
   Router.map({
     id : "index",
