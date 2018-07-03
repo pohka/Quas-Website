@@ -52,15 +52,6 @@
 
 
 
-
-
-
-
-
-
-
-
-
 ## new custom attrs
 * data param types:
   * variable (string/number/boolean)

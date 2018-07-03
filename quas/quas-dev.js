@@ -534,7 +534,14 @@ Dev.stringifyVDOM = (vdom, tabs) => {
     let parsedVal = Dev.parseProps(customAttrs[i].val);
     str += Dev.tabs(tabs + 2) + "{\n";
     str += Dev.tabs(tabs + 3) + "key: \"" + customAttrs[i].key + "\",\n";
-    str += Dev.tabs(tabs + 3) + "val: " + parsedVal;
+
+    if(customAttrs[i].key == "q-if"){
+      console.log("adding q-if: ", customAttrs[i]);
+      str += Dev.tabs(tabs + 3) + "val: (" + customAttrs[i].val + ")\n";
+    }
+    else{
+      str += Dev.tabs(tabs + 3) + "val: " + parsedVal + "\n";
+    }
     str += Dev.tabs(tabs + 2) + "}";
     if(i < customAttrs.length){
       str += ",\n";
@@ -665,10 +672,12 @@ Dev.tagStringToVDOM = (str) => {
   for(let i=1; i<arr.length; i++){
     let attr = arr[i].split("=");
     let key = attr[0];
-    let val = "";
-    if(attr[1]){
+    attr.shift();
+    let val = attr.join("=");
+    console.log(key,":",val);
+    if(val.length > 2){
       //remove quotes
-      val = attr[1].substr(1, attr[1].length-2);
+      val = val.substr(1, val.length-2);
     }
     if(key.substr(0,2) == "q-"){
       VDOM.addCustomAttr(vdom, key, val);
