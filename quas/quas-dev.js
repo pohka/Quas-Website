@@ -529,7 +529,9 @@ Dev.stringifyVDOM = (vdom, tabs) => {
   //     str += ",\n";
   //   }
   // });
+  let parsePropExceptions = ["q-if", "q-props"]
   let customAttrs = VDOM.customAttrs(vdom);
+
   for(let i=0; i<customAttrs.length; i++){
     let parsedVal = Dev.parseProps(customAttrs[i].val);
     str += Dev.tabs(tabs + 2) + "{\n";
@@ -674,7 +676,6 @@ Dev.tagStringToVDOM = (str) => {
     let key = attr[0];
     attr.shift();
     let val = attr.join("=");
-    console.log(key,":",val);
     if(val.length > 2){
       //remove quotes
       val = val.substr(1, val.length-2);

@@ -32,6 +32,17 @@ class Component{
     this.isPure = false;
   }
 
+  addTemplate(key, callback){
+    if(!this.templates){
+      this.templates = {};
+    }
+    this.templates[key] = callback;
+  }
+
+  getTemplate(key, props){
+    return this.templates[key](props);
+  }
+
 
   /**
     # function
@@ -211,7 +222,7 @@ const Quas = {
     }
 
     //text node
-    if(newVDOM.constructor == String){
+    if(newVDOM == String){
       if(!vdom){
         let text = document.createTextNode(newVDOM);
         parent.append(text);
@@ -376,7 +387,7 @@ const Quas = {
   */
   createElement : (vdom, comp, parent) => {
     //if a text node
-    if(vdom.constructor === String){
+    if(!Array.isArray(vdom)){
       if(!parent){
         return document.createTextNode(vdom);
       }
@@ -689,6 +700,15 @@ const Quas = {
           parentVDOM[2].push(vdom);
         }
       }
+    }
+    else if(command == "fore"){
+      console.log(data);
+      for(let i=0; i<data[0].length; i++){
+        let child = comp.getTemplate(data[1], data[2]);
+        console.log("child:", child);
+        parentVDOM[2].push(child);
+      }
+      return 0;
     }
     else if(command == "if"){
       console.log("value:" + (data));

@@ -69,6 +69,7 @@
   * template
  * change a childNode
 
+* need to be able to parse {} within {} e.g. {myfunc( {name:"world"} )}
 ----
 
 this.templates = {};
