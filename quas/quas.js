@@ -423,6 +423,7 @@ const Quas = {
     let root, action;
 
     //evaluate all the custom attrs
+    console.log(vdom);
     for(let a=0; a<vdom[3].length; a++){
       action = Quas.evalCustomAttr(vdom[3][a].key, vdom[3][a].val, vdom, comp);
       if(action == -1){
