@@ -5,14 +5,17 @@ Quas.export(
   class Navbar extends Component{
     constructor(props){
       super(props);
-    }
+      this.addTemplate("option", (item) => {
+        let isActive = (window.location.pathname.indexOf(item.case) > -1);
 
-    static createOption(item){
-      let isActive = (window.location.pathname.indexOf(item.case) > -1);
-
-      return (
-        #<div><a class="nav-item" href="{item.path}" target="push" active="{isActive}">{item.title}</a></div>
-      );
+        return (
+          #<div>
+            <a class="nav-item" href="{item.path}" target="push" active="{isActive}">{
+              item.title
+            }</a>
+          </div>
+        );
+      });
     }
 
     onPush(route){
@@ -27,7 +30,7 @@ Quas.export(
               <img src="/img/logo_sm.png">
               <span>Quas.js</span>
             </a>
-             <div q-bind-for="{[Navbar.createOption,this.props.items]}" class="nav-con">
+             <div q-template-for="['option', this.props.items]" class="nav-con">
             </div>
             <div class="search-bar-con">
               <input type="text" class="search-bar" autocomplete="off" spellcheck="false" placeholder="Search API">

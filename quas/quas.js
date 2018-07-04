@@ -222,7 +222,7 @@ const Quas = {
     }
 
     //text node
-    if(newVDOM == String){
+    if(!Array.isArray(newVDOM)){
       if(!vdom){
         let text = document.createTextNode(newVDOM);
         parent.append(text);
@@ -264,9 +264,29 @@ const Quas = {
       else{
 
         //eval all custom attributes
-        for(let a=0; a<vdom[3].length; a++){
-          Quas.evalCustomAttr(vdom[3][a].key, vdom[3][a].val, vdom, comp);
-        }
+        //let hasCustomAttrs = false;
+        //if(newVDOM.constructor != String){
+          //console.log("diff custom attr:", newVDOM.constructor!=String, newVDOM[3]);
+          hasCustomAttrs = (newVDOM[3].length > 0);
+          for(let a=0; a<newVDOM[3].length; a++){
+            action = Quas.evalCustomAttr(newVDOM[3][a].key, newVDOM[3][a].val, newVDOM, comp);
+            if(action == -1){
+              dom.remove();
+              return -1;
+            }
+          }
+      //  }
+        // else{
+        //   console.log("REEEEEEEEEEEEEEEEEEEEEE string diffing customa ttrds")
+        // }
+        // let action;
+        // for(let a=0; a<vdom[3].length; a++){
+        //   console.log("diffing customattrs:", newVDOM[3]);
+        //   action = Quas.evalCustomAttr(newVDOM[3][a].key, newVDOM[3][a].val, vdom, comp);
+        //   if(action == -1){
+        //     return -1;
+        //   }
+        // }
 
         //clone attrs to keep track of newly added attrs
         let newAttrs = {};
@@ -702,7 +722,7 @@ const Quas = {
       }
     }
     else if(command == "template"){
-      console.log(data);
+      //console.log(data);
       if(params[0] && params[0] == "for"){
         for(let i=0; i<data[1].length; i++){
           let child;
@@ -717,17 +737,18 @@ const Quas = {
       }
       else{
         let child = comp.genTemplate(data[0], data[1]);
-        console.log("child:", child);
+        //console.log("child:", child);
         parentVDOM[2].push(child);
       }
       return 0;
     }
     else if(command == "if"){
-      console.log("value:" + (data));
+      //console.log("value:" + (data));
       if(data != true){
         return -1;
       }
     }
+    //todo: remove
     //calls a function and passes the variable as a param
     else if(command === "bind"){
       if(params[0] === undefined){
@@ -742,6 +763,7 @@ const Quas = {
         }
       }
     }
+    //todo: change so it accepts single vdoms and not just an array of vdoms
     //appends an array of vdoms to as a child of this node
     else if(command == "append"){
       for(let i=0; i<data.length; i++){

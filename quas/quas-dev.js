@@ -518,17 +518,7 @@ Dev.stringifyVDOM = (vdom, tabs) => {
 
   //custom attributes
   str += Dev.tabs(tabs + 1) + "[\n";
-  //let customAttrs = VDOM.customAttrs(vdom);
-  //let customAttrCount = vdom[3].size;
-  //count = 0;
-  // vdom[3].forEach((val, key) => {
-  //   let parsedVal = Dev.parseProps(val);
-  //   str += Dev.tabs(tabs + 2) + "\"" + key + "\":" + parsedVal;
-  //   count++;
-  //   if(count != customAttrCount){
-  //     str += ",\n";
-  //   }
-  // });
+
   let parsePropExceptions = ["q-if", "q-props"]
   let customAttrs = VDOM.customAttrs(vdom);
 
@@ -550,14 +540,6 @@ Dev.stringifyVDOM = (vdom, tabs) => {
     }
   }
 
-  // for(let a in customAttrs){
-  //   let val = Dev.parseProps(customAttrs[a]);
-  //   str += Dev.tabs(tabs + 2) + "\"" + a + "\":" + val;
-  //   count++;
-  //   if(count != customAttrCount){
-  //     str += ",\n";
-  //   }
-  // }
   str += "\n" + Dev.tabs(tabs + 1) + "]\n"; //end of custom attrs
 
   str += "\n" + Dev.tabs(tabs) + "]"; //close current node
