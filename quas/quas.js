@@ -39,8 +39,8 @@ class Component{
     this.templates[key] = callback;
   }
 
-  getTemplate(key, props){
-    return this.templates[key](props);
+  genTemplate(key, props, val){
+    return this.templates[key](props, val);
   }
 
 
@@ -685,8 +685,8 @@ const Quas = {
   */
   evalCustomAttr : (key, data, parentVDOM, comp) => {
     let params = key.split("-");
-
     let command = params[1];
+
     params.splice(0,2);
     let children = [];
 
@@ -701,10 +701,22 @@ const Quas = {
         }
       }
     }
-    else if(command == "fore"){
+    else if(command == "template"){
       console.log(data);
-      for(let i=0; i<data[0].length; i++){
-        let child = comp.getTemplate(data[1], data[2]);
+      if(params[0] && params[0] == "for"){
+        for(let i=0; i<data[1].length; i++){
+          let child;
+          if(data[2]){
+            child = comp.genTemplate(data[0], data[1][i], data[2]);
+          }
+          else{
+            child = comp.genTemplate(data[0], data[1][i]);
+          }
+          parentVDOM[2].push(child);
+        }
+      }
+      else{
+        let child = comp.genTemplate(data[0], data[1]);
         console.log("child:", child);
         parentVDOM[2].push(child);
       }

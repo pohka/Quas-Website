@@ -537,7 +537,7 @@ Dev.stringifyVDOM = (vdom, tabs) => {
     str += Dev.tabs(tabs + 2) + "{\n";
     str += Dev.tabs(tabs + 3) + "key: \"" + customAttrs[i].key + "\",\n";
 
-    if(customAttrs[i].key == "q-if"){
+    if(customAttrs[i].key == "q-if" || customAttrs[i].key.indexOf("q-template")==0){
       console.log("adding q-if: ", customAttrs[i]);
       str += Dev.tabs(tabs + 3) + "val: (" + customAttrs[i].val + ")\n";
     }
@@ -591,34 +591,53 @@ Dev.parseProps = (text) => {
       inProp = false,
       openIndex = -1,
       startsWithProp = false,
-      endsWithProp = false;
+      endsWithProp = false,
+      scopeDepth = 0;
   for(let i=0; i<text.length; i++){
     let char = text.charAt(i);
-    if(!inProp && char == "{"  && lastChar != "\\"){
-      openIndex = i;
-      inProp = true;
+    if(char == "{"  && lastChar != "\\"){
+      if(!inProp){
+        openIndex = i;
+        inProp = true;
+      }
+      //entering a deeper scope
+      else{
+        scopeDepth += 1;
+        propText += char;
+      }
     }
     else if(inProp && char == "}" && lastChar != "\\"){
-      inProp = false;
+      //end of props
+      if(scopeDepth == 0){
+        inProp = false;
 
-      if(openIndex >= 1){
-        fullText += "\"+"
+        if(openIndex >= 1){
+          fullText += "\"+"
+        }
+        else{
+          startsWithProp = true;
+        }
+        fullText += propText;
+        if(i != text.length-1){
+          fullText += "+\"";
+        }
+        else{
+          endsWithProp = true;
+        }
+        propText = "";
       }
+      //escaping a deeper scope
       else{
-        startsWithProp = true;
+        scopeDepth -= 1;
+        propText += char;
       }
-      fullText += propText;
-      if(i != text.length-1){
-        fullText += "+\"";
-      }
-      else{
-        endsWithProp = true;
-      }
-      propText = "";
     }
+    //add char to propText
     else if(inProp){
       propText += char;
     }
+
+    //add char to fullText
     else{
       fullText += char;
     }
