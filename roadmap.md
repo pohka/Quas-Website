@@ -22,6 +22,9 @@
   * handling of animations (entry and exit)
   * keys, so components and list items don't do unnecessary rerender
   * event attrs, some simple common functions
+  * q-heading - set id and text content to same thing so it is possible to has navigate to it
+    * <h2 q-heading="Test Me"></h2>
+    * result: <h2 id="TestMe">Test Me</h2> 
 
 
 ## important stuff

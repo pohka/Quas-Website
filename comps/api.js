@@ -29,6 +29,51 @@ Quas.export(
           </div>
         );
       });
+
+      this.addTemplate("class-heading", (cls) => {
+        if(cls.super && cls.super != ""){
+          let c = cls.super.toLowerCase();
+          return (
+            #<h1>
+              {cls.name} <span class="api-extend">extends
+                <a href="/api/{c}" target="push">{cls.super}</a>
+              </span>
+            </h1>
+          );
+        }
+        else{
+          return #<h1>{cls.name}</h1>;
+        }
+      });
+
+      this.addTemplate('heading', (text) => {
+        return #<h2 id="{text}">{text}</h2>;
+      });
+
+      this.addTemplate("overview-item", (prop, type) => {
+        if(type == "method"){
+          return #<li><a href="#{prop.name}" target="push">{prop.name}</a></li>;
+        }
+        else if(type == "properties"){
+          return #<li><a href="#properties" target="push">{prop.name}</a></li>;
+        }
+      });
+
+      this.addTemplate("props-table-row", (prop) => {
+        return(
+          #<tr>
+            <td>{prop.name}</td>
+            <td>{prop.types.join(" | ")}</td>
+            <td>{prop.desc}</td>
+          </tr>
+        );
+      });
+
+
+
+      // this.addTemplate("item-heading", (text) => {
+      //   return #<h2 id="{text}">{text}</h2>;
+      // })
     }
 
     fetchData(path){
@@ -89,25 +134,43 @@ Quas.export(
         }
         else{
           let cls = APIBody.findDocByName(pageID);
-          let clsContent = APIBody.genContent(cls);
+      //    let clsContent = APIBody.genContent(cls);
+          let funcs = APIBody.genFuncItems(cls);
 
           return (
             #<div class="api-con">
-              <div>{APIBody.genClassHeading(cls)}</div>
-            //  <div q-append="{navVDOM}"></div>
+              <div q-template="['class-heading', cls]"></div>
+              <div class="api-nav">
+                <h3>Classes</h3>
+                <div q-template-for="['nav-item', APIBody.docs, 'class']"></div>
+                <h3>Modules</h3>
+                <div q-template-for="['nav-item', APIBody.docs, 'module']"></div>
+              </div>
               <p>{cls.desc}</p>
               <div class="api-cls-overview">
                 <div class="col">
                   <h4>Methods</h4>
-                  <ul q-bind-for="{[APIBody.genOverviewFuncListItem,cls.funcs]}"></ul>
+                  <ul q-template-for="['overview-item', cls.funcs, 'method']"></ul>
                 </div>
                 <div class="col">
                   <h4>Properties</h4>
-                  <ul q-bind-for="{[APIBody.genOverviewPropListItem,cls.props]}"></ul>
+                  <ul q-template-for="['overview-item', cls.props, 'properties']"></ul>
                 </div>
               </div>
-              <div class="api-content" q-append="{clsContent}"></div>
+              //<div class="api-content" q-append="{clsContent}"></div>
+              <div q-if="cls.props.length > 0">
+                <h2 id="properties">Properties</h2>
+                <table q-template-for="['props-table-row', cls.props]">
+                  <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </table>
+              </div>
+          //    <div q-append="{funcs}">
 
+            //  </div>
             </div>
           )
         }
@@ -132,23 +195,35 @@ Quas.export(
       });
     }
 
-    static genOverviewFuncListItem(func){
-      return #<li><a href="#{func.name}" target="push">{func.name}</a></li>;
-    }
+    // static genContent(cls){
+    //   let vdoms = [];
+    //   //props
+    //   if(cls.props.length > 0){
+    //     vdoms.push(APIItem.genHeading("Properties"));
+    //     vdoms.push(APIItem.genPropsTable(cls.props));
+    //   }
+    //
+    //   //functions
+    //   if(cls.funcs.length > 0){
+    //     vdoms.push(APIItem.genHeading("Methods"));
+    //     for(let i=0; i<cls.funcs.length; i++){
+    //       let vdom = APIItem.genItem(cls.funcs[i]);
+    //
+    //       //constructor should always be first
+    //       if(cls.funcs[i].name.toLowerCase() == "constructor"){
+    //         vdoms.splice(0, 0, vdom);
+    //       }
+    //       else{
+    //         vdoms.push(vdom);
+    //       }
+    //     }
+    //   }
+    //
+    //   return vdoms;
+    // }
 
-    static genOverviewPropListItem(prop){
-      return #<li><a href="#properties" target="push">{prop.name}</a></li>;
-    }
-
-    static genContent(cls){
+    static genFuncItems(cls){
       let vdoms = [];
-      //props
-      if(cls.props.length > 0){
-        vdoms.push(APIItem.genHeading("Properties"));
-        vdoms.push(APIItem.genPropsTable(cls.props));
-      }
-
-      //functions
       if(cls.funcs.length > 0){
         vdoms.push(APIItem.genHeading("Methods"));
         for(let i=0; i<cls.funcs.length; i++){
@@ -163,26 +238,25 @@ Quas.export(
           }
         }
       }
-
       return vdoms;
     }
 
     //generates the heading of a class
-    static genClassHeading(cls){
-      if(cls.super && cls.super != ""){
-        let c = cls.super.toLowerCase();
-        return (
-          #<h1>
-            {cls.name} <span class="api-extend">extends
-              <a href="/api/{c}" target="push">{cls.super}</a>
-            </span>
-          </h1>
-        );
-      }
-      else{
-        return #<h1>{cls.name}</h1>;
-      }
-    }
+    // static genClassHeading(cls){
+    //   if(cls.super && cls.super != ""){
+    //     let c = cls.super.toLowerCase();
+    //     return (
+    //       #<h1>
+    //         {cls.name} <span class="api-extend">extends
+    //           <a href="/api/{c}" target="push">{cls.super}</a>
+    //         </span>
+    //       </h1>
+    //     );
+    //   }
+    //   else{
+    //     return #<h1>{cls.name}</h1>;
+    //   }
+    // }
 
     //find the documentation data by class name
     static findDocByName(name){
