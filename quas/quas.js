@@ -732,6 +732,8 @@ const Quas = {
     let params = key.split("-");
     let command = params[1];
 
+    console.log("evaluating", data, parentVDOM);
+
     params.splice(0,2);
     let children = [];
 
@@ -739,7 +741,7 @@ const Quas = {
     //q-for-li=["item 1","item 2"]
     if(command === "for"){
       for(let i in data){
-        let vdom = [params[0], {}, []];
+        let vdom = [params[0], {}, [], []];
         if(params.length == 1){
           vdom[2].push(data[i]);
           parentVDOM[2].push(vdom);
@@ -799,9 +801,10 @@ const Quas = {
     //todo: change so it accepts single vdoms and not just an array of vdoms
     //appends an array of vdoms to as a child of this node
     else if(command == "append"){
-      for(let i=0; i<data.length; i++){
-        parentVDOM[2].push(data[i]);
-      }
+      console.log("appending:", data, parentVDOM);
+       for(let i=0; i<data.length; i++){
+         parentVDOM[2].push(data[i]);
+       }
     }
     else{
       return Quas.customAttrs[command](params, data, parentVDOM, comp);

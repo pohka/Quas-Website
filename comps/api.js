@@ -134,7 +134,6 @@ Quas.export(
         }
         else{
           let cls = APIBody.findDocByName(pageID);
-      //    let clsContent = APIBody.genContent(cls);
           let funcs = APIBody.genFuncItems(cls);
 
           return (
@@ -168,11 +167,9 @@ Quas.export(
                   </tr>
                 </table>
               </div>
-          //    <div q-append="{funcs}">
-
-            //  </div>
+              <div q-append="{funcs}"></div>
             </div>
-          )
+          );
         }
       }
     }
@@ -195,39 +192,12 @@ Quas.export(
       });
     }
 
-    // static genContent(cls){
-    //   let vdoms = [];
-    //   //props
-    //   if(cls.props.length > 0){
-    //     vdoms.push(APIItem.genHeading("Properties"));
-    //     vdoms.push(APIItem.genPropsTable(cls.props));
-    //   }
-    //
-    //   //functions
-    //   if(cls.funcs.length > 0){
-    //     vdoms.push(APIItem.genHeading("Methods"));
-    //     for(let i=0; i<cls.funcs.length; i++){
-    //       let vdom = APIItem.genItem(cls.funcs[i]);
-    //
-    //       //constructor should always be first
-    //       if(cls.funcs[i].name.toLowerCase() == "constructor"){
-    //         vdoms.splice(0, 0, vdom);
-    //       }
-    //       else{
-    //         vdoms.push(vdom);
-    //       }
-    //     }
-    //   }
-    //
-    //   return vdoms;
-    // }
-
     static genFuncItems(cls){
       let vdoms = [];
       if(cls.funcs.length > 0){
-        vdoms.push(APIItem.genHeading("Methods"));
+        vdoms.push(#<h2>Methods</h2>);
         for(let i=0; i<cls.funcs.length; i++){
-          let vdom = APIItem.genItem(cls.funcs[i]);
+           let vdom = APIBody.genItem(cls.funcs[i]);
 
           //constructor should always be first
           if(cls.funcs[i].name.toLowerCase() == "constructor"){
@@ -241,22 +211,103 @@ Quas.export(
       return vdoms;
     }
 
-    //generates the heading of a class
-    // static genClassHeading(cls){
-    //   if(cls.super && cls.super != ""){
-    //     let c = cls.super.toLowerCase();
-    //     return (
-    //       #<h1>
-    //         {cls.name} <span class="api-extend">extends
-    //           <a href="/api/{c}" target="push">{cls.super}</a>
-    //         </span>
-    //       </h1>
-    //     );
-    //   }
-    //   else{
-    //     return #<h1>{cls.name}</h1>;
-    //   }
-    // }
+    static genItem(func){
+      let returnTypes = func.return.join(" | ");
+
+      let code = "";
+      if(func.showCode && func.code.length > 0){
+        code = (
+          #<pre class="api-code">
+            <code q-code-js="{func.code}"></code>
+          </pre>
+        );
+      }
+      if(!func.showCode && func.code.length > 0){
+        let text = "</>"
+        code = (
+          #<div class="show-code" onclick="{APIItem.showCode}" data-func="{func.name}">Code {text}</div>
+        );
+      }
+
+      let returnVDOM;
+      if(returnTypes.length > 0){
+        returnVDOM = (
+          #<div class="api-content-item-return">
+            <span class="api-returns">Returns: </span> {returnTypes}
+          </div>
+        );
+      }
+      else{
+        returnVDOM = "";
+      }
+
+      //
+      let paramNames = [];
+
+      let tableVDOM = [];
+      if(func.params.length > 0){
+
+        let hasOptional = false;
+        for(let a=0; a<func.params.length && !hasOptional; a++){
+          if(func.params[a].optional){
+            hasOptional= true;
+          }
+        }
+
+        let headings = ["Parameter", "Type", "Description"];
+        if(hasOptional){
+          headings.push("Optional");
+        }
+
+        let paramVDOMs = [];
+        paramVDOMs.push(#<tr q-for-th="{headings}"></tr>);
+        for(let a=0; a<func.params.length; a++){
+          paramNames.push(func.params[a].name);
+          if(!hasOptional){
+            paramVDOMs.push(
+              #<tr>
+                <td>{func.params[a].name}</td>
+                <td>{func.params[a].types.join(" | ")}</td>
+                <td>{func.params[a].desc}</td>
+              </tr>
+            );
+          }
+          else{
+            let optionStr = "No";
+            if(func.params[a].optional){
+              optionStr = "Yes";
+            }
+            paramVDOMs.push(
+              #<tr>
+                <td>{func.params[a].name}</td>
+                <td>{func.params[a].types.join(" | ")}</td>
+                <td>{func.params[a].desc}</td>
+                <td>{optionStr}</td>
+              </tr>
+            );
+          }
+        }
+
+        tableVDOM = #<table q-append="{paramVDOMs}"></table>;
+      }
+
+
+      return (
+        #<div class="api-content-item">
+          <h3 id="{func.name}" isStatic="{func.isStatic}">{
+            func.name, "( " + paramNames.join(", ") +" )"
+          }</h3>
+          <div class="api-content-item-info">
+            <pre>
+            <p>{func.desc}</p>
+            </pre>
+            <div q-if="tableVDOM.length > 0">{tableVDOM}</div>
+            <div>{returnVDOM}</div>
+            <div>{code}</div>
+          </div>
+        </div>
+      );
+    }
 
     //find the documentation data by class name
     static findDocByName(name){
