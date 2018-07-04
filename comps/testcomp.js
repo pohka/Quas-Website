@@ -9,7 +9,7 @@ Quas.export(
     }
 
     render(){
-      let max = 2;
+      let max = 30;
       let animals = ["bird", "cat", "dog"];
       let user = {name : "john", age : 18};
       let users = [
@@ -25,7 +25,7 @@ Quas.export(
       return (
         #<div>
           <ul>
-            <li q-if="max > this.counter" id="aaa{this.counter}">
+            <li q-if="max > this.counter">
               item {this.counter}
             </li>
             <li q-if="true">{max}</li>

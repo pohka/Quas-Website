@@ -1,7 +1,7 @@
 import Router from "/quas/modules/router.js"
 import Scroll from "/quas/modules/scroll.js"
 
-import APINav from "/comps/api-nav.js"
+//import APINav from "/comps/api-nav.js"
 import APIItem from "/comps/api-item.js"
 import "/comps/api.css"
 
@@ -10,10 +10,25 @@ Quas.export(
   class APIBody extends Component{
     constructor(props){
       super(props);
-      this.nav = new APINav();
+      //this.nav = new APINav();
+      this.createTemplates();
       this.props.isLoaded = false;
       this.fetchData(this.props.path);
       this.hashOffset = -80;
+
+    }
+
+    createTemplates(){
+      this.addTemplate("nav-item", (item, type) =>{
+        let path = "/api/" + item.name.toLowerCase();
+        let isActive = (window.location.pathname == path);
+      //  if(item.type == type)
+        return(
+          #<div q-if="item.type == type">
+            <a href="{path}" target="push" active="{isActive}">{item.name}</a>
+          </div>
+        );
+      });
     }
 
     fetchData(path){
@@ -55,13 +70,19 @@ Quas.export(
         let urlparms = Router.currentRoute.params;
         console.log("params:" , urlparms);
         let pageID = urlparms.id;
-        let navVDOM = [this.nav.render()];
+      //  let navVDOM = [this.nav.render()];
 
         if(pageID == "overview"){
           return (
             #<div class="api-con">
               <h1>Overview</h1>
-              <div q-append="{navVDOM}"></div>
+          //    <div q-append="{navVDOM}"></div>.
+              <div class="api-nav">
+                <h3>Classes</h3>
+                <div q-template-for="['nav-item', APIBody.docs, 'class']"></div>
+                <h3>Modules</h3>
+                <div q-template-for="['nav-item', APIBody.docs, 'module']"></div>
+              </div>
               <p>{"Version: ", this.props.version}</p>
             </div>
           );
@@ -73,7 +94,7 @@ Quas.export(
           return (
             #<div class="api-con">
               <div>{APIBody.genClassHeading(cls)}</div>
-              <div q-append="{navVDOM}"></div>
+            //  <div q-append="{navVDOM}"></div>
               <p>{cls.desc}</p>
               <div class="api-cls-overview">
                 <div class="col">

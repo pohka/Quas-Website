@@ -129,6 +129,29 @@ const Quas = {
     Quas.render(myComp);
     ```
   */
+  rootCond(vdom){
+    Quas.removeConditionalVDOMs(vdom);
+    return vdom;
+  },
+  removeConditionalVDOMs(vdom){
+    //not a text node
+    if(Array.isArray(vdom)){
+      if(vdom[3]["q-if"] && vdom[3]["q-if"] == false){
+        return false;
+      }
+      else{
+        for(let i=0; i<vdom[2].length; i++){
+          //if removed child node has false conditional statement
+          if(!Quas.removeConditionalVDOMs(vdom[2][i])){
+            vdom[2].splice(i,1);
+            i -= 1;
+          }
+        }
+      }
+    }
+    return true;
+  },
+
   render : (comp, parent) => {
     //if parent passed is a query selector string
     if(parent && parent.constructor === String){
@@ -139,8 +162,13 @@ const Quas = {
     //first time rendering
     if(!comp.isMounted() && parent !== null && parent){
       comp.vdom = comp.render();
+      console.log("before filter:", comp.vdom);
+      comp.vdom = Quas.rootCond(comp.vdom);
+      console.log("after filter:", comp.vdom);
       comp.dom = Quas.createElement(comp.vdom, comp);
-      parent.appendChild(comp.dom);
+      if(comp.dom){
+        parent.appendChild(comp.dom);
+      }
     }
 
     //diff the vdom if mounted and not pure
@@ -171,6 +199,8 @@ const Quas = {
   */
   diffRootVDOM : (comp, vdom, newVDOM) => {
     let hasDiff = false;
+
+
     if(newVDOM[0] != comp.vdom[0] || //diff tags
       Object.keys(vdom[1]).length != Object.keys(newVDOM[1]).length){ //diff attr count
       hasDiff = true;
@@ -198,7 +228,7 @@ const Quas = {
   /*
     ---
     recursively diffs the virtual dom of a component
-    returns:
+    returns based on the changes to the real DOM tree:
     0 - if not change to the node
     1 - if added a node to the parent
     -1 - if this node was removed
@@ -220,6 +250,17 @@ const Quas = {
       }
       return -1;
     }
+
+    if(Array.isArray(newVDOM)){
+      for(let a=0; a<newVDOM[3].length; a++){
+        action = Quas.evalCustomAttr(newVDOM[3][a].key, newVDOM[3][a].val, newVDOM, comp);
+        if(action == -1 && dom){
+          dom.remove();
+          return -1;
+        }
+      }
+    }
+
 
     //text node
     if(!Array.isArray(newVDOM)){
@@ -262,31 +303,14 @@ const Quas = {
       }
       //same tag
       else{
-
-        //eval all custom attributes
-        //let hasCustomAttrs = false;
-        //if(newVDOM.constructor != String){
-          //console.log("diff custom attr:", newVDOM.constructor!=String, newVDOM[3]);
-          hasCustomAttrs = (newVDOM[3].length > 0);
-          for(let a=0; a<newVDOM[3].length; a++){
-            action = Quas.evalCustomAttr(newVDOM[3][a].key, newVDOM[3][a].val, newVDOM, comp);
-            if(action == -1){
-              dom.remove();
-              return -1;
-            }
-          }
-      //  }
-        // else{
-        //   console.log("REEEEEEEEEEEEEEEEEEEEEE string diffing customa ttrds")
-        // }
-        // let action;
-        // for(let a=0; a<vdom[3].length; a++){
-        //   console.log("diffing customattrs:", newVDOM[3]);
-        //   action = Quas.evalCustomAttr(newVDOM[3][a].key, newVDOM[3][a].val, vdom, comp);
-        //   if(action == -1){
-        //     return -1;
-        //   }
-        // }
+          //was working
+          // for(let a=0; a<newVDOM[3].length; a++){
+          //   action = Quas.evalCustomAttr(newVDOM[3][a].key, newVDOM[3][a].val, newVDOM, comp);
+          //   if(action == -1 && dom){
+          //     dom.remove();
+          //     return -1;
+          //   }
+          // }
 
         //clone attrs to keep track of newly added attrs
         let newAttrs = {};
@@ -477,7 +501,7 @@ const Quas = {
 
     //children
     if(children !== undefined){
-      for(let i in children){
+      for(let i=0; i<children.length; i++){
         let child = Quas.createElement(children[i], comp, el);
         if(child !== undefined){
           el.appendChild(child);
@@ -733,18 +757,26 @@ const Quas = {
           else{
             child = comp.genTemplate(data[0], data[1][i]);
           }
-          parentVDOM[2].push(child);
+
+          if(child){
+
+            let condition = Quas.getCustomAttrByKey(child, "q-if");
+            if(condition === undefined || condition == true ){
+              parentVDOM[2].push(child);
+              console.log("added");
+            }
+          }
         }
       }
       else{
         let child = comp.genTemplate(data[0], data[1]);
-        //console.log("child:", child);
+        // console.log("child:", child);
         parentVDOM[2].push(child);
       }
       return 0;
     }
     else if(command == "if"){
-      //console.log("value:" + (data));
+      console.log("value:" + (data));
       if(data != true){
         return -1;
       }
@@ -775,6 +807,14 @@ const Quas = {
       return Quas.customAttrs[command](params, data, parentVDOM, comp);
     }
     return 0;
+  },
+
+  getCustomAttrByKey(vdom, key){
+    for(let i=0; i<vdom[3].length; i++){
+      if(vdom[3][i].key == key){
+        return vdom[3][i].val;
+      }
+    }
   },
 
   /**
