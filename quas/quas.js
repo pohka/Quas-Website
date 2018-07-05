@@ -108,6 +108,54 @@ class Component{
   @prop {Array<Object>} customAttrs - the registered custom attributes
 */
 const Quas = {
+
+  //filters out false q-if statements
+  filterOutFalseConditions : (vdom) => {
+    Quas.removeConditionalVDOMs(vdom);
+    return vdom;
+  },
+
+  removeConditionalVDOMs : (vdom) => {
+    console.log("remove conditional vdoms");
+    //not a text node
+    if(Array.isArray(vdom)){
+      let condition = Quas.getCustomAttrByKey(vdom, "q-if");
+      console.log("condition", condition);
+      if(condition !== undefined && condition == false){
+        return false;
+      }
+      else{
+        for(let i=0; i<vdom[2].length; i++){
+          //if removed child node has false conditional statement
+          let shouldRemoveChild = Quas.removeConditionalVDOMs(vdom[2][i]);
+          if(shouldRemoveChild !== undefined && shouldRemoveChild == false){
+            console.log("removed q-if node")
+            vdom[2].splice(i,1);
+            i -= 1;
+          }
+        }
+      }
+    }
+    return true;
+  },
+
+  customAttrsActions : (vdom, comp) => {
+    //not a text node
+    if(Array.isArray(vdom)){
+      console.log("custom attr actions");
+      for(let a=0; a<vdom[3].length; a++){
+        Quas.evalCustomAttr(vdom[3][a].key, vdom[3][a].val, vdom, comp);
+        //action = Quas.evalCustomAttr(vdom[3][a].key, vdom[3][a].val, vdom, comp);
+        // if(action == -1){
+        //   return;
+        // }
+      }
+      for(let i=0; i<vdom[2].length; i++){
+        Quas.customAttrsActions(vdom[2][i], comp);
+      }
+    }
+  },
+
   /**
     ---
     Mounts a component to the DOM tree, however if the Component is already mounted it will update the component
@@ -129,29 +177,6 @@ const Quas = {
     Quas.render(myComp);
     ```
   */
-  rootCond(vdom){
-    Quas.removeConditionalVDOMs(vdom);
-    return vdom;
-  },
-  removeConditionalVDOMs(vdom){
-    //not a text node
-    if(Array.isArray(vdom)){
-      if(vdom[3]["q-if"] && vdom[3]["q-if"] == false){
-        return false;
-      }
-      else{
-        for(let i=0; i<vdom[2].length; i++){
-          //if removed child node has false conditional statement
-          if(!Quas.removeConditionalVDOMs(vdom[2][i])){
-            vdom[2].splice(i,1);
-            i -= 1;
-          }
-        }
-      }
-    }
-    return true;
-  },
-
   render : (comp, parent) => {
     //if parent passed is a query selector string
     if(parent && parent.constructor === String){
@@ -162,7 +187,8 @@ const Quas = {
     //first time rendering
     if(!comp.isMounted() && parent !== null && parent){
       comp.vdom = comp.render();
-      comp.vdom = Quas.rootCond(comp.vdom);
+      Quas.customAttrsActions(comp.vdom, comp);
+      comp.vdom = Quas.filterOutFalseConditions(comp.vdom);
       comp.dom = Quas.createElement(comp.vdom, comp);
       if(comp.dom){
         parent.appendChild(comp.dom);
@@ -172,6 +198,9 @@ const Quas = {
     //diff the vdom if mounted and not pure
     else if(comp.isMounted() && !comp.isPure){
       let newVDOM = comp.render();
+      Quas.customAttrsActions(newVDOM, comp);
+      newVDOM = Quas.filterOutFalseConditions(newVDOM);
+      console.log("old:",comp.vdom, " new:", newVDOM);
 
       //root tag is different
       let hasDiff = Quas.diffRootVDOM(comp, comp.vdom, newVDOM);
@@ -249,15 +278,15 @@ const Quas = {
       return -1;
     }
 
-    if(Array.isArray(newVDOM)){
-      for(let a=0; a<newVDOM[3].length; a++){
-        action = Quas.evalCustomAttr(newVDOM[3][a].key, newVDOM[3][a].val, newVDOM, comp);
-        if(action == -1 && dom){
-          dom.remove();
-          return -1;
-        }
-      }
-    }
+    // if(Array.isArray(newVDOM)){
+    //   for(let a=0; a<newVDOM[3].length; a++){
+    //     action = Quas.evalCustomAttr(newVDOM[3][a].key, newVDOM[3][a].val, newVDOM, comp);
+    //     // if(action == -1 && dom){
+    //     //   dom.remove();
+    //     //   return -1;
+    //     // }
+    //   }
+    // }
 
 
     //text node
@@ -445,12 +474,12 @@ const Quas = {
     let root, action;
 
     //evaluate all the custom attrs
-    for(let a=0; a<vdom[3].length; a++){
-      action = Quas.evalCustomAttr(vdom[3][a].key, vdom[3][a].val, vdom, comp);
-      if(action == -1){
-        return;
-      }
-    }
+    //for(let a=0; a<vdom[3].length; a++){
+      //action = Quas.evalCustomAttr(vdom[3][a].key, vdom[3][a].val, vdom, comp);
+      // if(action == -1){
+      //   return;
+      // }
+    //}
 
     let el = document.createElement(tag)
 
@@ -758,7 +787,7 @@ const Quas = {
           if(child){
 
             let condition = Quas.getCustomAttrByKey(child, "q-if");
-            if(condition === undefined || condition == true ){
+            if(condition === undefined || condition == true){
               parentVDOM[2].push(child);
             }
           }
@@ -794,7 +823,10 @@ const Quas = {
     //appends an array of vdoms to as a child of this node
     else if(command == "append"){
        for(let i=0; i<data.length; i++){
-         parentVDOM[2].push(data[i]);
+         let condition = Quas.getCustomAttrByKey(data[i], "q-if");
+         if(condition === undefined || condition == true){
+           parentVDOM[2].push(data[i]);
+         }
        }
     }
     else{

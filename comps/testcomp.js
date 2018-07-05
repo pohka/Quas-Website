@@ -5,11 +5,13 @@ Quas.export(
       super();
       this.createTemplates();
       console.log("creating test");
-      this.counter = 0;
+      if(!TestComp.counter){
+        TestComp.counter = 0;
+      }
     }
 
     render(){
-      let max = 30;
+      let max = 3;
       let animals = ["bird", "cat", "dog"];
       let user = {name : "john", age : 18};
       let users = [
@@ -18,15 +20,15 @@ Quas.export(
         { name : "sofia", age : 24 }
       ];
 
-      this.counter++;
-      console.log("RENDERING TESTCOMP", this.counter);
+      TestComp.counter++;
+    //  console.log("RENDERING TESTCOMP", this.counter);
 
 
       return (
         #<div>
           <ul>
-            <li q-if="max > this.counter">
-              item {this.counter}
+            <li q-if="max > TestComp.counter">
+              item {TestComp.counter}
             </li>
             <li q-if="true">{max}</li>
           </ul>
@@ -57,4 +59,4 @@ Quas.export(
       });
     }
   }
-)
+);

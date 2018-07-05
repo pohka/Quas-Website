@@ -126,6 +126,8 @@ Quas.export(
 
           return (
             #<div class="api-con">
+
+
               <div q-template="['class-heading', cls]"></div>
               <div class="api-nav">
                 <h3>Classes</h3>
@@ -144,6 +146,8 @@ Quas.export(
                   <ul q-template-for="['overview-item', cls.props, 'properties']"></ul>
                 </div>
               </div>
+
+
               //<div class="api-content" q-append="{clsContent}"></div>
               <div q-if="cls.props.length > 0">
                 <h2 id="properties">Properties</h2>
@@ -232,7 +236,7 @@ Quas.export(
       //
       let paramNames = [];
 
-      let tableVDOM = [];
+      let tableVDOM;
       if(func.params.length > 0){
 
         let hasOptional = false;
@@ -279,7 +283,6 @@ Quas.export(
         tableVDOM = #<table q-append="{paramVDOMs}"></table>;
       }
 
-
       return (
         #<div class="api-content-item">
           <h3 id="{func.name}" isStatic="{func.isStatic}">{
@@ -289,7 +292,9 @@ Quas.export(
             <pre>
             <p>{func.desc}</p>
             </pre>
-            <div q-if="tableVDOM.length > 0">{tableVDOM}</div>
+            <div q-if="tableVDOM !== undefined">{
+              tableVDOM
+            }</div>
             <div>{returnVDOM}</div>
             <div>{code}</div>
           </div>
