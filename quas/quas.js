@@ -162,9 +162,7 @@ const Quas = {
     //first time rendering
     if(!comp.isMounted() && parent !== null && parent){
       comp.vdom = comp.render();
-      console.log("before filter:", comp.vdom);
       comp.vdom = Quas.rootCond(comp.vdom);
-      console.log("after filter:", comp.vdom);
       comp.dom = Quas.createElement(comp.vdom, comp);
       if(comp.dom){
         parent.appendChild(comp.dom);
@@ -447,7 +445,6 @@ const Quas = {
     let root, action;
 
     //evaluate all the custom attrs
-    console.log(vdom);
     for(let a=0; a<vdom[3].length; a++){
       action = Quas.evalCustomAttr(vdom[3][a].key, vdom[3][a].val, vdom, comp);
       if(action == -1){
@@ -732,8 +729,6 @@ const Quas = {
     let params = key.split("-");
     let command = params[1];
 
-    console.log("evaluating", data, parentVDOM);
-
     params.splice(0,2);
     let children = [];
 
@@ -765,20 +760,17 @@ const Quas = {
             let condition = Quas.getCustomAttrByKey(child, "q-if");
             if(condition === undefined || condition == true ){
               parentVDOM[2].push(child);
-              console.log("added");
             }
           }
         }
       }
       else{
         let child = comp.genTemplate(data[0], data[1]);
-        // console.log("child:", child);
         parentVDOM[2].push(child);
       }
       return 0;
     }
     else if(command == "if"){
-      console.log("value:" + (data));
       if(data != true){
         return -1;
       }
@@ -801,7 +793,6 @@ const Quas = {
     //todo: change so it accepts single vdoms and not just an array of vdoms
     //appends an array of vdoms to as a child of this node
     else if(command == "append"){
-      console.log("appending:", data, parentVDOM);
        for(let i=0; i<data.length; i++){
          parentVDOM[2].push(data[i]);
        }

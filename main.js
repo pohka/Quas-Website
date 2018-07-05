@@ -12,7 +12,7 @@ import TestComp from "/comps/testcomp.js"
 import LandingBody from "/comps/landing-body.js"
 import DownloadBody from "/comps/download-body.js"
 import DocsBody from "/comps/docs-body.js"
-import APIBody from "/comps/api.js"
+import APIBody from "/comps/api/api.js"
 
 //css
 import "/quas-site.css"

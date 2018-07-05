@@ -1,16 +1,14 @@
 import Router from "/quas/modules/router.js"
 import Scroll from "/quas/modules/scroll.js"
 
-//import APINav from "/comps/api-nav.js"
-import APIItem from "/comps/api-item.js"
-import "/comps/api.css"
+
+import "/comps/api/api.css"
 
 
 Quas.export(
   class APIBody extends Component{
     constructor(props){
       super(props);
-      //this.nav = new APINav();
       this.createTemplates();
       this.props.isLoaded = false;
       this.fetchData(this.props.path);
@@ -68,16 +66,9 @@ Quas.export(
           </tr>
         );
       });
-
-
-
-      // this.addTemplate("item-heading", (text) => {
-      //   return #<h2 id="{text}">{text}</h2>;
-      // })
     }
 
     fetchData(path){
-      console.log(path);
       Quas.fetch(path, "json").then((data) =>{
         let info = {};
         for(let i in data){
@@ -113,15 +104,12 @@ Quas.export(
       }
       else{
         let urlparms = Router.currentRoute.params;
-        console.log("params:" , urlparms);
         let pageID = urlparms.id;
-      //  let navVDOM = [this.nav.render()];
 
         if(pageID == "overview"){
           return (
             #<div class="api-con">
               <h1>Overview</h1>
-          //    <div q-append="{navVDOM}"></div>.
               <div class="api-nav">
                 <h3>Classes</h3>
                 <div q-template-for="['nav-item', APIBody.docs, 'class']"></div>
@@ -225,7 +213,7 @@ Quas.export(
       if(!func.showCode && func.code.length > 0){
         let text = "</>"
         code = (
-          #<div class="show-code" onclick="{APIItem.showCode}" data-func="{func.name}">Code {text}</div>
+          #<div class="show-code" on-click="{APIBody.showCode}" data-func="{func.name}">Code {text}</div>
         );
       }
 
@@ -314,6 +302,23 @@ Quas.export(
       for(let i=0; i<this.docs.length; i++){
         if(this.docs[i].name.toLowerCase() == name){
           return APIBody.docs[i];
+        }
+      }
+    }
+
+
+    static showCode(e, comp){
+      let funcName = e.target.attributes["data-func"].value;
+      let clsName = Router.currentRoute.params.id;
+      for(let i=0; i<APIBody.docs.length; i++){
+        if( (APIBody.docs[i].type != "function") &&
+            APIBody.docs[i].name.toLowerCase() == clsName){
+            for(let a=0; a<APIBody.docs[i].funcs.length; a++){
+                if(APIBody.docs[i].funcs[a].name == funcName){
+                  APIBody.docs[i].funcs[a].showCode= true;
+                  Quas.render(comp);
+                }
+            }
         }
       }
     }
