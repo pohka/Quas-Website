@@ -295,19 +295,24 @@ const Quas = {
     //diff the vdom if mounted and not pure
     else if(comp.isMounted() && !comp.isPure){
       let newVDOM = comp.render();
-      //let shouldUse = Quas.evalVDOM(newVDOM, comp);
-      Quas.customAttrsActions(newVDOM, comp);
-      newVDOM = Quas.filterOutFalseConditions(newVDOM);
-      //console.log("old:",comp.vdom, " new:", newVDOM);
+      let shouldUse = Quas.evalVDOM(newVDOM, comp);
 
+      
+      // Quas.customAttrsActions(newVDOM, comp);
+      // newVDOM = Quas.filterOutFalseConditions(newVDOM);
 
-      //root tag is different
-      let hasDiff = Quas.diffRootVDOM(comp, comp.vdom, newVDOM);
+      if(shouldUse){
+        //root tag is different
+        let hasDiff = Quas.diffRootVDOM(comp, comp.vdom, newVDOM);
 
-      if(!hasDiff){
-        Quas.diffVDOM(comp, comp.dom.parentNode, comp.dom, comp.vdom, newVDOM);
+        if(!hasDiff){
+          Quas.diffVDOM(comp, comp.dom.parentNode, comp.dom, comp.vdom, newVDOM);
+        }
+        comp.vdom = newVDOM;
       }
-      comp.vdom = newVDOM;
+      else{
+        comp.unmount();
+      }
     }
   },
 
