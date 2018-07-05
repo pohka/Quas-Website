@@ -479,7 +479,7 @@ Dev.convertHTMLStringToVDOM = (html) =>{
 
   @return {String}
 */
-Dev.stringifyVDOM = (vdom, tabs) => {
+Dev.stringifyVDOM = (vdom, tabs, isChild) => {
   if(!Array.isArray(vdom)){
     let res = Dev.parseProps(vdom.trimExcess())
     return Dev.tabs(tabs) + res;
@@ -489,60 +489,85 @@ Dev.stringifyVDOM = (vdom, tabs) => {
   str += Dev.tabs(tabs + 1) + "\"" + VDOM.tag(vdom) + "\",\n";
 
   //attributes
-  str += Dev.tabs(tabs + 1) + "{\n";
   let attrs = VDOM.attrs(vdom);
   let attrCount = Object.keys(attrs).length;
-  let count = 0;
-  for(let a in attrs){
-    let val = Dev.parseProps(attrs[a]);
-    str += Dev.tabs(tabs + 2) + "\"" + a + "\":" + val;
-    count++;
-    if(count != attrCount){
-      str += ",\n";
-    }
-  }
-  str += "\n" + Dev.tabs(tabs + 1) + "},\n";
-
-  //child nodes
   let children = VDOM.childNodes(vdom);
-  str += Dev.tabs(tabs + 1);
-  str += "[\n";
-  for(let i=0; i<children.length; i++){
-    str += Dev.stringifyVDOM(children[i], tabs+2);
-    if(i < children.length-1){
-      str +=  ",\n";
-    }
-  }
-  str += "\n" + Dev.tabs(tabs + 1) + "],\n"; //close child nodes
-
-
-  //custom attributes
-  str += Dev.tabs(tabs + 1) + "[\n";
-
-  let parsePropExceptions = ["q-if", "q-props"]
   let customAttrs = VDOM.customAttrs(vdom);
 
-  for(let i=0; i<customAttrs.length; i++){
-    let parsedVal = Dev.parseProps(customAttrs[i].val);
-    str += Dev.tabs(tabs + 2) + "{\n";
-    str += Dev.tabs(tabs + 3) + "key: \"" + customAttrs[i].key + "\",\n";
-
-    if(customAttrs[i].key == "q-if" || customAttrs[i].key.indexOf("q-template")==0){
-      console.log("adding q-if: ", customAttrs[i]);
-      str += Dev.tabs(tabs + 3) + "val: (" + customAttrs[i].val + ")\n";
+  if(attrCount == 0 && children.length == 0 && customAttrs.length == 0){
+    str += "{}, [], []\n";
+  }
+  else{
+    if(attrCount == 0){
+      str += Dev.tabs(tabs + 1) + "{},\n";
     }
     else{
-      str += Dev.tabs(tabs + 3) + "val: " + parsedVal + "\n";
+      str += Dev.tabs(tabs + 1) + "{\n";
+      let count = 0;
+      for(let a in attrs){
+        let val = Dev.parseProps(attrs[a]);
+        str += Dev.tabs(tabs + 2) + "\"" + a + "\":" + val;
+        count++;
+        if(count != attrCount){
+          str += ",\n";
+        }
+      }
+      str += "\n" + Dev.tabs(tabs + 1) + "},\n";
     }
-    str += Dev.tabs(tabs + 2) + "}";
-    if(i < customAttrs.length){
-      str += ",\n";
+
+    //child nodes
+    if(children.length == 0){
+      str += Dev.tabs(tabs + 1) + "[],\n";
+    }
+    else{
+      str += Dev.tabs(tabs + 1) + "[\n";
+      for(let i=0; i<children.length; i++){
+        str += Dev.stringifyVDOM(children[i], tabs+2, true);
+        if(i < children.length-1){
+          str +=  ",\n";
+        }
+      }
+      str += "\n" + Dev.tabs(tabs + 1) + "],\n"; //close child nodes
+    }
+
+
+    //custom attributes
+    if(customAttrs.length == 0){
+      str += Dev.tabs(tabs + 1) + "[]\n";
+    }
+    else{
+      str += Dev.tabs(tabs + 1) + "[\n";
+
+      let parsePropExceptions = ["q-if", "q-props"]
+
+      for(let i=0; i<customAttrs.length; i++){
+        let parsedVal = Dev.parseProps(customAttrs[i].val);
+        str += Dev.tabs(tabs + 2) + "{\n";
+        str += Dev.tabs(tabs + 3) + "key: \"" + customAttrs[i].key + "\",\n";
+
+        if(customAttrs[i].key == "q-if" || customAttrs[i].key.indexOf("q-template")==0){
+          console.log("adding q-if: ", customAttrs[i]);
+          str += Dev.tabs(tabs + 3) + "val: (" + customAttrs[i].val + ")\n";
+        }
+        else{
+          str += Dev.tabs(tabs + 3) + "val: " + parsedVal + "\n";
+        }
+        str += Dev.tabs(tabs + 2) + "}";
+        if(i < customAttrs.length){
+          str += ",\n";
+        }
+      }
+
+      str += "\n" + Dev.tabs(tabs + 1) + "]\n"; //end of custom attrs
     }
   }
 
-  str += "\n" + Dev.tabs(tabs + 1) + "]\n"; //end of custom attrs
 
-  str += "\n" + Dev.tabs(tabs) + "]"; //close current node
+  str += Dev.tabs(tabs) + "]"; //close current node
+
+  if(!isChild){
+    str += "\n";
+  }
 
   return str;
 }
