@@ -546,7 +546,6 @@ Dev.stringifyVDOM = (vdom, tabs, isChild) => {
         str += Dev.tabs(tabs + 3) + "key: \"" + customAttrs[i].key + "\",\n";
 
         if(customAttrs[i].key == "q-if" || customAttrs[i].key.indexOf("q-template")==0){
-          console.log("adding q-if: ", customAttrs[i]);
           str += Dev.tabs(tabs + 3) + "val: (" + customAttrs[i].val + ")\n";
         }
         else{

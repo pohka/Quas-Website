@@ -109,18 +109,42 @@ class Component{
 */
 const Quas = {
 
-  evalVDOM : (rootVDOM, comp) => {
-    let condition = Quas.getCustomAttrByKey(rootVDOM, "q-if");
-    if(condition !== undefined && condition == false){
-      return false;
-    }
+  /**
+    ---
+    Evaluates all the custom attributes for this vdom and all of its child nodes.
+    Returns false if the root vdom shouldn't be rendered
+    ---
 
+    @param {AST} rootVDOM
+    @param {Component} component
+
+    @return {Boolean}
+  */
+  evalVDOM : (rootVDOM, comp) => {
+    //not a root vdom
     if(Array.isArray(rootVDOM)){
+      let condition = Quas.getCustomAttrByKey(rootVDOM, "q-if");
+      if(condition !== undefined && condition == false){
+        return false;
+      }
+
+      for(let a=0; a<rootVDOM[3].length; a++){
+        Quas.evalCustomAttr(rootVDOM[3][a].key, rootVDOM[3][a].val, rootVDOM, comp);
+      }
       Quas.evalVDOMChild(rootVDOM, comp);
     }
     return true;
   },
 
+  /*
+  ---
+  Recursively evaluates all the child nodes for the given vdom
+  ---
+
+  @param {AST} vdom
+  @param {Component} component
+
+  */
   evalVDOMChild : (vdom, comp) => {
     //loop through all the children of the given vdom
     for(let a=0; a<vdom[2].length; a++){
@@ -174,12 +198,19 @@ const Quas = {
     }
 
 
-    //first time rendering
+    /*
+      first time rendering
+
+      1. Get raw AST from the component
+      2. Evaluate the custom attributes for the AST
+
+      If the root should still be rendered
+      3. Set the components vdom to the AST
+      4. Create the DOM element for the component
+      */
     if(!comp.isMounted() && parent !== null && parent){
       let rawVDOM = comp.render();
       let shouldUse = Quas.evalVDOM(rawVDOM, comp);
-      // Quas.customAttrsActions(comp.vdom, comp);
-      // comp.vdom = Quas.filterOutFalseConditions(comp.vdom);
       if(shouldUse){
         comp.vdom = rawVDOM;
         comp.dom = Quas.createElement(comp.vdom, comp);
@@ -192,8 +223,6 @@ const Quas = {
     //diff the vdom if mounted and not pure
     else if(comp.isMounted() && !comp.isPure){
       let newVDOM = comp.render();
-
-      //new way
       let shouldUse = Quas.evalVDOM(newVDOM, comp);
       if(shouldUse){
         //root tag is different
@@ -816,6 +845,7 @@ const Quas = {
     //todo: change so it accepts single vdoms and not just an array of vdoms
     //appends an array of vdoms to as a child of this node
     else if(command == "append"){
+      console.log("appending", data);
        for(let i=0; i<data.length; i++){
          //let condition = Quas.getCustomAttrByKey(data[i], "q-if");
          //if(condition === undefined || condition == true){
