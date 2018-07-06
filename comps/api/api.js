@@ -123,7 +123,10 @@ Quas.export(
 
           return (
             #<div class="api-con">
+              //class heading
               <div q-template="['class-heading', cls]"></div>
+
+              //api navbar at the left side
               <div class="api-nav">
                 <h3>Classes</h3>
                 <div q-template-for="['nav-item', APIBody.docs, 'class']"></div>
@@ -131,6 +134,8 @@ Quas.export(
                 <div q-template-for="['nav-item', APIBody.docs, 'module']"></div>
               </div>
               <p>{cls.desc}</p>
+
+              //class methods and props navigation (overview)
               <div class="api-cls-overview">
                 <div class="col">
                   <h4>Methods</h4>
@@ -245,17 +250,22 @@ Quas.export(
 
       return (
         #<div class="api-content-item">
+          //title
           <h3 id="{func.name}">
-            <span q-if="func.isStatic" class="static">
-              static
-            </span>
+            //prefix if static function
+            <span q-if="func.isStatic" class="static">static</span>
+            //function(param, param, ...)
             { func.name + "( " + paramNames.join(", ") +" )" }
           </h3>
           <div class="api-content-item-info">
+            //function description
             <pre>
-            <p>{func.desc}</p>
+              <p>{func.desc}</p>
             </pre>
+            //parameter table
             <div q-if="tableVDOM !== undefined">{tableVDOM}</div>
+
+            //return value
             <div q-if="returnTypes.length > 0" class="api-content-item-return">
               <span class="api-returns">Returns: </span> {returnTypes}
             </div>
@@ -269,7 +279,6 @@ Quas.export(
               class="show-code" on-click="{APIBody.showCode}" data-func="{func.name}">
               Code {"</>"}
             </div>
-
           </div>
         </div>
       );

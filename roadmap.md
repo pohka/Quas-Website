@@ -39,6 +39,9 @@
     * current: <div q-append="{[vdom]}"></div><div q-append="{[vdom]}"></div>
     * change to: ?
   * easier way of doing tables, so you can hide rows
+  * reuse a tamplte multiple times without declaring an array or data
+    * <div q-template-for="['myTemplate', [,,,]]"> //works but not optimal
+    * <div q-template-for="['myTemplate', 4]">
 
 
 ## important stuff
