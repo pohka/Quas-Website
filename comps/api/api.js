@@ -159,7 +159,7 @@ Quas.export(
                   </tr>
                 </table>
               </div>
-              <div q-append="{funcs}"></div>
+              <div q-append="funcs"></div>
             </div>
           );
         }
@@ -210,7 +210,7 @@ Quas.export(
       if(func.showCode && func.code.length > 0){
         code = (
           #<pre class="api-code">
-            <code q-code-js="{func.code}"></code>
+            <code q-code-js="func.code"></code>
           </pre>
         );
       }
@@ -252,7 +252,7 @@ Quas.export(
         }
 
         let paramVDOMs = [];
-        paramVDOMs.push(#<tr q-for-th="{headings}"></tr>);
+        paramVDOMs.push(#<tr q-for-th="headings"></tr>);
         for(let a=0; a<func.params.length; a++){
           paramNames.push(func.params[a].name);
           if(!hasOptional){
@@ -280,7 +280,7 @@ Quas.export(
           }
         }
 
-        tableVDOM = #<table q-append="{paramVDOMs}"></table>;
+        tableVDOM = #<table q-append="paramVDOMs"></table>;
       }
 
       return (

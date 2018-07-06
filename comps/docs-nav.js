@@ -25,7 +25,7 @@ Quas.export(
     //  console.log("rendering docs nav");
       return (
         #<div class="docs-nav-con">
-          <div class="docs-nav-list" q-bind-for="{[DocsNav.genItem,this.props.pages]}"></div>
+          <div class="docs-nav-list" q-bind-for="[DocsNav.genItem,this.props.pages]"></div>
         </div>
       );
 

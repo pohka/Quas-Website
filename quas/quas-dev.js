@@ -538,20 +538,12 @@ Dev.stringifyVDOM = (vdom, tabs, isChild) => {
     else{
       str += Dev.tabs(tabs + 1) + "[\n";
 
-      let parsePropExceptions = ["if", "props"]
-
       for(let i=0; i<customAttrs.length; i++){
-        let parsedVal = Dev.parseProps(customAttrs[i].val);
         str += Dev.tabs(tabs + 2) + "{\n";
         str += Dev.tabs(tabs + 3) + "key: \"" + customAttrs[i].key + "\",\n";
-
-        if(customAttrs[i].key == "if" || customAttrs[i].key.indexOf("template")==0){
-          str += Dev.tabs(tabs + 3) + "val: (" + customAttrs[i].val + ")\n";
-        }
-        else{
-          str += Dev.tabs(tabs + 3) + "val: " + parsedVal + "\n";
-        }
+        str += Dev.tabs(tabs + 3) + "val: (" + customAttrs[i].val + ")\n";
         str += Dev.tabs(tabs + 2) + "}";
+
         if(i < customAttrs.length){
           str += ",\n";
         }

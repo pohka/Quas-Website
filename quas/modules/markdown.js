@@ -53,10 +53,10 @@ Quas.export({
       if(codeBlockOpen){
         //end of code block
         if(trimmedLine == "```"){
-          let attrs = {
-            "q-code" : code,
-            "data-type" : codeLang
-          };
+          // let attrs = {
+          //   "q-code" : code,
+          //   "data-type" : codeLang
+          // };
 
           vdoms.push(
             // ["pre", {},
@@ -71,7 +71,7 @@ Quas.export({
             //   []
             // ]
             #<pre>
-              <code q-code="{code}" data-type="{codeLang}"></code>
+              <code q-code="code" data-type="{codeLang}"></code>
             </pre>
           );
           code = "";
