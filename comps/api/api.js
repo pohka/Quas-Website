@@ -13,14 +13,12 @@ Quas.export(
       this.props.isLoaded = false;
       this.fetchData(this.props.path);
       this.hashOffset = -80;
-
     }
 
     createTemplates(){
       this.addTemplate("nav-item", (item, type) =>{
         let path = "/api/" + item.name.toLowerCase();
         let isActive = (window.location.pathname == path);
-      //  if(item.type == type)
         return(
           #<div q-if="item.type == type">
             <a href="{path}" target="push" active="{isActive}">{item.name}</a>
@@ -76,7 +74,6 @@ Quas.export(
             this.props[i] = data[i];
           }
         }
-        //APIBody.overview = info,
         APIBody.docs = data.docs;
         APIBody.sortDocs();
         this.setProps({
@@ -126,8 +123,6 @@ Quas.export(
 
           return (
             #<div class="api-con">
-
-
               <div q-template="['class-heading', cls]"></div>
               <div class="api-nav">
                 <h3>Classes</h3>
@@ -147,8 +142,6 @@ Quas.export(
                 </div>
               </div>
 
-
-              //<div class="api-content" q-append="{clsContent}"></div>
               <div q-if="cls.props.length > 0">
                 <h2 id="properties">Properties</h2>
                 <table q-template-for="['props-table-row', cls.props]">
@@ -206,31 +199,6 @@ Quas.export(
     static genItem(func){
       let returnTypes = func.return.join(" | ");
 
-      // let code = "";
-      // if(func.showCode && func.code.length > 0){
-      //   code = (
-      //     #<pre class="api-code">
-      //       <code q-code-js="func.code"></code>
-      //     </pre>
-      //   );
-      // }
-      // if(!func.showCode && func.code.length > 0){
-      //   let text = "</>"
-      //   code = (
-      //     #<div class="show-code" on-click="{APIBody.showCode}" data-func="{func.name}">Code {text}</div>
-      //   );
-      // }
-
-      // let returnVDOM;
-      //if(returnTypes.length > 0){
-        // returnVDOM = (
-        //   #<div q-if="returnTypes.length > 0" class="api-content-item-return">
-        //     <span class="api-returns">Returns: </span> {returnTypes}
-        //   </div>
-        // );
-      //}
-
-
       let paramNames = [];
 
       let tableVDOM;
@@ -248,36 +216,31 @@ Quas.export(
           headings.push("Optional");
         }
 
-        let paramVDOMs = [];
-        paramVDOMs.push(#<tr q-for-th="headings"></tr>);
+        let tableRows = [];
         for(let a=0; a<func.params.length; a++){
           paramNames.push(func.params[a].name);
-          if(!hasOptional){
-            paramVDOMs.push(
-              #<tr>
-                <td>{func.params[a].name}</td>
-                <td>{func.params[a].types.join(" | ")}</td>
-                <td>{func.params[a].desc}</td>
-              </tr>
-            );
-          }
-          else{
-            let optionStr = "No";
-            if(func.params[a].optional){
-              optionStr = "Yes";
+
+            let rowItems = [
+              func.params[a].name,
+              func.params[a].types.join(' | '),
+              func.params[a].desc
+            ];
+
+            if(hasOptional){
+              let optionStr = "No";
+              if(func.params[a].optional){
+                optionStr = "Yes";
+              }
+              rowItems.push(optionStr);
             }
-            paramVDOMs.push(
-              #<tr>
-                <td>{func.params[a].name}</td>
-                <td>{func.params[a].types.join(" | ")}</td>
-                <td>{func.params[a].desc}</td>
-                <td>{optionStr}</td>
-              </tr>
-            );
-          }
+            tableRows.push(rowItems);
         }
 
-        tableVDOM = #<table q-append="paramVDOMs"></table>;
+        tableVDOM = (
+          #<table q-for-tr-td="tableRows">
+            <tr q-for-th="headings"></tr>
+          </table>
+        );
       }
 
       return (

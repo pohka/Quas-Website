@@ -819,11 +819,17 @@ const Quas = {
 
     //creates multiple child nodes of the given type
     //q-for-li=["item 1","item 2"]
-    if(command === "for"){
+    if(command == "for"){
       for(let i in data){
         let vdom = [params[0], {}, [], []];
         if(params.length == 1){
           vdom[2].push(data[i]);
+          parentVDOM[2].push(vdom);
+        }
+        else if(params.length == 2){
+          for(let j in data[i]){
+            vdom[2].push([ params[1], {}, [ data[i][j] ], [] ]);
+          }
           parentVDOM[2].push(vdom);
         }
       }

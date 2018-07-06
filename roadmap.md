@@ -38,6 +38,7 @@
   * new syntax for adding a vdom as a prop rather than appending it from a container, as there is an extra element created for no reason
     * current: <div q-append="{[vdom]}"></div><div q-append="{[vdom]}"></div>
     * change to: ?
+  * easier way of doing tables, so you can hide rows
 
 
 ## important stuff
@@ -59,6 +60,10 @@
   * problems with functions calls
 * site
   * click
+* quas-dev doesn't properly transpile spaces in array
+  * e.g. #<tr q-for-td="['item 1', 'item 2']">
+  * however this works: #<tr q-for-td="myArray">
+* q-else="" remove requirement for attrs to have a value
 
 ## routing features to add
 * onBeforePush() - e.g. user navigates away but the current page has input data that they might not want to lose

@@ -590,7 +590,7 @@ Dev.stringifyVDOM = (vdom, tabs, isChild) => {
       console.log(condition)
       str += ",\n" + Dev.tabs(tabs + 1) + "{\n"+
               Dev.tabs(tabs + 2) + "key: \"" + condition.key + "\",\n"+
-              Dev.tabs(tabs + 2) + "val: (" + condition.val + ")\n" +
+              Dev.tabs(tabs + 2) + "val: " + condition.val + "\n" +
               Dev.tabs(tabs + 1) + "}";
     }
   }
