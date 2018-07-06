@@ -206,34 +206,31 @@ Quas.export(
     static genItem(func){
       let returnTypes = func.return.join(" | ");
 
-      let code = "";
-      if(func.showCode && func.code.length > 0){
-        code = (
-          #<pre class="api-code">
-            <code q-code-js="func.code"></code>
-          </pre>
-        );
-      }
-      if(!func.showCode && func.code.length > 0){
-        let text = "</>"
-        code = (
-          #<div class="show-code" on-click="{APIBody.showCode}" data-func="{func.name}">Code {text}</div>
-        );
-      }
+      // let code = "";
+      // if(func.showCode && func.code.length > 0){
+      //   code = (
+      //     #<pre class="api-code">
+      //       <code q-code-js="func.code"></code>
+      //     </pre>
+      //   );
+      // }
+      // if(!func.showCode && func.code.length > 0){
+      //   let text = "</>"
+      //   code = (
+      //     #<div class="show-code" on-click="{APIBody.showCode}" data-func="{func.name}">Code {text}</div>
+      //   );
+      // }
 
-      let returnVDOM;
-      if(returnTypes.length > 0){
-        returnVDOM = (
-          #<div class="api-content-item-return">
-            <span class="api-returns">Returns: </span> {returnTypes}
-          </div>
-        );
-      }
-      else{
-        returnVDOM = "";
-      }
+      // let returnVDOM;
+      //if(returnTypes.length > 0){
+        // returnVDOM = (
+        //   #<div q-if="returnTypes.length > 0" class="api-content-item-return">
+        //     <span class="api-returns">Returns: </span> {returnTypes}
+        //   </div>
+        // );
+      //}
 
-      //
+
       let paramNames = [];
 
       let tableVDOM;
@@ -285,18 +282,31 @@ Quas.export(
 
       return (
         #<div class="api-content-item">
-          <h3 id="{func.name}" isStatic="{func.isStatic}">{
-            func.name, "( " + paramNames.join(", ") +" )"
-          }</h3>
+          <h3 id="{func.name}">
+            <span q-if="func.isStatic" class="static">
+              static
+            </span>
+            { func.name + "( " + paramNames.join(", ") +" )" }
+          </h3>
           <div class="api-content-item-info">
             <pre>
             <p>{func.desc}</p>
             </pre>
-            <div q-if="tableVDOM !== undefined">{
-              tableVDOM
-            }</div>
-            <div>{returnVDOM}</div>
-            <div>{code}</div>
+            <div q-if="tableVDOM !== undefined">{tableVDOM}</div>
+            <div q-if="returnTypes.length > 0" class="api-content-item-return">
+              <span class="api-returns">Returns: </span> {returnTypes}
+            </div>
+
+            //code block
+            <pre q-if="func.showCode && func.code.length > 0" class="api-code">
+              <code q-code-js="func.code"></code>
+            </pre>
+            //show code block button
+            <div q-else-if="!func.showCode && func.code.length > 0"
+              class="show-code" on-click="{APIBody.showCode}" data-func="{func.name}">
+              Code {"</>"}
+            </div>
+
           </div>
         </div>
       );
@@ -311,15 +321,17 @@ Quas.export(
       }
     }
 
-
+    //click event for code preview
     static showCode(e, comp){
       let funcName = e.target.attributes["data-func"].value;
       let clsName = Router.currentRoute.params.id;
+      //find the matching function in the documentation
       for(let i=0; i<APIBody.docs.length; i++){
         if( (APIBody.docs[i].type != "function") &&
             APIBody.docs[i].name.toLowerCase() == clsName){
             for(let a=0; a<APIBody.docs[i].funcs.length; a++){
                 if(APIBody.docs[i].funcs[a].name == funcName){
+                  //set show to true and update the render
                   APIBody.docs[i].funcs[a].showCode= true;
                   Quas.render(comp);
                 }

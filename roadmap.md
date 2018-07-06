@@ -35,6 +35,9 @@
   * state manager, for not spwa
   * standardized way of dealing with async loading data, i.e. this.prop.isLoaded
   * emit custom event to all components
+  * new syntax for adding a vdom as a prop rather than appending it from a container, as there is an extra element created for no reason
+    * current: <div q-append="{[vdom]}"></div><div q-append="{[vdom]}"></div>
+    * change to: ?
 
 
 ## important stuff

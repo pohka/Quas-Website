@@ -721,9 +721,11 @@ const Quas = {
   evalVDOMChild : (vdom, comp) => {
     //will be true if a true conditional statement has been found in this block
     let isConditionSolved = false;
+    let removedChild;
 
     //loop through all the children of the given vdom
     for(let a=0; a<vdom[2].length; a++){
+       removedChild = false;
       //not a text node
       let child = vdom[2][a];
       if(Array.isArray(child)){
@@ -739,6 +741,7 @@ const Quas = {
             //false if statement
             else{
               isConditionSolved = false;
+              removedChild = true;
               vdom[2].splice(a,1);
               a -= 1;
             }
@@ -747,6 +750,7 @@ const Quas = {
           else if(condition.key == "else-if"){
             //already solved
             if(isConditionSolved){
+              removedChild = true;
               vdom[2].splice(a,1);
               a -= 1;
             }
@@ -758,6 +762,7 @@ const Quas = {
               }
               //else-if statement is false
               else{
+                removedChild = true;
                 vdom[2].splice(a,1);
                 a -= 1;
               }
@@ -765,15 +770,17 @@ const Quas = {
 
           }
           //q-else
-          //remove else statement if a condition has already been solved
+          //remove else statement if a condition has been solved
           else if(condition.key == "else" && isConditionSolved){
+            removedChild = true;
+            isConditionSolved = true;
             vdom[2].splice(a,1);
             a -= 1;
-            isConditionSolved = true;
           }
         }
+
         //otherwise evaluate the childs custom attrs
-        else{
+        if(!removedChild){
           //if keeping this vdom
           for(let b=0; b<child[3].length; b++){
             Quas.evalCustomAttr(child[3][b], child, comp);
@@ -866,6 +873,7 @@ const Quas = {
        }
     }
     else{
+      console.log("calling customa attr:",command);
       Quas.customAttrs[command](params, data, parentVDOM, comp);
     }
   },
