@@ -101,10 +101,16 @@ const VDOM = {
     }
     let node = [tag, attrs, children, []];
     for(let i=0; i<customAttrs.length; i++){
-      node[4].push({
+      let attr = {
         key : customAttrs[i].key.replace(/q-/, ""),
         val : customAttrs[i].val
-      });
+      };
+      if(attr.key == "if"){
+        node[4] = attr;
+      }
+      else{
+        node[3].push(attr);
+      }
     }
     return node;
   },
@@ -127,7 +133,7 @@ const VDOM = {
   returns the custom attributes for the given vdom AST
   ---
 
-  @param {AST} - vdom
+  @param {AST} vdom
 
   @return {Array<Object>}
   */
@@ -136,10 +142,30 @@ const VDOM = {
   },
 
   addCustomAttr : (vdom, key, val) => {
-    vdom[3].push({
+    let attr = {
       key : key.replace(/q-/, ""),
       val : val
-    });
+    };
+
+    if(attr.key == "if"){
+      vdom[4] = attr;
+    }
+    else{
+      vdom[3].push(attr);
+    }
+  },
+
+  /**
+    ---
+    Returns the conditional custom attribute i.e. q-if
+    ---
+
+    @param {AST} vdom
+
+    @return {Object}
+  */
+  condition : (vdom) => {
+    return vdom[4];
   }
 }
 
@@ -500,9 +526,10 @@ Dev.stringifyVDOM = (vdom, tabs, isChild) => {
   let attrCount = Object.keys(attrs).length;
   let children = VDOM.childNodes(vdom);
   let customAttrs = VDOM.customAttrs(vdom);
+  let condition = VDOM.condition(vdom);
 
-  if(attrCount == 0 && children.length == 0 && customAttrs.length == 0){
-    str += "{}, [], []\n";
+  if(attrCount == 0 && children.length == 0 && customAttrs.length == 0 && condition === undefined){
+    str += "{}, [], []";
   }
   else{
     if(attrCount == 0){
@@ -556,12 +583,20 @@ Dev.stringifyVDOM = (vdom, tabs, isChild) => {
         }
       }
 
-      str += "\n" + Dev.tabs(tabs + 1) + "]\n"; //end of custom attrs
+      str += "\n" + Dev.tabs(tabs + 1) + "]"; //end of custom attrs
+    }
+
+    if(condition !== undefined){
+      console.log(condition)
+      str += ",\n" + Dev.tabs(tabs + 1) + "{\n"+
+              Dev.tabs(tabs + 2) + "key: \"" + condition.key + "\",\n"+
+              Dev.tabs(tabs + 2) + "val: (" + condition.val + ")\n" +
+              Dev.tabs(tabs + 1) + "}";
     }
   }
 
 
-  str += Dev.tabs(tabs) + "]"; //close current node
+  str += "\n" + Dev.tabs(tabs) + "]"; //close current node
 
   if(!isChild){
     str += "\n";

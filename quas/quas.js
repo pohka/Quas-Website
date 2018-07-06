@@ -696,8 +696,8 @@ const Quas = {
   evalVDOM : (rootVDOM, comp) => {
     //not a root vdom
     if(Array.isArray(rootVDOM)){
-      let condition = Quas.getCustomAttrByKey(rootVDOM, "if");
-      if(condition !== undefined && condition == false){
+      let condition = rootVDOM[4];
+      if(condition !== undefined && condition.val == false){
         return false;
       }
 
@@ -725,8 +725,8 @@ const Quas = {
       let child = vdom[2][a];
       if(Array.isArray(child)){
         //remove if it has a negative conditional statement
-        let condition = Quas.getCustomAttrByKey(child, "if");
-        if(condition !== undefined && condition == false){
+        let condition = child[4];
+        if(condition !== undefined && condition.val == false){
           vdom[2].splice(a,1);
           a -= 1;
         }
@@ -833,14 +833,6 @@ const Quas = {
       return Quas.customAttrs[command](params, data, parentVDOM, comp);
     }
     return 0;
-  },
-
-  getCustomAttrByKey(vdom, key){
-    for(let i=0; i<vdom[3].length; i++){
-      if(vdom[3][i].key == key){
-        return vdom[3][i].val;
-      }
-    }
   },
 
   /**
