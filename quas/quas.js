@@ -109,66 +109,7 @@ class Component{
 */
 const Quas = {
 
-  /**
-    ---
-    Evaluates all the custom attributes for this vdom and all of its child nodes.
-    Returns false if the root vdom shouldn't be rendered
-    ---
 
-    @param {AST} rootVDOM
-    @param {Component} component
-
-    @return {Boolean}
-  */
-  evalVDOM : (rootVDOM, comp) => {
-    //not a root vdom
-    if(Array.isArray(rootVDOM)){
-      let condition = Quas.getCustomAttrByKey(rootVDOM, "q-if");
-      if(condition !== undefined && condition == false){
-        return false;
-      }
-
-      for(let a=0; a<rootVDOM[3].length; a++){
-        Quas.evalCustomAttr(rootVDOM[3][a], rootVDOM, comp);
-      }
-      Quas.evalVDOMChild(rootVDOM, comp);
-    }
-    return true;
-  },
-
-  /*
-  ---
-  Recursively evaluates all the child nodes for the given vdom
-  ---
-
-  @param {AST} vdom
-  @param {Component} component
-
-  */
-  evalVDOMChild : (vdom, comp) => {
-    //loop through all the children of the given vdom
-    for(let a=0; a<vdom[2].length; a++){
-      //not a text node
-      let child = vdom[2][a];
-      if(Array.isArray(child)){
-        //remove if it has a negative conditional statement
-        let condition = Quas.getCustomAttrByKey(child, "if");
-        if(condition !== undefined && condition == false){
-          vdom[2].splice(a,1);
-          a -= 1;
-        }
-        //otherwise evaluate the childs custom attrs
-        else{
-          //if keeping this vdom
-          for(let b=0; b<child[3].length; b++){
-            Quas.evalCustomAttr(child[3][b], child, comp);
-          }
-
-          Quas.evalVDOMChild(child, comp);
-        }
-      }
-    }
-  },
 
   /**
     ---
@@ -306,17 +247,6 @@ const Quas = {
       return -1;
     }
 
-    // if(Array.isArray(newVDOM)){
-    //   for(let a=0; a<newVDOM[3].length; a++){
-    //     action = Quas.evalCustomAttr(newVDOM[3][a].key, newVDOM[3][a].val, newVDOM, comp);
-    //     // if(action == -1 && dom){
-    //     //   dom.remove();
-    //     //   return -1;
-    //     // }
-    //   }
-    // }
-
-
     //text node
     if(!Array.isArray(newVDOM)){
       if(!vdom){
@@ -358,14 +288,6 @@ const Quas = {
       }
       //same tag
       else{
-          //was working
-          // for(let a=0; a<newVDOM[3].length; a++){
-          //   action = Quas.evalCustomAttr(newVDOM[3][a].key, newVDOM[3][a].val, newVDOM, comp);
-          //   if(action == -1 && dom){
-          //     dom.remove();
-          //     return -1;
-          //   }
-          // }
 
         //clone attrs to keep track of newly added attrs
         let newAttrs = {};
@@ -500,14 +422,6 @@ const Quas = {
     let attrs = vdom[1];
     let children = vdom[2];
     let root, action;
-
-    //evaluate all the custom attrs
-    //for(let a=0; a<vdom[3].length; a++){
-      //action = Quas.evalCustomAttr(vdom[3][a].key, vdom[3][a].val, vdom, comp);
-      // if(action == -1){
-      //   return;
-      // }
-    //}
 
     let el = document.createElement(tag)
 
@@ -762,6 +676,71 @@ const Quas = {
           return response.arrayBuffer();
         }
     });
+  },
+
+  /*
+    ---
+    Evaluates all the custom attributes for this vdom and also for of it's child nodes.
+    This function should be called before Quas.createElement() as
+    the component.render() just returns the raw AST and the custom attributes
+    can modifiy this node and it's children
+
+    Returns false if the root vdom shouldn't be rendered
+    ---
+
+    @param {AST} rootVDOM
+    @param {Component} component
+
+    @return {Boolean}
+  */
+  evalVDOM : (rootVDOM, comp) => {
+    //not a root vdom
+    if(Array.isArray(rootVDOM)){
+      let condition = Quas.getCustomAttrByKey(rootVDOM, "if");
+      if(condition !== undefined && condition == false){
+        return false;
+      }
+
+      for(let a=0; a<rootVDOM[3].length; a++){
+        Quas.evalCustomAttr(rootVDOM[3][a], rootVDOM, comp);
+      }
+      Quas.evalVDOMChild(rootVDOM, comp);
+    }
+    return true;
+  },
+
+  /*
+  ---
+  Recursively evaluates all the child nodes for the given vdom
+  ---
+
+  @param {AST} vdom
+  @param {Component} component
+
+  */
+  evalVDOMChild : (vdom, comp) => {
+    //loop through all the children of the given vdom
+    for(let a=0; a<vdom[2].length; a++){
+      //not a text node
+      let child = vdom[2][a];
+      if(Array.isArray(child)){
+        //remove if it has a negative conditional statement
+        let condition = Quas.getCustomAttrByKey(child, "if");
+        if(condition !== undefined && condition == false){
+          vdom[2].splice(a,1);
+          a -= 1;
+        }
+        //otherwise evaluate the childs custom attrs
+        else{
+          //if keeping this vdom
+          for(let b=0; b<child[3].length; b++){
+            Quas.evalCustomAttr(child[3][b], child, comp);
+          }
+
+          Quas.evalVDOMChild(child, comp);
+        }
+      }
+    }
   },
 
   /*
