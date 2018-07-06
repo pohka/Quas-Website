@@ -99,7 +99,14 @@ const VDOM = {
     if(!customAttrs){
       customAttrs = [];
     }
-    return [tag, attrs, children, customAttrs];
+    let node = [tag, attrs, children, []];
+    for(let i=0; i<customAttrs.length; i++){
+      node[4].push({
+        key : customAttrs[i].key.replace(/q-/, ""),
+        val : customAttrs[i].val
+      });
+    }
+    return node;
   },
 
   /**
