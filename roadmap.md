@@ -24,7 +24,17 @@
   * event attrs, some simple common functions
   * q-heading - set id and text content to same thing so it is possible to has navigate to it
     * <h2 q-heading="Test Me"></h2>
-    * result: <h2 id="TestMe">Test Me</h2> 
+    * result: <h2 id="TestMe">Test Me</h2>
+  * q-prepend
+  * events  bind functon with variable i.e. on-click="increment, 1" on-click="increment, -1"
+  * having props update reactivelt rather than using .setProps()
+  * option to use:
+    * <div .myClass #myID></div> rather than
+    * <div class="myClass" id="myID"></div>
+  * component style function for components css classes
+  * state manager, for not spwa
+  * standardized way of dealing with async loading data, i.e. this.prop.isLoaded
+  * emit custom event to all components
 
 
 ## important stuff

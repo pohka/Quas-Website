@@ -129,7 +129,7 @@ const Quas = {
       }
 
       for(let a=0; a<rootVDOM[3].length; a++){
-        Quas.evalCustomAttr(rootVDOM[3][a].key, rootVDOM[3][a].val, rootVDOM, comp);
+        Quas.evalCustomAttr(rootVDOM[3][a], rootVDOM, comp);
       }
       Quas.evalVDOMChild(rootVDOM, comp);
     }
@@ -161,7 +161,7 @@ const Quas = {
         else{
           //if keeping this vdom
           for(let b=0; b<child[3].length; b++){
-            Quas.evalCustomAttr(child[3][b].key, child[3][b].val, child, comp);
+            Quas.evalCustomAttr(child[3][b], child, comp);
           }
 
           Quas.evalVDOMChild(child, comp);
@@ -782,8 +782,9 @@ const Quas = {
 
 
   */
-  evalCustomAttr : (key, data, parentVDOM, comp) => {
-    let params = key.split("-");
+  evalCustomAttr : (attr, parentVDOM, comp) => {
+    let params = attr.key.split("-");
+    let data = attr.val;
     let command = params[1];
 
     params.splice(0,2);
@@ -847,10 +848,7 @@ const Quas = {
     else if(command == "append"){
       console.log("appending", data);
        for(let i=0; i<data.length; i++){
-         //let condition = Quas.getCustomAttrByKey(data[i], "q-if");
-         //if(condition === undefined || condition == true){
            parentVDOM[2].push(data[i]);
-         //}
        }
     }
     else{
