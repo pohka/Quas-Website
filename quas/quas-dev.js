@@ -85,7 +85,7 @@ const VDOM = {
     @param {String} tag
     @param {Object} attributes - (optional)
     @param {Array<Object>} children - (optional)
-    @param {Map<String,?>} customAttrs - (optional) key, value
+    @param {Array<Object>} customAttrs - (optional) key, value
 
     @return {AST}
   */
@@ -97,7 +97,7 @@ const VDOM = {
       children = [];
     }
     if(!customAttrs){
-      customAttrs = new Map();
+      customAttrs = [];
     }
     return [tag, attrs, children, customAttrs];
   },
@@ -130,7 +130,7 @@ const VDOM = {
 
   addCustomAttr : (vdom, key, val) => {
     vdom[3].push({
-      key : key,
+      key : key.replace(/q-/, ""),
       val : val
     });
   }
@@ -538,14 +538,14 @@ Dev.stringifyVDOM = (vdom, tabs, isChild) => {
     else{
       str += Dev.tabs(tabs + 1) + "[\n";
 
-      let parsePropExceptions = ["q-if", "q-props"]
+      let parsePropExceptions = ["if", "props"]
 
       for(let i=0; i<customAttrs.length; i++){
         let parsedVal = Dev.parseProps(customAttrs[i].val);
         str += Dev.tabs(tabs + 2) + "{\n";
         str += Dev.tabs(tabs + 3) + "key: \"" + customAttrs[i].key + "\",\n";
 
-        if(customAttrs[i].key == "q-if" || customAttrs[i].key.indexOf("q-template")==0){
+        if(customAttrs[i].key == "if" || customAttrs[i].key.indexOf("template")==0){
           str += Dev.tabs(tabs + 3) + "val: (" + customAttrs[i].val + ")\n";
         }
         else{

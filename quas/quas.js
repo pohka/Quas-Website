@@ -152,7 +152,7 @@ const Quas = {
       let child = vdom[2][a];
       if(Array.isArray(child)){
         //remove if it has a negative conditional statement
-        let condition = Quas.getCustomAttrByKey(child, "q-if");
+        let condition = Quas.getCustomAttrByKey(child, "if");
         if(condition !== undefined && condition == false){
           vdom[2].splice(a,1);
           a -= 1;
@@ -783,11 +783,10 @@ const Quas = {
 
   */
   evalCustomAttr : (attr, parentVDOM, comp) => {
-    let params = attr.key.split("-");
+    let arr = attr.key.split("-");
     let data = attr.val;
-    let command = params[1];
-
-    params.splice(0,2);
+    let command = arr[0];
+    let params = arr.slice(1);
     let children = [];
 
     //creates multiple child nodes of the given type
@@ -809,11 +808,11 @@ const Quas = {
             child = comp.genTemplate(data[0], data[1][i], data[2]);
           }
           else{
-            child = comp.genTemplate(data[0], data[1][i]);
+             child = comp.genTemplate(data[0], data[1][i]);
           }
 
           if(child){
-            parentVDOM[2].push(child);
+             parentVDOM[2].push(child);
           }
         }
       }
