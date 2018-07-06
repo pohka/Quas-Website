@@ -14,6 +14,7 @@
   @prop {Boolean} isPure - If true the component won't update once mounted
   @prop {Element} dom - Root Element
   @prop {AST} vdom - Virtual dom for this component
+  @prop {Object} events - all of the event listener functions
 */
 
 class Component{
@@ -29,6 +30,17 @@ class Component{
       this.props = {}
     }
     this.isPure = false;
+  }
+
+  addTemplate(key, callback){
+    if(!this.templates){
+      this.templates = {};
+    }
+    this.templates[key] = callback;
+  }
+
+  genTemplate(key, props, val){
+    return this.templates[key](props, val);
   }
 
 
@@ -96,6 +108,9 @@ class Component{
   @prop {Array<Object>} customAttrs - the registered custom attributes
 */
 const Quas = {
+
+
+
   /**
     ---
     Mounts a component to the DOM tree, however if the Component is already mounted it will update the component
@@ -124,24 +139,45 @@ const Quas = {
     }
 
 
-    //first time rendering
+    /*
+      first time rendering
+
+      1. Get raw AST from the component
+      2. Evaluate the custom attributes for the AST
+
+      If the root should still be rendered
+      3. Set the components vdom to the AST
+      4. Create the DOM element for the component
+      */
     if(!comp.isMounted() && parent !== null && parent){
-      comp.vdom = comp.render();
-      comp.dom = Quas.createElement(comp.vdom, comp);
-      parent.appendChild(comp.dom);
+      let rawVDOM = comp.render();
+      let shouldUse = Quas.evalVDOM(rawVDOM, comp);
+      if(shouldUse){
+        comp.vdom = rawVDOM;
+        comp.dom = Quas.createElement(comp.vdom, comp);
+        if(comp.dom){
+          parent.appendChild(comp.dom);
+        }
+      }
     }
 
     //diff the vdom if mounted and not pure
     else if(comp.isMounted() && !comp.isPure){
       let newVDOM = comp.render();
+      let shouldUse = Quas.evalVDOM(newVDOM, comp);
+      if(shouldUse){
+        //root tag is different
+        let hasDiff = Quas.diffRootVDOM(comp, comp.vdom, newVDOM);
 
-      //root tag is different
-      let hasDiff = Quas.diffRootVDOM(comp, comp.vdom, newVDOM);
-
-      if(!hasDiff){
-        Quas.diffVDOM(comp, comp.dom.parentNode, comp.dom, comp.vdom, newVDOM);
+        if(!hasDiff){
+          Quas.diffVDOM(comp, comp.dom.parentNode, comp.dom, comp.vdom, newVDOM);
+        }
+        comp.vdom = newVDOM;
       }
-      comp.vdom = newVDOM;
+      //root vdom has a false conditional
+      else{
+        comp.unmount();
+      }
     }
   },
 
@@ -159,6 +195,8 @@ const Quas = {
   */
   diffRootVDOM : (comp, vdom, newVDOM) => {
     let hasDiff = false;
+
+
     if(newVDOM[0] != comp.vdom[0] || //diff tags
       Object.keys(vdom[1]).length != Object.keys(newVDOM[1]).length){ //diff attr count
       hasDiff = true;
@@ -186,7 +224,7 @@ const Quas = {
   /*
     ---
     recursively diffs the virtual dom of a component
-    returns:
+    returns based on the changes to the real DOM tree:
     0 - if not change to the node
     1 - if added a node to the parent
     -1 - if this node was removed
@@ -210,7 +248,7 @@ const Quas = {
     }
 
     //text node
-    if(newVDOM.constructor == String){
+    if(!Array.isArray(newVDOM)){
       if(!vdom){
         let text = document.createTextNode(newVDOM);
         parent.append(text);
@@ -250,6 +288,7 @@ const Quas = {
       }
       //same tag
       else{
+
         //clone attrs to keep track of newly added attrs
         let newAttrs = {};
         for(let a in newVDOM[1]){
@@ -258,13 +297,12 @@ const Quas = {
 
         for(let a in vdom[1]){
           let prefix = a.substr(0,2);
-          let isCustomAttr = (prefix == "q-");
           let isEvent = (prefix == "on");
 
           //removed attribute a
           if(newVDOM[1][a] === undefined){
             if(isEvent){
-              let eventNames = a.substr(2).split("-on");
+              let eventNames = a.substr(3).split("-");
               for(let e in eventNames){
                 dom.removeEventListener(eventNames[e], comp.events[eventNames[e]]);
                 delete comp.events[eventNames[e]];
@@ -275,16 +313,11 @@ const Quas = {
             }
           }
           else{
-
-            //custom attr
-            if(isCustomAttr){
-              Quas.evalCustomAttr(a, newVDOM[1][a], newVDOM, comp, dom);
-            }
             //diff attribute value
-            else if(vdom[1][a] != newVDOM[1][a]){
+            if(vdom[1][a] != newVDOM[1][a]){
               //event
               if(isEvent){
-                let eventNames = a.substr(2).split("-on");
+                let eventNames = a.substr(3).split("-");
                 for(let e in eventNames){
                   if(vdom[1][a] != newVDOM[1][a]){
                     dom.removeEventListener(eventNames[e], comp.events[eventNames[e]]);
@@ -307,11 +340,10 @@ const Quas = {
         for(let a in newAttrs){
           if(a != 0){
             let prefix = a.substr(0,2);
-            let isCustomAttr = (prefix == "q-");
             let isEvent = (prefix == "on");
 
             if(isEvent){
-              let eventNames = a.substr(2).split("-on");
+              let eventNames = a.substr(3).split("-");
               for(let e in eventNames){
                 comp.events[eventNames[e]] = (mouseEvent)=>{
                   newAttrs[a](mouseEvent, comp);
@@ -376,7 +408,7 @@ const Quas = {
   */
   createElement : (vdom, comp, parent) => {
     //if a text node
-    if(vdom.constructor === String){
+    if(!Array.isArray(vdom)){
       if(!parent){
         return document.createTextNode(vdom);
       }
@@ -389,20 +421,18 @@ const Quas = {
     let tag = vdom[0];
     let attrs = vdom[1];
     let children = vdom[2];
+    let root, action;
+
     let el = document.createElement(tag)
-    let root;
 
     //attributes
     for(let a in attrs){
 
       let prefix = a.substr(0,2);
-      //custom attribute
-      if(prefix === "q-"){
-        Quas.evalCustomAttr(a, attrs[a], vdom, comp, el);
-      }
+
       //event
-      else if(prefix === "on"){
-        let eventNames = a.substr(2).split("-on");
+      if(prefix == "on"){
+        let eventNames = a.substr(3).split("-");
         if(!comp.events){
           comp.events = {};
         }
@@ -414,7 +444,7 @@ const Quas = {
           el.addEventListener(eventNames[i], comp.events[eventNames[i]]);
         }
       }
-      //attr
+      //basic attr
       else{
         el.setAttribute(a, attrs[a]);
       }
@@ -439,7 +469,7 @@ const Quas = {
 
     //children
     if(children !== undefined){
-      for(let i in children){
+      for(let i=0; i<children.length; i++){
         let child = Quas.createElement(children[i], comp, el);
         if(child !== undefined){
           el.appendChild(child);
@@ -650,7 +680,75 @@ const Quas = {
 
   /*
     ---
-    Evaluates a custom attribute
+    Evaluates all the custom attributes for this vdom and also for of it's child nodes.
+    This function should be called before Quas.createElement() as
+    the component.render() just returns the raw AST and the custom attributes
+    can modifiy this node and it's children
+
+    Returns false if the root vdom shouldn't be rendered
+    ---
+
+    @param {AST} rootVDOM
+    @param {Component} component
+
+    @return {Boolean}
+  */
+  evalVDOM : (rootVDOM, comp) => {
+    //not a root vdom
+    if(Array.isArray(rootVDOM)){
+      let condition = rootVDOM[4];
+      if(condition !== undefined && condition.val == false){
+        return false;
+      }
+
+      for(let a=0; a<rootVDOM[3].length; a++){
+        Quas.evalCustomAttr(rootVDOM[3][a], rootVDOM, comp);
+      }
+      Quas.evalVDOMChild(rootVDOM, comp);
+    }
+    return true;
+  },
+
+  /*
+  ---
+  Recursively evaluates all the child nodes for the given vdom
+  ---
+
+  @param {AST} vdom
+  @param {Component} component
+
+  */
+  evalVDOMChild : (vdom, comp) => {
+    //loop through all the children of the given vdom
+    for(let a=0; a<vdom[2].length; a++){
+      //not a text node
+      let child = vdom[2][a];
+      if(Array.isArray(child)){
+        //remove if it has a negative conditional statement
+        let condition = child[4];
+        if(condition !== undefined && condition.val == false){
+          vdom[2].splice(a,1);
+          a -= 1;
+        }
+        //otherwise evaluate the childs custom attrs
+        else{
+          //if keeping this vdom
+          for(let b=0; b<child[3].length; b++){
+            Quas.evalCustomAttr(child[3][b], child, comp);
+          }
+
+          Quas.evalVDOMChild(child, comp);
+        }
+      }
+    }
+  },
+
+  /*
+    ---
+    Evaluates a custom attribute and returns the action to take
+    -1 : don't render the current vdom node
+    0 : do nothing
+
     ---
 
     @param {String} key - the key name of the attr
@@ -659,25 +757,56 @@ const Quas = {
     @param {Component} component - the componet of this custom attribute
     @param {Element} dom - the com of the component
 
-  */
-  evalCustomAttr : (key, data, parentVDOM, comp, dom) => {
-    let params = key.split("-");
+    @return {Number}
 
-    let command = params[1];
-    params.splice(0,2);
+
+  */
+  evalCustomAttr : (attr, parentVDOM, comp) => {
+    let arr = attr.key.split("-");
+    let data = attr.val;
+    let command = arr[0];
+    let params = arr.slice(1);
     let children = [];
 
     //creates multiple child nodes of the given type
     //q-for-li=["item 1","item 2"]
     if(command === "for"){
       for(let i in data){
-        let vdom = [params[0], {}, []];
+        let vdom = [params[0], {}, [], []];
         if(params.length == 1){
           vdom[2].push(data[i]);
           parentVDOM[2].push(vdom);
         }
       }
     }
+    else if(command == "template"){
+      if(params[0] && params[0] == "for"){
+        for(let i=0; i<data[1].length; i++){
+          let child;
+          if(data[2]){
+            child = comp.genTemplate(data[0], data[1][i], data[2]);
+          }
+          else{
+             child = comp.genTemplate(data[0], data[1][i]);
+          }
+
+          if(child){
+             parentVDOM[2].push(child);
+          }
+        }
+      }
+      else{
+        let child = comp.genTemplate(data[0], data[1]);
+        parentVDOM[2].push(child);
+      }
+      return 0;
+    }
+    else if(command == "if"){
+      if(data != true){
+        return -1;
+      }
+    }
+    //todo: remove
     //calls a function and passes the variable as a param
     else if(command === "bind"){
       if(params[0] === undefined){
@@ -692,15 +821,18 @@ const Quas = {
         }
       }
     }
+    //todo: change so it accepts single vdoms and not just an array of vdoms
     //appends an array of vdoms to as a child of this node
     else if(command == "append"){
-      for(let i=0; i<data.length; i++){
-        parentVDOM[2].push(data[i]);
-      }
+      console.log("appending", data);
+       for(let i=0; i<data.length; i++){
+           parentVDOM[2].push(data[i]);
+       }
     }
     else{
-      Quas.customAttrs[command](params, data, parentVDOM, comp, dom);
+      return Quas.customAttrs[command](params, data, parentVDOM, comp);
     }
+    return 0;
   },
 
   /**

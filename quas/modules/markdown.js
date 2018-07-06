@@ -53,14 +53,27 @@ Quas.export({
       if(codeBlockOpen){
         //end of code block
         if(trimmedLine == "```"){
-          let attrs = {
-            "q-code" : code,
-            "data-type" : codeLang
-          };
+          // let attrs = {
+          //   "q-code" : code,
+          //   "data-type" : codeLang
+          // };
 
-          vdoms.push(["pre", {}, [
-            ["code", attrs, []]
-          ]]);
+          vdoms.push(
+            // ["pre", {},
+            //   [
+            //     ["code", { "data-type" : codeLang }, [], [
+            //       // {
+            //       //   key : "q-code",
+            //       //   val : code
+            //       // }
+            //     ]]
+            //   ],
+            //   []
+            // ]
+            #<pre>
+              <code q-code="code" data-type="{codeLang}"></code>
+            </pre>
+          );
           code = "";
           codeLang = "";
           codeBlockOpen = false;
@@ -80,19 +93,19 @@ Quas.export({
       //new line
       if(!isLineParsed && trimmedLine == ""){
         if(paragraph.length > 0){
-          vdoms.push(["p",{},[paragraph]]);
+          vdoms.push(#<p>{paragraph}</p>);
           paragraph = "";
         }
 
         else if(lastLineType == "ul" || lastLineType == "ol"){
-          let listVDOM = [lastLineType, {}, []]
+          let listVDOM = [lastLineType, {}, [], []]
           for(let a=0; a<listItems.length; a++){
             //nested list items
             if(Array.isArray(listItems[a])){
 
             }
             else{
-              listVDOM[2].push(["li", {}, [listItems[a]]]);
+              listVDOM[2].push(#<li>{listItems[a]}</li>);
             }
           }
           vdoms.push(listVDOM);
@@ -106,7 +119,7 @@ Quas.export({
       //multiline quote
       else if(lastLineType == "quote" && firstChar == ">"){
         let lastItem = vdoms[vdoms.length-1];
-        lastItem[2].push(["br", {}, []]);
+        lastItem[2].push(["br", {}, [], []]);
         lastItem[2].push(afterFirstWord);
         isLineParsed = true;
       }
@@ -122,7 +135,7 @@ Quas.export({
         }
         if(validHeading){
           let tag = "h" + firstWord.length;
-          vdoms.push([tag, {}, [afterFirstWord]]);
+          vdoms.push([tag, {}, [afterFirstWord], []]);
           lastLineType = "heading";
           isLineParsed = true;
         }
@@ -130,7 +143,7 @@ Quas.export({
 
       //quote
       else if(!isLineParsed && firstChar == ">"){
-        vdoms.push(["quote", {}, [afterFirstWord]]);
+        vdoms.push(#<quote>{afterFirstWord}</quote>);
         lastLineType = "quote";
         isLineParsed = true;
       }
@@ -161,7 +174,7 @@ Quas.export({
       //last line
       if(i == lines.length-1){
         if(paragraph.length > 0){
-          vdoms.push(["p",{},[paragraph]]);
+          vdoms.push(#<p>{paragraph}</p>);
         }
       }
     }

@@ -1,6 +1,9 @@
 /*----------- CARD ---------*/
 .card-con{
 	display: flex;
+  flex-flow: wrap;
+	align-items: center;
+  justify-content: center;
 	width: 1000px;
 	margin: 0 auto;
 	margin-top: 50px;
@@ -8,9 +11,8 @@
 
 .card{
 	padding: 30px;
-	width: 100%;
 	text-align: center;
-	display: inline-block;
+	width: 300px;
 	margin-bottom: 20px;
 }
 

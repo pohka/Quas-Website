@@ -115,7 +115,7 @@ Quas.export(
               text = word;
               word = char;
             }
-            parentVDOM[2].push(["span", {"class":"code-comment"}, [text]]);
+            parentVDOM[2].push(["span", {"class":"code-comment"}, [text], []]);
             isComment = false;
             isMultilineComment = false;
 
@@ -154,7 +154,7 @@ Quas.export(
           else if(isQuote && quoteOpen && char == quoteType){
             word += char;
             quoteOpen = false;
-            parentVDOM[2].push(["span", {"class":"code-quote"}, [word]]);
+            parentVDOM[2].push(["span", {"class":"code-quote"}, [word], []]);
 
             quoteException = true;
 
@@ -230,14 +230,14 @@ Quas.export(
       let after = ">" + arr[1];
 
       //html tag
-      parentVDOM[2].push(["span", {}, [pre]]);
-      parentVDOM[2].push(["span", {"class":"code-htmltag"}, [mid]]);
-      parentVDOM[2].push(["span", {}, [after]]);
+      parentVDOM[2].push(["span", {}, [pre], []]);
+      parentVDOM[2].push(["span", {"class":"code-htmltag"}, [mid], []]);
+      parentVDOM[2].push(["span", {}, [after], []]);
     }
     else{
       //javascript
       if(!CodeHighlighter.isHTML){
-        let vdom = ["span", {}, [text]];
+        let vdom = ["span", {}, [text], []];
         if(CodeHighlighter.jsKeyWords.indexOf(word.trim()) > -1){
           vdom[1]["class"] = "code-keyword";
         }
@@ -255,8 +255,8 @@ Quas.export(
     for(let i=0; i<strs.length; i++){
 
       if(isTag){
-        let openVDOM = ["span", {}, ["<"]];
-        let closeVDOM = ["span", {}, [">"]];
+        let openVDOM = ["span", {}, ["<"], []];
+        let closeVDOM = ["span", {}, [">"], []];
 
         //let midSpans = [];
         let midVDOMs = [];
@@ -270,16 +270,16 @@ Quas.export(
 
           //html tag
           if(i == 0){
-            midVDOMs.push(["span", {"class":"code-htmltag"}, [attrs[i]]]);
+            midVDOMs.push(["span", {"class":"code-htmltag"}, [attrs[i]], []]);
           }
           //html attribute
           else{
             let kv = attrs[i].split("=");
-            midVDOMs.push(["span", {"class":"code-htmlkey"}, [kv[0]]]);
+            midVDOMs.push(["span", {"class":"code-htmlkey"}, [kv[0]], []]);
 
             if(kv.length > 1){
               midVDOMs.push(["span", {}, ["="]]);
-              midVDOMs.push(["span", {"class":"code-htmlval"}, [kv[1]]]);
+              midVDOMs.push(["span", {"class":"code-htmlval"}, [kv[1]], []]);
             }
           }
         }
@@ -292,7 +292,7 @@ Quas.export(
 
       }
       else{
-        parentVDOM[2].push(["span", {}, [strs[i]]]);
+        parentVDOM[2].push(["span", {}, [strs[i]], []]);
       }
       isTag = !isTag;
     }

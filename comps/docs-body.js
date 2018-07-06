@@ -21,6 +21,7 @@ Quas.export(
       let comp = this;
       Quas.fetch("/docs/"+page+".md").then((res) => {
         let vdoms = Markdown.parseToVDOM(res);
+        console.log("makrdown:" ,vdoms);
         comp.setProps({
          loaded : true,
          content : vdoms
@@ -42,7 +43,7 @@ Quas.export(
       }
       else{
         return (
-          #<div class="docs-content" q-append="{this.props.content}"></div>
+          #<div class="docs-content" q-append="this.props.content"></div>
         );
       }
     }

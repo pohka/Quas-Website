@@ -18,7 +18,7 @@
 Quas.export({
   init : ()=>{
     Quas.async = {};
-    Quas.customAttrs["async"] = (params, data, parentVDOM, comp, parentDOM) => {
+    Quas.customAttrs["async"] = (params, data, parentVDOM, comp) => {
       //async load img
       if(params[0] == "imgsrc"){
         if(!Quas.async.imgs){
@@ -41,7 +41,6 @@ Quas.export({
           if(Quas.async.imgs[i].src == url){
             foundImage = true;
             parentVDOM[1]["src"] = url;
-            parentDOM.setAttribute("src", url);
           }
         }
 
