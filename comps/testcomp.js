@@ -26,6 +26,13 @@ Quas.export(
 
       return (
         #<div>
+          <div q-if="true">test 1</div>
+          <div q-else="true">test 2</div>
+          <div q-if="false">test a</div>
+          <div q-else-if="false">test 3</div>
+          <div q-else-if="true">test 4</div>
+          <div q-else="true">test 5</div>
+
           <ul>
             <li q-if="max > TestComp.counter">
               item {TestComp.counter}

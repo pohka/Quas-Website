@@ -105,7 +105,7 @@ const VDOM = {
         key : customAttrs[i].key.replace(/q-/, ""),
         val : customAttrs[i].val
       };
-      if(attr.key == "if"){
+      if(attr.key == "if" || attr.key == "else" || attr.key == "else-if"){
         node[4] = attr;
       }
       else{
@@ -147,7 +147,7 @@ const VDOM = {
       val : val
     };
 
-    if(attr.key == "if"){
+    if(attr.key == "if" || attr.key == "else" || attr.key == "else-if"){
       vdom[4] = attr;
     }
     else{

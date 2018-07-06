@@ -697,7 +697,7 @@ const Quas = {
     //not a root vdom
     if(Array.isArray(rootVDOM)){
       let condition = rootVDOM[4];
-      if(condition !== undefined && condition.val == false){
+      if(condition !== undefined && condition.val == false && condition.key == "if"){
         return false;
       }
 
@@ -719,16 +719,58 @@ const Quas = {
 
   */
   evalVDOMChild : (vdom, comp) => {
+    //will be true if a true conditional statement has been found in this block
+    let isConditionSolved = false;
+
     //loop through all the children of the given vdom
     for(let a=0; a<vdom[2].length; a++){
       //not a text node
       let child = vdom[2][a];
       if(Array.isArray(child)){
-        //remove if it has a negative conditional statement
+        //remove any unused conditional statement blocks
         let condition = child[4];
-        if(condition !== undefined && condition.val == false){
-          vdom[2].splice(a,1);
-          a -= 1;
+        if(condition !== undefined){
+          //q-if
+          if(condition.key == "if"){
+            //if statement block opened
+            if(condition.val){
+              isConditionSolved = true;
+            }
+            //false if statement
+            else{
+              isConditionSolved = false;
+              vdom[2].splice(a,1);
+              a -= 1;
+            }
+          }
+          //q-else-if
+          else if(condition.key == "else-if"){
+            //already solved
+            if(isConditionSolved){
+              vdom[2].splice(a,1);
+              a -= 1;
+            }
+            //not solved yet
+            else{
+              //else-if statement is true
+              if(condition.val){
+                isConditionSolved = true;
+              }
+              //else-if statement is false
+              else{
+                vdom[2].splice(a,1);
+                a -= 1;
+              }
+            }
+
+          }
+          //q-else
+          //remove else statement if a condition has already been solved
+          else if(condition.key == "else" && isConditionSolved){
+            vdom[2].splice(a,1);
+            a -= 1;
+            isConditionSolved = true;
+          }
         }
         //otherwise evaluate the childs custom attrs
         else{
@@ -799,14 +841,8 @@ const Quas = {
         let child = comp.genTemplate(data[0], data[1]);
         parentVDOM[2].push(child);
       }
-      return 0;
     }
-    else if(command == "if"){
-      if(data != true){
-        return -1;
-      }
-    }
-    //todo: remove
+
     //calls a function and passes the variable as a param
     else if(command === "bind"){
       if(params[0] === undefined){
@@ -830,9 +866,8 @@ const Quas = {
        }
     }
     else{
-      return Quas.customAttrs[command](params, data, parentVDOM, comp);
+      Quas.customAttrs[command](params, data, parentVDOM, comp);
     }
-    return 0;
   },
 
   /**
