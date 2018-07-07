@@ -17,6 +17,7 @@ Quas.export(
 
       if(!Store.getState("isAPILoaded")){
         Store.setData("api", []);
+        Store.setData("version", -1);
         this.fetchData(this.props.path);
       }
 
@@ -66,16 +67,17 @@ Quas.export(
 
     fetchData(path){
       Quas.fetch(path, "json").then((data) =>{
-        let info = {};
+        let overview = {};
         for(let i in data){
           if(i != "docs"){
-            this.props[i] = data[i];
+            overview[i] = data[i];
           }
         }
 
         APIBody.sortDocs(data.docs);
         setTimeout(() => {
-        Store.setData("api", data.docs);
+          Store.setData("apiOverview", overview);
+          Store.setData("api", data.docs);
 
           Store.setState("isAPILoaded", true);
           Scroll.toHash(this.hashOffset);
@@ -115,7 +117,7 @@ Quas.export(
           return (
             #<div class="api-con">
               <h1>Overview</h1>
-              <p>{"Version: ", this.props.version}</p>
+              <p>{"Version: ", Store.getData("apiOverview").version}</p>
             </div>
           );
         }

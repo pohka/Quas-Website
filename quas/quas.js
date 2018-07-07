@@ -153,6 +153,9 @@ const Quas = {
       */
     if(!comp.isMounted() && parent !== null && parent){
       let rawVDOM = comp.render();
+      if(rawVDOM === undefined){
+        rawVDOM = "";
+      }
       let shouldUse = Quas.evalVDOM(rawVDOM, comp);
       if(shouldUse){
         comp.vdom = rawVDOM;
@@ -166,6 +169,9 @@ const Quas = {
     //diff the vdom if mounted and not pure
     else if(comp.isMounted() && !comp.isPure){
       let newVDOM = comp.render();
+      if(newVDOM === undefined){
+        newVDOM = "";
+      }
       let shouldUse = Quas.evalVDOM(newVDOM, comp);
       if(shouldUse){
         //root tag is different
@@ -698,10 +704,8 @@ const Quas = {
   evalVDOM : (rootVDOM, comp) => {
     //not a root vdom
     if(Array.isArray(rootVDOM)){
-      let condition = rootVDOM[4];
-      if(condition !== undefined && condition.val == false && condition.key == "if"){
-        return false;
-      }
+      
+      //ignore all conditional statements for rootVDOM
 
       for(let a=0; a<rootVDOM[3].length; a++){
         Quas.evalCustomAttr(rootVDOM[3][a], rootVDOM, comp);
