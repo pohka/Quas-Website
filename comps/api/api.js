@@ -1,5 +1,6 @@
 import Router from "/quas/modules/router.js"
 import Scroll from "/quas/modules/scroll.js"
+import Store from "/quas/modules/store.js"
 
 
 import "/comps/api/api.css"
@@ -11,20 +12,18 @@ Quas.export(
       super(props);
       this.createTemplates();
       this.props.isLoaded = false;
-      this.fetchData(this.props.path);
+
       this.hashOffset = -80;
+
+      if(!Store.getState("isAPILoaded")){
+        Store.setData("api", []);
+        this.fetchData(this.props.path);
+      }
+
+      Store.observe(this, "isAPILoaded");
     }
 
     createTemplates(){
-      this.addTemplate("nav-item", (item, type) =>{
-        let path = "/api/" + item.name.toLowerCase();
-        let isActive = (window.location.pathname == path);
-        return(
-          #<div q-if="item.type == type">
-            <a href="{path}" target="push" active="{isActive}">{item.name}</a>
-          </div>
-        );
-      });
 
       this.addTemplate("class-heading", (cls) => {
         if(cls.super && cls.super != ""){
@@ -74,19 +73,22 @@ Quas.export(
             this.props[i] = data[i];
           }
         }
-        APIBody.docs = data.docs;
-        APIBody.sortDocs();
-        this.setProps({
-          isLoaded : true,
-        });
-        Scroll.toHash(this.hashOffset);
+
+        APIBody.sortDocs(data.docs);
+        setTimeout(() => {
+        Store.setData("api", data.docs);
+
+          Store.setState("isAPILoaded", true);
+          Scroll.toHash(this.hashOffset);
+        }, 1000);
       }).catch((err) => console.error(err));
     }
 
     onPush(){
-      for(let i=0; i<APIBody.docs.length; i++){
-        for(let a=0; a<APIBody.docs[i].funcs.length; a++){
-          APIBody.docs[i].funcs[a].showCode = false;
+      let docs = Store.getData("api");
+      for(let i=0; i<docs.length; i++){
+        for(let a=0; a<docs[i].funcs.length; a++){
+          docs[i].funcs[a].showCode = false;
         }
       }
     }
@@ -96,7 +98,7 @@ Quas.export(
     }
 
     render(){
-      if(!this.props.isLoaded){
+      if(!Store.getState("isAPILoaded")){
         return #<h1>Loading</h1>;
       }
       else{
@@ -107,12 +109,6 @@ Quas.export(
           return (
             #<div class="api-con">
               <h1>Overview</h1>
-              <div class="api-nav">
-                <h3>Classes</h3>
-                <div q-template-for="['nav-item', APIBody.docs, 'class']"></div>
-                <h3>Modules</h3>
-                <div q-template-for="['nav-item', APIBody.docs, 'module']"></div>
-              </div>
               <p>{"Version: ", this.props.version}</p>
             </div>
           );
@@ -123,16 +119,8 @@ Quas.export(
 
           return (
             #<div class="api-con">
-              //class heading
+              //class heading and description
               <div q-template="['class-heading', cls]"></div>
-
-              //api navbar at the left side
-              <div class="api-nav">
-                <h3>Classes</h3>
-                <div q-template-for="['nav-item', APIBody.docs, 'class']"></div>
-                <h3>Modules</h3>
-                <div q-template-for="['nav-item', APIBody.docs, 'module']"></div>
-              </div>
               <p>{cls.desc}</p>
 
               //class methods and props navigation (overview)
@@ -165,14 +153,14 @@ Quas.export(
     }
 
     //orders all the data alphabetically
-    static sortDocs(){
-      APIBody.docs = APIBody.docs.sort((a, b) => {
+    static sortDocs(docs){
+      docs = docs.sort((a, b) => {
         return a.name.localeCompare(b.name)
       });
-      for(let i=0; i<APIBody.docs.length; i++){
-        APIBody.docs[i].funcs = APIBody.docs[i].funcs.sort();
-        APIBody.docs[i].funcs = APIBody.sortKey(APIBody.docs[i].funcs, "name");
-        APIBody.docs[i].props = APIBody.sortKey(APIBody.docs[i].props, "name");
+      for(let i=0; i<docs.length; i++){
+        docs[i].funcs = docs[i].funcs.sort();
+        docs[i].funcs = APIBody.sortKey(docs[i].funcs, "name");
+        docs[i].props = APIBody.sortKey(docs[i].props, "name");
       }
     }
 
@@ -286,9 +274,10 @@ Quas.export(
 
     //find the documentation data by class name
     static findDocByName(name){
-      for(let i=0; i<this.docs.length; i++){
-        if(this.docs[i].name.toLowerCase() == name){
-          return APIBody.docs[i];
+      let docs = Store.getData("api");
+      for(let i=0; i<docs.length; i++){
+        if(docs[i].name.toLowerCase() == name){
+          return docs[i];
         }
       }
     }
@@ -297,14 +286,15 @@ Quas.export(
     static showCode(e, comp){
       let funcName = e.target.attributes["data-func"].value;
       let clsName = Router.currentRoute.params.id;
+      let docs = Store.getData("api");
       //find the matching function in the documentation
-      for(let i=0; i<APIBody.docs.length; i++){
-        if( (APIBody.docs[i].type != "function") &&
-            APIBody.docs[i].name.toLowerCase() == clsName){
-            for(let a=0; a<APIBody.docs[i].funcs.length; a++){
-                if(APIBody.docs[i].funcs[a].name == funcName){
+      for(let i=0; i<docs.length; i++){
+        if( (docs[i].type != "function") &&
+            docs[i].name.toLowerCase() == clsName){
+            for(let a=0; a<docs[i].funcs.length; a++){
+                if(docs[i].funcs[a].name == funcName){
                   //set show to true and update the render
-                  APIBody.docs[i].funcs[a].showCode= true;
+                  docs[i].funcs[a].showCode= true;
                   Quas.render(comp);
                 }
             }

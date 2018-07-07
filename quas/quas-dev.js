@@ -1047,16 +1047,14 @@ Dev.addImports = function(type){
         }
 
         bundle += jsContent[i].file + "\n";
-        keys +="const " + jsContent[i].key + " = Quas.modules['" + jsContent[i].key + "'];\n" +
-          "if(typeof Quas.modules['" + jsContent[i].key + "'].init =='function'){\n" +
-          "  Quas.modules['" + jsContent[i].key + "'].init('" + jsContent[i].key + "');\n}\n";
-
+        keys +="const " + jsContent[i].key + " = Quas.modules['" + jsContent[i].key + "'];\n"
       }
     }
 
     //add all the references to modules to the end
     //e.g. const Card = Quas.modules["Card"];
-    bundle += keys;
+    bundle += keys +  "\nfor(let i in Quas.modules){ \n  "+
+      "if(typeof Quas.modules[i].init == 'function'){\n    Quas.modules[i].init(i);\n  }\n}";
 
     bundle = Dev.transpile(bundle);
     Dev.bundle.js = bundle;

@@ -1,0 +1,38 @@
+import Store from "/quas/modules/store.js"
+
+Quas.export(
+  class APINav extends Component{
+    constructor(){
+        super();
+        this.createTemplates();
+        Store.observe(this, "isAPILoaded");
+    }
+
+    createTemplates(){
+      this.addTemplate("nav-item", (item, type) =>{
+        let path = "/api/" + item.name.toLowerCase();
+        let isActive = (window.location.pathname == path);
+        return(
+          #<div q-if="item.type == type">
+            <a href="{path}" target="push" active="{isActive}">{item.name}</a>
+          </div>
+        );
+      });
+    }
+
+    render(){
+      let isLoaded = Store.getState("isAPILoaded");
+      let docs = Store.getData("api");
+      return (
+        #<div q-if="isLoaded" class="api-nav">
+          <h3>Classes</h3>
+          <div q-if="typeof docs != 'undefined'"
+            q-template-for="['nav-item', docs, 'class']"></div>
+          <h3>Modules</h3>
+          <div q-if="typeof docs != 'undefined'"
+            q-template-for="['nav-item', docs, 'module']"></div>
+        </div>
+      );
+    }
+  }
+)

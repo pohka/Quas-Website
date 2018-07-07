@@ -13,6 +13,7 @@ import LandingBody from "/comps/landing-body.js"
 import DownloadBody from "/comps/download-body.js"
 import DocsBody from "/comps/docs-body.js"
 import APIBody from "/comps/api/api.js"
+import APINav from "/comps/api/api-nav.js"
 
 //css
 import "/quas-site.css"
@@ -118,6 +119,9 @@ function ready(){
         props : {
           path : "/docs/api.json"
         }
+      },
+      {
+        comp : APINav
       }
     ]
   });
