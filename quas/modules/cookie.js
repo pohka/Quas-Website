@@ -4,7 +4,7 @@
   Managing cookies
   ---
 */
-Quas.export({
+export({
   /**
     ---
     Returns a cookie value by key

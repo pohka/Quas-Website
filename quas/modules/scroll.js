@@ -4,7 +4,7 @@
   Handles scroll events and actions
   ---
 */
-Quas.export({
+export({
   /**
     ---
     scrolls on Y-Axis to the top of the element with a matching id to the url hash. If no element is found with a matching ID nothing will happen

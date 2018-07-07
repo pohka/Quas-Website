@@ -1,5 +1,5 @@
 
-Quas.export(
+export(
   class DownloadBody extends Component{
     render(){
       if(DownloadBody.renderedOnce === undefined){

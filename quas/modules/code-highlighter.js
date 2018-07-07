@@ -1,6 +1,6 @@
 import "/quas/css/code-highlighter.css";
 
-Quas.export(
+export(
   class CodeHighlighter{
     static init(key){
       this.jsKeyWords = [

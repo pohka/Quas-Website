@@ -1,5 +1,5 @@
 
-Quas.export(
+export(
   class TestComp extends Component{
     constructor(){
       super();
@@ -54,7 +54,7 @@ Quas.export(
           //   </label>
           //   <input type="submit" value="Submit">
           // </form>
-          
+
         // <ul q-template="['foo', {name : 'world'}]"></ul>
         // <ul q-template="['foo', user]"></ul>
         // <h2>Users over 18</h2>

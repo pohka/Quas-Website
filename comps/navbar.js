@@ -1,7 +1,7 @@
 import Quas.Router
 import "/comps/navbar.css";
 
-Quas.export(
+export (
   class Navbar extends Component{
     constructor(props){
       super(props);

@@ -1,4 +1,4 @@
-Quas.export(
+export(
   class DocsContent extends Component{
     constructor(){
       super();

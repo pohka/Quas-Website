@@ -1,6 +1,6 @@
 import Quas.Markdown
 
-Quas.export(
+export(
   class DocsBody extends Component{
     constructor(){
       super();

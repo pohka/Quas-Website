@@ -1,6 +1,6 @@
 import Quas.Store
 
-Quas.export(
+export(
   class APINav extends Component{
     constructor(){
         super();

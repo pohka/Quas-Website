@@ -21,7 +21,7 @@ todo:
   Handling markdown
   ---
 */
-Quas.export({
+export({
   /**
     ---
     Parses markdown text and returns a virtual dom

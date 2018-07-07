@@ -1,6 +1,6 @@
 import Quas.Router
 
-Quas.export(
+export(
   class DocsNav extends Component{
     constructor(props){
       super(props);

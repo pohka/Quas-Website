@@ -1,5 +1,5 @@
 //shared storage
-Quas.export({
+export({
   data : {},
   _state : {},
   observers : {},

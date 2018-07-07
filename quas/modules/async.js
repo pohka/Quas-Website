@@ -15,7 +15,7 @@
     </div>
   ```
 */
-Quas.export({
+export({
   init : ()=>{
     Quas.async = {};
     Quas.customAttrs["async"] = (params, data, parentVDOM, comp) => {

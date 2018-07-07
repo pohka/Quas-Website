@@ -10,7 +10,7 @@
   @prop {Array<Object>} comps - all of the current instances of component
   @prop {Object} currentRoute - the current route being displayed
 */
-Quas.export({
+export({
 
   //initalization
   init : () => {

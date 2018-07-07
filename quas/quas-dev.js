@@ -1038,13 +1038,13 @@ Dev.addImports = function(type){
       else{
         bundle += "/*---------- " + jsContent[i].path + " ----------*/\n";
 
-        //replace all "Quas.export(" with "Quas.modules[key] = ("
-        let exportMatch = jsContent[i].file.match(/Quas\.export\(/);
+        //replace all "export(" with "Quas.modules[key] = ("
+        let exportMatch = jsContent[i].file.match(/export\s+\(|export\(/);
 
         let key = Dev.convertKebabCaseToTitleCase(jsContent[i].key);
 
         if(exportMatch){
-          let setModule = "Quas.modules['" +key + "'] = (";
+          let setModule = "Quas.modules['" + key + "'] = (";
           jsContent[i].file = jsContent[i].file.replace(exportMatch[0], setModule);
         }
 
@@ -1143,7 +1143,7 @@ Dev.convertKebabCaseToTitleCase = (name) => {
 Dev.parseImports = (filename, file, importLeftSide) => {
   let arr = filename.split("/");
   let srcKey = arr[arr.length-1].split(".")[0];
-  
+
   //check if this file key has already been imported
   for(let i=0; i<Dev.imports.js.content.length; i++){
     if(Dev.imports.js.content[i].key == srcKey){

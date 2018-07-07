@@ -1,6 +1,6 @@
 import "/comps/card.css";
 
-Quas.export(
+export(
   class LandingBody extends Component{
     constructor(){
       super();

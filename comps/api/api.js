@@ -6,7 +6,7 @@ import Quas.Store
 import "/comps/api/api.css"
 
 
-Quas.export(
+export(
   class APIBody extends Component{
     constructor(props){
       super(props);
