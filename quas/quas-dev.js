@@ -1207,7 +1207,7 @@ Dev.parseImports = (filename, file, importLeftSide) => {
       //built in modules
       //import Quas.Router
       else{
-        let arr = rightSide.split(".");
+        let arr = rightSide.split(/\s+|;/)[0].split(".");
 
         let scope = Dev.convertTitleCaseToKebabCase(arr[0]);
         let moduleFileName = Dev.convertTitleCaseToKebabCase(arr[1]);

@@ -1,6 +1,6 @@
 //modules
 import Quas.Router
-import Quas.CodeHighlighter
+import Quas.CodeHighlighter;
 import Quas.Async
 
 //components
