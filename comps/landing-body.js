@@ -4,15 +4,6 @@ Quas.export(
   class LandingBody extends Component{
     constructor(){
       super();
-      this.addTemplate("card", (props) => {
-        return (
-            #<div class="card">
-              <img src="/img/{props.img}">
-              <h3>{props.title}</h3>
-              <span>{props.text}</span>
-            </div>
-        );
-      });
       this.props.cards = [
         {
           img : "small-rocket-ship-silhouette.png",
@@ -45,6 +36,18 @@ Quas.export(
           text : "what to put here"
         }
       ];
+    }
+
+    initTemplates(){
+      this.addTemplate("card", (props) => {
+        return (
+            #<div class="card">
+              <img src="/img/{props.img}">
+              <h3>{props.title}</h3>
+              <span>{props.text}</span>
+            </div>
+        );
+      });
     }
 
     static clicked(){

@@ -15,8 +15,6 @@
     * save scroll anchor
     * is component visible
   * finish markdown module
-  * remake transpiler
-    * fix all the custom attrs*** remake them
   * dealing changes in child components
   * form handling
   * handling of animations (entry and exit)
@@ -32,14 +30,13 @@
     * <div .myClass #myID></div> rather than
     * <div class="myClass" id="myID"></div>
   * component style function for components css classes
-  * state manager, for not spwa
+  * Store data is get and set directly, state can be updated reactively without setState()
   * standardized way of dealing with async loading data, i.e. this.prop.isLoaded
-  * emit custom event to all components
   * new syntax for adding a vdom as a prop rather than appending it from a container, as there is an extra element created for no reason
     * current: <div q-append="{[vdom]}"></div><div q-append="{[vdom]}"></div>
     * change to: ?
   * easier way of doing tables, so you can hide rows
-  * reuse a tamplte multiple times without declaring an array or data
+  * reuse a template multiple times without declaring an array or data
     * <div q-template-for="['myTemplate', [,,,]]"> //works but not optimal
     * <div q-template-for="['myTemplate', 4]">
 
@@ -63,70 +60,13 @@
   * problems with functions calls
 * site
   * click
-* quas-dev doesn't properly transpile spaces in array
+* quas-dev doesn't properly transpile spaces in array:
   * e.g. #<tr q-for-td="['item 1', 'item 2']">
   * however this works: #<tr q-for-td="myArray">
 * q-else="" remove requirement for attrs to have a value
 
 ## routing features to add
 * onBeforePush() - e.g. user navigates away but the current page has input data that they might not want to lose
-* fetch data and then navigate if no caught error
-
-
-
-
-
-## new custom attrs
-* data param types:
-  * variable (string/number/boolean)
-  * array of variables (strings/numbers/boolean)
-  * object (keys and values)
-  * array of objects
-
-* combine with other custom attrs
-  * if statements (conditional)
-
-* output
- * set or remove a basic attribute
- * create/remove a childNode
-  * single node
-  * template
- * change a childNode
-
-* need to be able to parse {} within {} e.g. {myfunc( {name:"world"} )}
-----
-
-this.templates = {};
-templates["sample"] = #<div>animal is a {name}</div>;
-templates["user"] = {
-    temp : #<div>{user.name} is {user.age} years old</div>;
-    props : [user]
-}
-
-* if statement with variable
-q-if="{(age > 18)}"
-
-
-* if statement with an object
-user = { age: 10, name: "john" };
-q-if="{(user.age > 18)}"
-
-
-* if statement with array of variables
-items = ["dog", "cat", "bird"];
-<div
-q-for="{i in animals}"
-q-if="{(animals[i] > 18)}"
-q-template="sample"
-q-props="{name:animals[i]}" ></div>
-
-
-* if statement with array of objects
-users = [{ age:10, name: "john" }, ...]
-q-for="{user in users}"
-q-if="{(user.age > 18)}"
-q-template="user"
-q-props="{user}"
 
 
 

@@ -30,6 +30,9 @@ class Component{
       this.props = {}
     }
     this.isPure = false;
+    if(typeof this.initTemplates == 'function'){
+      this.initTemplates();
+    }
   }
 
   addTemplate(key, callback){
@@ -704,7 +707,7 @@ const Quas = {
   evalVDOM : (rootVDOM, comp) => {
     //not a root vdom
     if(Array.isArray(rootVDOM)){
-      
+
       //ignore all conditional statements for rootVDOM
 
       for(let a=0; a<rootVDOM[3].length; a++){

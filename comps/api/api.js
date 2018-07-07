@@ -10,7 +10,6 @@ Quas.export(
   class APIBody extends Component{
     constructor(props){
       super(props);
-      this.createTemplates();
       this.props.isLoaded = false;
 
       this.hashOffset = -80;
@@ -24,7 +23,7 @@ Quas.export(
       this.observe("isAPILoaded");
     }
 
-    createTemplates(){
+    initTemplates(){
       this.addTemplate("class-heading", (cls) => {
         if(cls.super && cls.super != ""){
           let c = cls.super.toLowerCase();

@@ -3,7 +3,6 @@ Quas.export(
   class TestComp extends Component{
     constructor(){
       super();
-      this.createTemplates();
       console.log("creating test");
       if(!TestComp.counter){
         TestComp.counter = 0;
@@ -50,7 +49,7 @@ Quas.export(
       );
     }
 
-    createTemplates(){
+    initTemplates(){
       this.addTemplate("foo", (props) => {
          return #<div>hello {props.name}</div>
       });

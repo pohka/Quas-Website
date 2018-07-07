@@ -5,6 +5,10 @@ Quas.export(
   class Navbar extends Component{
     constructor(props){
       super(props);
+
+    }
+
+    initTemplates(){
       this.addTemplate("option", (item) => {
         let isActive = (window.location.pathname.indexOf(item.case) > -1);
 
