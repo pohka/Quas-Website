@@ -21,7 +21,7 @@ Quas.export(
     }
 
     render(){
-      let isLoaded = Store.getState("isAPILoaded");
+      let isLoaded = Store.state.isAPILoaded;
       let docs = Store.data.api;
       if(!isLoaded){
         return (

@@ -1,12 +1,14 @@
-
+//shared storage
 Quas.export({
+  data : {},
+  _state : {},
+  observers : {},
+  observerCount : 0,
+
   init : () => {
-    Store.data = {};
-    Store.state = {};
-    Store.observers = {};
-    Store.observerCount = 0;
     Quas.addListener(Store, "unmount");
 
+    //observe prototype function for components
     Component.prototype.observe = function(state){
       this.observerID = Store.observerCount;
       Store.observerCount++;
@@ -17,19 +19,34 @@ Quas.export({
         Store.observers[state].push(this);
       }
     }
+
+    //proxy for overriding state setter
+    Store.state = new Proxy(Store._state, {
+      set: function (target, key, value){
+          //if there has a been a change, update render
+          if(target[key] !== undefined && target[key] != value){
+            target[key] = value;
+            Store.emitStateChange(key);
+          }
+          //initalizing a state
+          else if(target[key] === undefined){
+            target[key] = value;
+          }
+
+          return true;
+      }
+    });
   },
 
-  getState : (key) => {
-    return Store.state[key];
-  },
-
-  setState : (key, val) => {
-    Store.state[key] = val;
-    for(let i in Store.observers[key]){
-      Quas.render(Store.observers[key][i]);
+  //emits the state change to all the observers
+  emitStateChange : (stateName) =>{
+    for(let i in Store.observers[stateName]){
+      Quas.render(Store.observers[stateName][i]);
     }
   },
 
+  //triggered by unmount event
+  //removes observer when they are unmounted
   onEvent : (eventName, comp) => {
     if(comp.observerID === undefined || eventName != "unmount") return;
 

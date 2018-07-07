@@ -10,11 +10,13 @@ Quas.export(
   class APIBody extends Component{
     constructor(props){
       super(props);
-      this.props.isLoaded = false;
+      this.props.hashOffset = -80;
 
-      this.hashOffset = -80;
+      if(Store.state.isAPILoaded === undefined){
+        Store.state.isAPILoaded = false;
+      }
 
-      if(!Store.getState("isAPILoaded")){
+      if(!Store.state.isAPILoaded){
         Store.data.api = [];
         Store.data.apiOverview = {};
         this.fetchData(this.props.path);
@@ -74,13 +76,10 @@ Quas.export(
         }
 
         APIBody.sortDocs(data.docs);
-        setTimeout(() => {
-          Store.data.apiOverview = overview;
-          Store.data.api = data.docs;
-
-          Store.setState("isAPILoaded", true);
-          Scroll.toHash(this.hashOffset);
-        }, 1000);
+        Store.data.apiOverview = overview;
+        Store.data.api = data.docs;
+        Store.state.isAPILoaded = true;
+        Scroll.toHash(this.props.hashOffset);
       }).catch((err) => console.error(err));
     }
 
@@ -94,11 +93,11 @@ Quas.export(
     }
 
     onAfterPush(){
-      Scroll.toHash(this.hashOffset);
+      Scroll.toHash(this.props.hashOffset);
     }
 
     render(){
-      if(!Store.getState("isAPILoaded")){
+      if(!Store.state.isAPILoaded){
         return (
           #<div class="docs-content">
             <div class="placeholder placeholder-heading"></div>
