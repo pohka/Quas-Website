@@ -1,4 +1,4 @@
-import Router from "/quas/modules/router.js"
+import Quas.Router
 
 Quas.export(
   class DocsNav extends Component{

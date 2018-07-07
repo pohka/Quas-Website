@@ -979,7 +979,7 @@ Dev.exportToFile = function(content, filename){
   @param {String} type - extention of the file
   @param {String} key - key name for the import in modules
 */
-Dev.import = function(path, type, key){
+Dev.import = function(path, type, leftSide){
   if(Dev.imports[type] === undefined){
     Dev.imports[type] = {
       content : {},
@@ -994,7 +994,7 @@ Dev.import = function(path, type, key){
     type : "GET",
     success : (file) => {
       if(type == "js"){
-        Dev.parseImports(path, file, key);
+        Dev.parseImports(path, file, leftSide);
       }
       else if(type == "css"){
         cssContent = Dev.imports[type].content;
@@ -1030,7 +1030,7 @@ Dev.addImports = function(type){
     let keys = "";
     for(let i=0; i<jsContent.length; i++){
       //root file is not a module
-      if(jsContent[i].key == "root"){
+      if(jsContent[i].path == Dev.main){
         bundle +=
           "/*---------- " + jsContent[i].path + " ----------*/\n" +
           jsContent[i].file.trim() + "\n\n";
@@ -1041,13 +1041,15 @@ Dev.addImports = function(type){
         //replace all "Quas.export(" with "Quas.modules[key] = ("
         let exportMatch = jsContent[i].file.match(/Quas\.export\(/);
 
+        let key = Dev.convertKebabCaseToTitleCase(jsContent[i].key);
+
         if(exportMatch){
-          let setModule = "Quas.modules['" + jsContent[i].key + "'] = (";
+          let setModule = "Quas.modules['" +key + "'] = (";
           jsContent[i].file = jsContent[i].file.replace(exportMatch[0], setModule);
         }
 
         bundle += jsContent[i].file + "\n";
-        keys +="const " + jsContent[i].key + " = Quas.modules['" + jsContent[i].key + "'];\n"
+        keys += jsContent[i].leftSide + "Quas.modules['" + key + "'];\n"
       }
     }
 
@@ -1079,6 +1081,8 @@ Dev.addImports = function(type){
   }
 }
 
+Dev.main = "/main.js";
+
 /*
   ---
   Dynamically loads the bundle.
@@ -1098,7 +1102,7 @@ Dev.load = function(){
     url : mainFile,
     type : "GET",
     success : (file) => {
-      let hasImport = Dev.parseImports(mainFile, file, "root");
+      let hasImport = Dev.parseImports(mainFile, file, "");
 
       //if no imports just add the root
       if(!hasImport){
@@ -1111,6 +1115,22 @@ Dev.load = function(){
   });
 }
 
+Dev.convertTitleCaseToKebabCase = (name) => {
+  name = name.replace(/([A-Z])/g, (g) => `-${g[0].toLowerCase()}`);
+  if(name.charAt(0) == "-"){
+    return name.substr(1);
+  }
+  return name;
+}
+
+Dev.convertKebabCaseToTitleCase = (name) => {
+  let arr = name.split("-");
+  for(let i in arr){
+   arr[i] = arr[i].charAt(0).toUpperCase() + arr[i].substr(1);
+  }
+  return arr.join("");
+}
+
 /*
   ---
   Checks a JavaScript file to see if it has any imports
@@ -1120,17 +1140,21 @@ Dev.load = function(){
   @param {String} file - file content
   @param {String} key - key name for the import in modules
 */
-Dev.parseImports = (filename, file, key) => {
+Dev.parseImports = (filename, file, importLeftSide) => {
+  let arr = filename.split("/");
+  let srcKey = arr[arr.length-1].split(".")[0];
+  
   //check if this file key has already been imported
   for(let i=0; i<Dev.imports.js.content.length; i++){
-    if(Dev.imports.js.content[i].key == key){
+    if(Dev.imports.js.content[i].key == srcKey){
       return false;
     }
   }
 
   let lines = file.split("\n");
-  let importModuleRegex = /import+\s.*?\sfrom+\s".*"|import+\s.*?\sfrom+\s'.*'|import+\s.*?\sfrom+\s`.*`/;
-  let importCssRegex = /import+\s".*"|import+\s'.*'|import+\s`.*`/;
+
+  const importRegex = /import\s+.*?/
+  const quoteRegex = /".*?"|'.*?'|`.*?`/;
   let multiLineCommentOpen = false;
   let parsedFile = "";
   let hasImport = false;
@@ -1154,38 +1178,71 @@ Dev.parseImports = (filename, file, key) => {
       validLine = validLine.split("//")[0];
     }
 
-    let importModuleMatch = validLine.match(importModuleRegex);
-    let importCssMatch = validLine.match(importCssRegex);
-    if(importModuleMatch){
-      hasImport = true;
-      let key = importModuleMatch[0].split(/\s/)[1];
-      let path = importModuleMatch[0].match(/".*?"|'.*?'|`.*?`/)[0];
-      path = path.substr(1,path.length-2); //remove quotes
+    let importMatch = validLine.match(importRegex);
+  //  let importCssMatch = validLine.match(importCssRegex);
+    if(importMatch){
+      let els = validLine.split(importRegex);
+      let leftSide = els[0];
+      console.log("inital match:" + leftSide);
+      let rightSide = els[1].trim();
+      let quoteMatch = rightSide.match(quoteRegex);
 
-      let arr = path.split(".");
-      let extention = arr[arr.length-1];
+      //css or js import
+      if(quoteMatch){
+        let path = quoteMatch[0].substr(1, quoteMatch[0].length-2);
+        let pathInfo = path.split(".");
+        let extention = pathInfo[pathInfo.length-1];
 
-      if(extention == "js"){
-        Dev.import(path, extention, key);
+        //javascipt
+        if(extention == "js"){
+          hasImport = true;
+          Dev.import(path, extention, leftSide);
+        }
+
+        //css
+        else{
+          Dev.import(path, extention);
+        }
       }
-    }
-    else if(importCssMatch){
+      //built in modules
+      //import Quas.Router
+      else{
+        let arr = rightSide.split(".");
+
+        let scope = Dev.convertTitleCaseToKebabCase(arr[0]);
+        let moduleFileName = Dev.convertTitleCaseToKebabCase(arr[1]);
+        let moduleName = "";
+        if(moduleFileName !== undefined){
+          moduleName = Dev.convertKebabCaseToTitleCase(moduleFileName);
+        }
+
+        let left = "const " + moduleName + " = ";
+        let path = "/" + scope + "/modules/" + moduleFileName + ".js";
+        let extention = "js";
+        hasImport = true;
+
+        console.log("LEFT:", left);
+        Dev.import(path, extention, left);
+      }
+
+
+      //if not a css import
       hasImport = true;
-      let path = importCssMatch[0].match(/".*?"|'.*?'|`.*?`/)[0];
-      path = path.substr(1,path.length-2); //remove quotes
-      let arr = path.split(".");
-      let extention = arr[arr.length-1];
-      Dev.import(path, extention);
     }
     else{
       parsedFile += lines[i] + "\n";
     }
   }
 
+  let data = filename.split("/");
+  let key = data[data.length-1].split(".")[0];
+
+
   //add file
   Dev.imports.js.content.push({
     path : filename,
     key : key,
+    leftSide : importLeftSide,
     file : parsedFile
   });
 

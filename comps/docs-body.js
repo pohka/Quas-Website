@@ -1,4 +1,4 @@
-import Markdown from "/quas/modules/markdown.js"
+import Quas.Markdown
 
 Quas.export(
   class DocsBody extends Component{

@@ -1,4 +1,4 @@
-import Store from "/quas/modules/store.js"
+import Quas.Store
 
 Quas.export(
   class APINav extends Component{

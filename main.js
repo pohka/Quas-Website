@@ -1,19 +1,18 @@
 //modules
-import Router from "/quas/modules/router.js"
-import CodeHighlighter from "/modules/code-highlighter.js"
-import Async from "/quas/modules/async.js"
+import Quas.Router
+import Quas.CodeHighlighter
+import Quas.Async
 
 //components
-import Navbar from "/comps/navbar.js"
-import DocsNav from "/comps/docs-nav.js"
-import Error404 from "/comps/404.js"
-import TestComp from "/comps/testcomp.js"
-
-import LandingBody from "/comps/landing-body.js"
-import DownloadBody from "/comps/download-body.js"
-import DocsBody from "/comps/docs-body.js"
-import APIBody from "/comps/api/api.js"
-import APINav from "/comps/api/api-nav.js"
+const Navbar = import "/comps/navbar.js"
+const DocsNav = import "/comps/docs-nav.js"
+const Error404 = import "/comps/404.js"
+const TestComp = import "/comps/testcomp.js"
+const LandingBody = import "/comps/landing-body.js"
+const DownloadBody = import "/comps/download-body.js"
+const DocsBody = import "/comps/docs-body.js"
+const APIBody = import "/comps/api/api.js"
+const APINav = import "/comps/api/api-nav.js"
 
 //css
 import "/quas-site.css"

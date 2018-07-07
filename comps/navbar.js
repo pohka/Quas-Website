@@ -1,4 +1,4 @@
-import Router from "/quas/modules/router.js";
+import Quas.Router
 import "/comps/navbar.css";
 
 Quas.export(

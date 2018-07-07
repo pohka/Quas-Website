@@ -1,6 +1,6 @@
-import Router from "/quas/modules/router.js"
-import Scroll from "/quas/modules/scroll.js"
-import Store from "/quas/modules/store.js"
+import Quas.Router
+import Quas.Scroll
+import Quas.Store
 
 
 import "/comps/api/api.css"

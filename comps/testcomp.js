@@ -9,6 +9,14 @@ Quas.export(
       }
     }
 
+    static submit(e, comp){
+      alert("here");
+      e.preventDefault();
+      e.stopPropagation();
+      console.log("submitted");
+      return false;
+    }
+
     render(){
       let max = 3;
       let animals = ["bird", "cat", "dog"];
@@ -39,6 +47,14 @@ Quas.export(
             <li q-if="true">{max}</li>
           </ul>
 
+          // <form on-submit="TestComp.submit">
+          //   <label>
+          //     Name:
+          //     <input type="text" name="name">
+          //   </label>
+          //   <input type="submit" value="Submit">
+          // </form>
+          
         // <ul q-template="['foo', {name : 'world'}]"></ul>
         // <ul q-template="['foo', user]"></ul>
         // <h2>Users over 18</h2>

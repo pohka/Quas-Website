@@ -71,4 +71,28 @@
 
 
 
+
+
+//built in module
+import Quas.Router
+
+//developer created component or module
+const myModule = require("/modules/module-name.js")
+
+//style sheets
+link "/mystyle.css"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 -
