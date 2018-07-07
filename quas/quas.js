@@ -94,6 +94,8 @@ class Component{
       this.dom = undefined;
     }
     this.vdom = undefined;
+    console.log("-----------unmounting----------", this);
+    Quas.emitEvent("unmount", this);
   }
 }
 
@@ -1007,11 +1009,27 @@ const Quas = {
   */
   hasModule : (name) => {
     return (typeof Quas.modules[name] !== "undefined");
+  },
+
+  addListener : (obj, eventName) => {
+    if(!Quas.eventListeners[eventName]){
+      Quas.eventListeners[eventName] = [obj];
+    }
+    else{
+      Quas.eventListeners[eventName].push(obj);
+    }
+  },
+
+  emitEvent : (eventName, val) => {
+    for(let i in Quas.eventListeners[eventName]){
+      Quas.eventListeners[eventName][i].onEvent(eventName, val);
+    }
   }
 }
 
 Quas.customAttrs = {}; //custom attributes
 Quas.modules = {}; //container for all the modules
+Quas.eventListeners = {}; //a collection of objects listening to events
 
 
 //calls the ready function once the document is loaded

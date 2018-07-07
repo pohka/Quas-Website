@@ -24,7 +24,6 @@ Quas.export(
     }
 
     createTemplates(){
-
       this.addTemplate("class-heading", (cls) => {
         if(cls.super && cls.super != ""){
           let c = cls.super.toLowerCase();
