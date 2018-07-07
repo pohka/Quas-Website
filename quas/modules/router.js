@@ -580,6 +580,7 @@ Quas.export({
            instance.onPush(route);
          }
          instance.setProps(props);
+         Quas.render(instance);
        }
        //new component
        else{

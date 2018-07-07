@@ -33,6 +33,46 @@ class Component{
     if(typeof this.initTemplates == 'function'){
       this.initTemplates();
     }
+
+    this._state = {};
+    let comp = this;
+
+    //proxy to listen to the setting of state
+    this.state = new Proxy(this._state, {
+      set: function (target, key, value){
+          //if there has a been a change, update render
+          if(target[key] !== undefined && target[key] != value){
+            target[key] = value;
+            Quas.render(comp);
+          }
+          //initalizing a state
+          else if(target[key] === undefined){
+            target[key] = value;
+          }
+
+          return true;
+      }
+    });
+  }
+
+  setStates(obj){
+    let hasChange = false;
+    for(let i in obj){
+      if(!hasChange && this._state[i] !== undefined && this._state[i] != obj[i]){
+        hasChange = true;
+      }
+        this._state[i] = obj[i];
+    }
+
+    if(hasChange){
+      Quas.render(this);
+    }
+  }
+
+  initStates(obj){
+    for(let i in obj){
+      this._state[i] = obj[i];
+    }
   }
 
   addTemplate(key, callback){
@@ -66,7 +106,6 @@ class Component{
     for(let k in obj){
       this.props[k] = obj[k];
     }
-    Quas.render(this);
   }
 
 

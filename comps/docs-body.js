@@ -4,15 +4,15 @@ Quas.export(
   class DocsBody extends Component{
     constructor(){
       super();
-      this.props.loaded = false;
+      this.initStates({
+        loaded : false,
+        page : ""
+      });
       this.props.content = [];
       this.fetchData();
     }
 
     onPush(route){
-      this.setProps({
-        loaded : false
-      });
       this.fetchData();
     }
 
@@ -20,18 +20,18 @@ Quas.export(
       let page = Router.currentRoute.params.page;
       let comp = this;
       Quas.fetch("/docs/"+page+".md").then((res) => {
-        let vdoms = Markdown.parseToVDOM(res);
-        console.log("makrdown:" ,vdoms);
-        comp.setProps({
-         loaded : true,
-         content : vdoms
-        });
+          let vdoms = Markdown.parseToVDOM(res);
+          comp.props.content = vdoms
+          comp.setStates({
+            loaded : true,
+            page : page
+          });
       })
       .catch(error => console.error(error));
     }
 
     render(){
-      if(!this.props.loaded){
+      if(!this.state.loaded){
         return (
           #<div class="docs-content">
             <div class="placeholder placeholder-heading"></div>

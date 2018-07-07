@@ -39,6 +39,7 @@
   * reuse a template multiple times without declaring an array or data
     * <div q-template-for="['myTemplate', [,,,]]"> //works but not optimal
     * <div q-template-for="['myTemplate', 4]">
+  * Store, option to save data to local storage
 
 
 ## important stuff

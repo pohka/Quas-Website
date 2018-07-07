@@ -27,7 +27,6 @@ Quas.export(
     }
 
     render(){
-      console.log("rendering navbar");
       return (
           #<nav>
             <a class="nav-logo" href="/" target="push">
