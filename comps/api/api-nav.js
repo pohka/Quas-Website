@@ -22,7 +22,7 @@ Quas.export(
 
     render(){
       let isLoaded = Store.getState("isAPILoaded");
-      let docs = Store.getData("api");
+      let docs = Store.data.api;
       if(!isLoaded){
         return (
           #<div class="api-nav">

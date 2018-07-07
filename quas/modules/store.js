@@ -19,14 +19,6 @@ Quas.export({
     }
   },
 
-  getData : (key) =>{
-    return Store.data[key];
-  },
-
-  setData : (key, val) => {
-    Store.data[key] = val;
-  },
-
   getState : (key) => {
     return Store.state[key];
   },

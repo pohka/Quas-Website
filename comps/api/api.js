@@ -15,8 +15,8 @@ Quas.export(
       this.hashOffset = -80;
 
       if(!Store.getState("isAPILoaded")){
-        Store.setData("api", []);
-        Store.setData("version", -1);
+        Store.data.api = [];
+        Store.data.apiOverview = {};
         this.fetchData(this.props.path);
       }
 
@@ -75,8 +75,8 @@ Quas.export(
 
         APIBody.sortDocs(data.docs);
         setTimeout(() => {
-          Store.setData("apiOverview", overview);
-          Store.setData("api", data.docs);
+          Store.data.apiOverview = overview;
+          Store.data.api = data.docs;
 
           Store.setState("isAPILoaded", true);
           Scroll.toHash(this.hashOffset);
@@ -85,7 +85,7 @@ Quas.export(
     }
 
     onPush(){
-      let docs = Store.getData("api");
+      let docs = Store.data.api;
       for(let i=0; i<docs.length; i++){
         for(let a=0; a<docs[i].funcs.length; a++){
           docs[i].funcs[a].showCode = false;
@@ -116,7 +116,7 @@ Quas.export(
           return (
             #<div class="api-con">
               <h1>Overview</h1>
-              <p>{"Version: ", Store.getData("apiOverview").version}</p>
+              <p>{"Version: ", Store.data.apiOverview.version}</p>
             </div>
           );
         }
@@ -281,7 +281,7 @@ Quas.export(
 
     //find the documentation data by class name
     static findDocByName(name){
-      let docs = Store.getData("api");
+      let docs = Store.data.api;
       for(let i=0; i<docs.length; i++){
         if(docs[i].name.toLowerCase() == name){
           return docs[i];
@@ -293,7 +293,7 @@ Quas.export(
     static showCode(e, comp){
       let funcName = e.target.attributes["data-func"].value;
       let clsName = Router.currentRoute.params.id;
-      let docs = Store.getData("api");
+      let docs = Store.data.api;
       //find the matching function in the documentation
       for(let i=0; i<docs.length; i++){
         if( (docs[i].type != "function") &&
