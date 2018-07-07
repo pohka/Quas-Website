@@ -20,7 +20,7 @@ Quas.export(
         this.fetchData(this.props.path);
       }
 
-      Store.observe(this, "isAPILoaded");
+      this.observe("isAPILoaded");
     }
 
     createTemplates(){
@@ -99,7 +99,14 @@ Quas.export(
 
     render(){
       if(!Store.getState("isAPILoaded")){
-        return #<h1>Loading</h1>;
+        return (
+          #<div class="docs-content">
+            <div class="placeholder placeholder-heading"></div>
+            <div class="placeholder placeholder-line"></div>
+            <div class="placeholder placeholder-line"></div>
+            <div class="placeholder placeholder-line"></div>
+          </div>
+        );
       }
       else{
         let urlparms = Router.currentRoute.params;

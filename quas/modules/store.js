@@ -1,41 +1,37 @@
 
-Quas.export(
-  class SharedStore{
+Quas.export({
+  init : () => {
+    Store.data = {};
+    Store.state = {};
+    Store.observers = {};
+    Store.observerCount = 0;
 
-
-    static init(){
-      this.data = {};
-      this.state = {};
-      this.observers = {};
-      this.observerCount = 0;
-    }
-
-    static getData(key){
-      return SharedStore.data[key];
-    }
-
-    static setData(key, val){
-      SharedStore.data[key] = val;
-    }
-
-    static getState(key){
-      return SharedStore.state[key];
-    }
-
-    static setState(key, val){
-      SharedStore.state[key] = val;
-      for(let i in this.observers[key]){
-        Quas.render(this.observers[key][i]);
+    Component.prototype.observe = function(state){
+      this.observerID = Store.observerCount;
+      Store.observerCount++;
+      if(!Store.observers[state]){
+        Store.observers[state] = [];
       }
+      Store.observers[state].push(this);
     }
+  },
 
-    static observe(comp, state){
-      comp.observerID = SharedStore.observerCount;
-      SharedStore.observerCount++;
-      if(!SharedStore.observers[state]){
-        SharedStore.observers[state] = [];
-      }
-      SharedStore.observers[state].push(comp);
+  getData : (key) =>{
+    return Store.data[key];
+  },
+
+  setData : (key, val) => {
+    Store.data[key] = val;
+  },
+
+  getState : (key) => {
+    return Store.state[key];
+  },
+
+  setState : (key, val) => {
+    Store.state[key] = val;
+    for(let i in Store.observers[key]){
+      Quas.render(Store.observers[key][i]);
     }
   }
-);
+});

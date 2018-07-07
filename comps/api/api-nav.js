@@ -5,7 +5,7 @@ Quas.export(
     constructor(){
         super();
         this.createTemplates();
-        Store.observe(this, "isAPILoaded");
+        this.observe("isAPILoaded");
     }
 
     createTemplates(){
@@ -23,16 +23,28 @@ Quas.export(
     render(){
       let isLoaded = Store.getState("isAPILoaded");
       let docs = Store.getData("api");
-      return (
-        #<div q-if="isLoaded" class="api-nav">
-          <h3>Classes</h3>
-          <div q-if="typeof docs != 'undefined'"
-            q-template-for="['nav-item', docs, 'class']"></div>
-          <h3>Modules</h3>
-          <div q-if="typeof docs != 'undefined'"
-            q-template-for="['nav-item', docs, 'module']"></div>
-        </div>
-      );
+      if(!isLoaded){
+        return (
+          #<div class="api-nav">
+            <div class="placeholder placeholder-heading"></div>
+            <div class="placeholder placeholder-line"></div>
+            <div class="placeholder placeholder-line"></div>
+            <div class="placeholder placeholder-line"></div>
+          </div>
+        );
+      }
+      else{
+        return (
+          #<div class="api-nav">
+            <h3>Classes</h3>
+            <div q-if="typeof docs != 'undefined'"
+              q-template-for="['nav-item', docs, 'class']"></div>
+            <h3>Modules</h3>
+            <div q-if="typeof docs != 'undefined'"
+              q-template-for="['nav-item', docs, 'module']"></div>
+          </div>
+        );
+      }
     }
   }
 )
