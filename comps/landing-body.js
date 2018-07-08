@@ -58,15 +58,15 @@ export(
       return (
           #<div>
             //landing top
-            <div class="landing-top">
-              <img class="landing-logo" q-async-imgsrc="'/img/logo_landing.png'">
-              <div class="landing-desc">
+            <div .landing-top .test>
+              <img .landing-logo q-async-imgsrc="'/img/logo_landing.png'">
+              <div .landing-desc>
                 <h1 on-click="onClick:2" on-mouseover="onClick:1">Quas.js</h1>
                 <h2>A progressive JavaScript UI library</h2>
               </div>
             </div>
-            <h2 class="section-heading">Features</h2>
-            <div class="card-con"
+            <h2 .section-heading>Features</h2>
+            <div .card-con
               q-template-for="['card', this.props.cards]">
             </div>
           </div>

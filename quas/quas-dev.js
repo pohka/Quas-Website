@@ -538,21 +538,53 @@ Dev.stringifyVDOM = (vdom, tabs, isChild) => {
     else{
       str += Dev.tabs(tabs + 1) + "{\n";
       let count = 0;
+
+       //collects the shorthand class attributes and appends them at the end of the attribute loop
+      let classesShorthand = [];
+      let hasShortHand = false;
+
       for(let a in attrs){
         let val;
+        let key = a;
+        hasShortHand = false;
+        let firstChar = key.charAt(0);
+        //pattern attr edge case
         if(a == "pattern"){
           val = "\"" + attrs[a] + "\"";
+        }
+        //#id
+        else if(firstChar == "#"){
+          val = "\"" + key.substr(1) + "\"";
+          key = "id";
+        }
+        //.class
+        else if(firstChar == "."){
+          classesShorthand.push(key.substr(1));
+          hasShortHand = true;
         }
         else{
           val = Dev.parseProps(attrs[a]);
         }
 
-        str += Dev.tabs(tabs + 2) + "\"" + a + "\":" + val;
+        if(val !== undefined){
+          str += Dev.tabs(tabs + 2) + "\"" + key + "\":" + val;
+        }
         count++;
-        if(count != attrCount){
+        if(count != attrCount && !hasShortHand){
           str += ",\n";
         }
       }
+
+      //add the shorthand classes
+      if(classesShorthand.length > 0){
+        let val = classesShorthand.join(" ");
+        if(count - classesShorthand.length > 0){
+          str += ",\n";
+        }
+        str += Dev.tabs(tabs + 2) + "\"class\":\"" + val + "\"";
+      }
+
+
       str += "\n" + Dev.tabs(tabs + 1) + "},\n";
     }
 
