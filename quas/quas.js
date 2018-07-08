@@ -372,7 +372,6 @@ const Quas = {
                   if(vdom[1][a] != newVDOM[1][a]){
                     dom.removeEventListener(eventNames[e], comp.events[eventNames[e]]);
                     comp.events[eventNames[e]] = (mouseEvent)=>{
-                      //newVDOM[1][a](mouseEvent, comp);
                       comp[newVDOM[1][a]](mouseEvent);
                     }
                     dom.addEventListener(eventNames[e], comp.events[eventNames[e]]);
@@ -397,7 +396,6 @@ const Quas = {
               let eventNames = a.substr(3).split("-");
               for(let e in eventNames){
                 comp.events[eventNames[e]] = (mouseEvent)=>{
-                  //newAttrs[a](mouseEvent, comp);
                   comp[newAttrs[a]](mouseEvent);
                 }
                 dom.addEventListener(eventNames[e], comp.events[eventNames[e]]);
@@ -490,7 +488,15 @@ const Quas = {
         }
         for(let i in eventNames){
           comp.events[eventNames[i]] = (e)=>{
-            comp[attrs[a]](e);
+            let deliIndex = attrs[a].indexOf(":");
+            if(deliIndex > -1){
+              let funcName = attrs[a].substr(0, deliIndex);
+              let arg = attrs[a].substr(deliIndex+1);
+              comp[funcName](e, arg);
+            }
+            else{
+              comp[attrs[a]](e);
+            }
           }
 
           el.addEventListener(eventNames[i], comp.events[eventNames[i]]);
