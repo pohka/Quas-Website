@@ -944,16 +944,38 @@ const Quas = {
         }
       }
     }
-    //todo: change so it accepts single vdoms and not just an array of vdoms
-    //appends an array of vdoms to as a child of this node
-    else if(command == "append"){
-      console.log("appending", data);
-       for(let i=0; i<data.length; i++){
-           parentVDOM[2].push(data[i]);
+
+    //appends or prepend a node or an array of nodes
+    else if(command == "append" || command == "prepend"){
+      //if a single node
+      if( data.constructor == String ||
+          (data[1] !== undefined && data[1].constructor == Object)){
+            //append a single node
+            if(command == "append"){
+              parentVDOM[2].push(data);
+            }
+            //prepend a single node
+            else{
+              parentVDOM[2].unshift(data);
+            }
+       }
+       else{
+         //append array
+         if(command == "append"){
+           for(let i=0; i<data.length; i++){
+               parentVDOM[2].push(data[i]);
+           }
+         }
+         //prepend array
+         else{
+           for(let i=data.length-1; i>-1; i--){
+               parentVDOM[2].unshift(data[i]);
+           }
+         }
        }
     }
+    //developer designed custom attr
     else{
-      console.log("calling customa attr:",command);
       Quas.customAttrs[command](params, data, parentVDOM, comp);
     }
   },

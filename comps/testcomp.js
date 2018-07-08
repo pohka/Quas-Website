@@ -32,7 +32,7 @@ export(
 
       TestComp.counter++;
     //  console.log("RENDERING TESTCOMP", this.counter);
-
+      let test = ['div',{},['test'],[]];
 
       return (
         #<div>
@@ -42,6 +42,10 @@ export(
           <div q-else-if="false">test 3</div>
           <div q-else-if="false">test 4</div>
           <div q-else>test 5</div>
+
+          <h2>appending?</h2>
+          <div q-prepend="test" q-append="['world']">hello </div>
+          <hr>
 
           // <ul>
           //   <li q-if="max > TestComp.counter">
