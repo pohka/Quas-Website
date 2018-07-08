@@ -580,7 +580,7 @@ Dev.stringifyVDOM = (vdom, tabs, isChild) => {
       str += Dev.tabs(tabs + 1) + "[\n";
 
       for(let i=0; i<customAttrs.length; i++){
-        if(!customAttrs[i].hasOwnProperty('val')){
+        if(customAttrs[i].val == ""){
           customAttrs[i].val = "\"\"";
         }
 
