@@ -539,7 +539,14 @@ Dev.stringifyVDOM = (vdom, tabs, isChild) => {
       str += Dev.tabs(tabs + 1) + "{\n";
       let count = 0;
       for(let a in attrs){
-        let val = Dev.parseProps(attrs[a]);
+        let val;
+        if(a == "pattern"){
+          val = "\"" + attrs[a] + "\"";
+        }
+        else{
+          val = Dev.parseProps(attrs[a]);
+        }
+
         str += Dev.tabs(tabs + 2) + "\"" + a + "\":" + val;
         count++;
         if(count != attrCount){
