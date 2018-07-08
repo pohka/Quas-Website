@@ -580,10 +580,14 @@ Dev.stringifyVDOM = (vdom, tabs, isChild) => {
       str += Dev.tabs(tabs + 1) + "[\n";
 
       for(let i=0; i<customAttrs.length; i++){
-        str += Dev.tabs(tabs + 2) + "{\n";
-        str += Dev.tabs(tabs + 3) + "key: \"" + customAttrs[i].key + "\",\n";
-        str += Dev.tabs(tabs + 3) + "val: (" + customAttrs[i].val + ")\n";
-        str += Dev.tabs(tabs + 2) + "}";
+        if(!customAttrs[i].hasOwnProperty('val')){
+          customAttrs[i].val = "\"\"";
+        }
+
+        str +=  Dev.tabs(tabs + 2) + "{\n" +
+                Dev.tabs(tabs + 3) + "key: \"" + customAttrs[i].key + "\",\n" +
+                Dev.tabs(tabs + 3) + "val: (" + customAttrs[i].val + ")\n" +
+                Dev.tabs(tabs + 2) + "}";
 
         if(i < customAttrs.length){
           str += ",\n";
@@ -594,9 +598,11 @@ Dev.stringifyVDOM = (vdom, tabs, isChild) => {
     }
 
     if(condition !== undefined){
-      console.log(condition)
+      if(condition.key == "else"){
+        condition.val = "\"\"";
+      }
       str += ",\n" + Dev.tabs(tabs + 1) + "{\n"+
-              Dev.tabs(tabs + 2) + "key: \"" + condition.key + "\",\n"+
+              Dev.tabs(tabs + 2) + "key: \"" + condition.key + "\",\n" +
               Dev.tabs(tabs + 2) + "val: " + condition.val + "\n" +
               Dev.tabs(tabs + 1) + "}";
     }
