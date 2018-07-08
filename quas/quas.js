@@ -53,6 +53,20 @@ class Component{
           return true;
       }
     });
+
+
+  }
+
+  addChildComponent(cls, props){
+    if(!this.children){
+      this.children = {};
+    }
+    if(!this.children[cls.constructor.name]){
+      this.children[cls.constructor.name] = [new cls(props)];
+    }
+    else{
+      this.children[cls.constructor.name].push(new cls(props));
+    }
   }
 
   setStates(obj){

@@ -2,6 +2,8 @@ import Quas.Router
 import Quas.Scroll
 import Quas.Store
 
+//templates
+const APIItem = import "/comps/api/api-item.js"
 
 import "/comps/api/api.css"
 
@@ -26,6 +28,7 @@ export(
     }
 
     initTemplates(){
+      this.addTemplate("api-item", APIItem);
       this.addTemplate("class-heading", (cls) => {
         if(cls.super && cls.super != ""){
           let c = cls.super.toLowerCase();
@@ -121,7 +124,6 @@ export(
         }
         else{
           let cls = APIBody.findDocByName(pageID);
-          let funcs = APIBody.genFuncItems(cls);
 
           return (
             #<div class="api-con">
@@ -151,7 +153,8 @@ export(
                   </tr>
                 </table>
               </div>
-              <div q-append="funcs"></div>
+              <h2 q-if="cls.funcs.length > 0">Methods</h2>
+              <div q-template-for="['api-item', cls.funcs]"></div>
             </div>
           );
         }
@@ -174,108 +177,6 @@ export(
       return arr.sort((a, b) => {
         return a[key].localeCompare(b[key]);
       });
-    }
-
-    static genFuncItems(cls){
-      let vdoms = [];
-      if(cls.funcs.length > 0){
-        vdoms.push(#<h2>Methods</h2>);
-        for(let i=0; i<cls.funcs.length; i++){
-           let vdom = APIBody.genItem(cls.funcs[i]);
-
-          //constructor should always be first
-          if(cls.funcs[i].name.toLowerCase() == "constructor"){
-            vdoms.splice(0, 0, vdom);
-          }
-          else{
-            vdoms.push(vdom);
-          }
-        }
-      }
-      return vdoms;
-    }
-
-    static genItem(func){
-      let returnTypes = func.return.join(" | ");
-
-      let paramNames = [];
-
-      let tableVDOM;
-      if(func.params.length > 0){
-
-        let hasOptional = false;
-        for(let a=0; a<func.params.length && !hasOptional; a++){
-          if(func.params[a].optional){
-            hasOptional= true;
-          }
-        }
-
-        let headings = ["Parameter", "Type", "Description"];
-        if(hasOptional){
-          headings.push("Optional");
-        }
-
-        let tableRows = [];
-        for(let a=0; a<func.params.length; a++){
-          paramNames.push(func.params[a].name);
-
-            let rowItems = [
-              func.params[a].name,
-              func.params[a].types.join(' | '),
-              func.params[a].desc
-            ];
-
-            if(hasOptional){
-              let optionStr = "No";
-              if(func.params[a].optional){
-                optionStr = "Yes";
-              }
-              rowItems.push(optionStr);
-            }
-            tableRows.push(rowItems);
-        }
-
-        tableVDOM = (
-          #<table q-for-tr-td="tableRows">
-            <tr q-for-th="headings"></tr>
-          </table>
-        );
-      }
-
-      return (
-        #<div class="api-content-item">
-          //title
-          <h3 id="{func.name}">
-            //prefix if static function
-            <span q-if="func.isStatic" class="static">static</span>
-            //function(param, param, ...)
-            { func.name + "( " + paramNames.join(", ") +" )" }
-          </h3>
-          <div class="api-content-item-info">
-            //function description
-            <pre>
-              <p>{func.desc}</p>
-            </pre>
-            //parameter table
-            <div q-if="tableVDOM !== undefined">{tableVDOM}</div>
-
-            //return value
-            <div q-if="returnTypes.length > 0" class="api-content-item-return">
-              <span class="api-returns">Returns: </span> {returnTypes}
-            </div>
-
-            //code block
-            <pre q-if="func.showCode && func.code.length > 0" class="api-code">
-              <code q-code-js="func.code"></code>
-            </pre>
-            //show code block button
-            <div q-else-if="!func.showCode && func.code.length > 0"
-              class="show-code" on-click="showCode" data-func="{func.name}">
-              Code {"</>"}
-            </div>
-          </div>
-        </div>
-      );
     }
 
     //find the documentation data by class name
