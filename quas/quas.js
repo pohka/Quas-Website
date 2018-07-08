@@ -371,9 +371,9 @@ const Quas = {
                 for(let e in eventNames){
                   if(vdom[1][a] != newVDOM[1][a]){
                     dom.removeEventListener(eventNames[e], comp.events[eventNames[e]]);
-                    comp.events[eventNames[e]] = (mouseEvent)=>{
-                      comp[newVDOM[1][a]](mouseEvent);
-                    }
+                     comp.events[eventNames[e]] = (mouseEvent)=>{
+                       return Quas.eventCallback(mouseEvent, newVDOM[1][a], comp);
+                     };
                     dom.addEventListener(eventNames[e], comp.events[eventNames[e]]);
                   }
                 }
@@ -396,8 +396,8 @@ const Quas = {
               let eventNames = a.substr(3).split("-");
               for(let e in eventNames){
                 comp.events[eventNames[e]] = (mouseEvent)=>{
-                  comp[newAttrs[a]](mouseEvent);
-                }
+                  return Quas.eventCallback(mouseEvent, newAttrs[a], comp);
+                };
                 dom.addEventListener(eventNames[e], comp.events[eventNames[e]]);
               }
             }
@@ -438,6 +438,18 @@ const Quas = {
       }
     }
     return returnVal;
+  },
+
+  eventCallback : (e, val, comp)=>{
+    let deliIndex = val.indexOf(":");
+    if(deliIndex > -1){
+      let funcName = val.substr(0, deliIndex);
+      let arg = val.substr(deliIndex+1);
+      return comp[funcName](e, arg);
+    }
+    else{
+      return comp[val](e);
+    }
   },
 
   /**
@@ -488,16 +500,8 @@ const Quas = {
         }
         for(let i in eventNames){
           comp.events[eventNames[i]] = (e)=>{
-            let deliIndex = attrs[a].indexOf(":");
-            if(deliIndex > -1){
-              let funcName = attrs[a].substr(0, deliIndex);
-              let arg = attrs[a].substr(deliIndex+1);
-              comp[funcName](e, arg);
-            }
-            else{
-              comp[attrs[a]](e);
-            }
-          }
+            return Quas.eventCallback(e, attrs[a], comp);
+          };
 
           el.addEventListener(eventNames[i], comp.events[eventNames[i]]);
         }

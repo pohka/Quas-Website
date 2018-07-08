@@ -1,3 +1,4 @@
+import Quas.FormHelper
 
 export(
   class TestComp extends Component{
@@ -10,12 +11,9 @@ export(
       this.state.counter = 0;
     }
 
-    static submit(e, comp){
-      alert("here");
-      e.preventDefault();
-      e.stopPropagation();
-      console.log("submitted");
-      return false;
+    onSubmit(e){
+      let inputData = FormHelper.onSubmit(e);
+      console.log(inputData);
     }
 
     onClick(e){
@@ -57,13 +55,40 @@ export(
             <button q-else="" on-mouseleave="onClick"> -{this.state.counter}</button>
           </div>
 
-          // <form on-submit="TestComp.submit">
-          //   <label>
-          //     Name:
-          //     <input type="text" name="name">
-          //   </label>
-          //   <input type="submit" value="Submit">
-          // </form>
+          <form on-submit="onSubmit">
+            <label>Name: </label><input type="text" name="fname">
+
+            <label>Age: </label><input type="number" name="age" min="0" max="100">
+
+            <br><br>
+
+            <label>What type of vehicle do you have?</label><br>
+            <input type="checkbox" name="vehicle" value="Bike"> bike<br>
+            <input type="checkbox" name="vehicle" value="Car"> car<br>
+            <input type="checkbox" name="vehicle" value="Boat" checked> boat<br>
+
+            <br><br>
+
+            Email: <input type="email" name="email"><br>
+            Pass: <input type="password" name="pass">
+
+            <br><br>
+
+            <input type="hidden" name="custId" value="3487">
+
+            File : <input type="file" name="file"><br>
+
+            <input type="radio" name="region" value="EU"> Europe<br>
+            <input type="radio" name="region" value="NA"> North America<br>
+            <input type="radio" name="region" value="SEA"> South East Asia<br>
+
+            Search Google: <input type="search" name="q"><br>
+
+            Add your homepage: <input type="url" name="homepage"><br>
+
+
+            <input type="reset"><input type="submit" value="Submit">
+          </form>
 
         // <ul q-template="['foo', {name : 'world'}]"></ul>
         // <ul q-template="['foo', user]"></ul>
