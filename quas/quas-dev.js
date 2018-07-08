@@ -739,7 +739,8 @@ Dev.tagStringToVDOM = (str) => {
       //remove quotes
       val = val.substr(1, val.length-2);
     }
-    if(key.substr(0,2) == "q-"){
+    let prefix = key.substr(0,2);
+    if(prefix == "q-"){
       VDOM.addCustomAttr(vdom, key, val);
     }
     else{

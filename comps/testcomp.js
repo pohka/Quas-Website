@@ -7,6 +7,7 @@ export(
       if(!TestComp.counter){
         TestComp.counter = 0;
       }
+      this.state.counter = 0;
     }
 
     static submit(e, comp){
@@ -15,6 +16,10 @@ export(
       e.stopPropagation();
       console.log("submitted");
       return false;
+    }
+
+    onClick(e){
+      this.state.counter += 1;
     }
 
     render(){
@@ -40,12 +45,17 @@ export(
           <div q-else-if="true">test 4</div>
           <div q-else="true">test 5</div>
 
-          <ul>
-            <li q-if="max > TestComp.counter">
-              item {TestComp.counter}
-            </li>
-            <li q-if="true">{max}</li>
-          </ul>
+          // <ul>
+          //   <li q-if="max > TestComp.counter">
+          //     item {TestComp.counter}
+          //   </li>
+          //   <li q-if="true">{max}</li>
+          // </ul>
+
+          <div>
+            <button q-if="this.state.counter%2 == 0" on-click="onClick">{this.state.counter}</button>
+            <button q-else="" on-mouseleave="onClick"> -{this.state.counter}</button>
+          </div>
 
           // <form on-submit="TestComp.submit">
           //   <label>

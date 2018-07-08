@@ -290,7 +290,7 @@ const Quas = {
   diffVDOM : (comp, parent, dom, vdom, newVDOM) => {
     let returnVal = 0;
 
-    if(!newVDOM){
+    if(newVDOM === undefined){
       if(parent && dom){
         parent.removeChild(dom);
       }
@@ -299,7 +299,7 @@ const Quas = {
 
     //text node
     if(!Array.isArray(newVDOM)){
-      if(!vdom){
+      if(vdom === undefined){
         let text = document.createTextNode(newVDOM);
         parent.append(text);
       }
@@ -310,14 +310,14 @@ const Quas = {
     }
 
     //old vdom is text node and new vdom is not a text node
-    else if(vdom && vdom.constructor == String && newVDOM.constructor != String){
+    else if(vdom !== undefined && vdom.constructor == String && newVDOM.constructor != String){
       let newDOM = Quas.createElement(newVDOM, comp);
       parent.replaceChild(newDOM, dom);
       return returnVal;
     }
 
     //old vdom doesn't have this new dom element
-    if(!vdom){
+    if(vdom === undefined){
       let newDOM = Quas.createElement(newVDOM, comp);
       parent.appendChild(newDOM);
       returnVal = 1;
@@ -372,7 +372,8 @@ const Quas = {
                   if(vdom[1][a] != newVDOM[1][a]){
                     dom.removeEventListener(eventNames[e], comp.events[eventNames[e]]);
                     comp.events[eventNames[e]] = (mouseEvent)=>{
-                      newVDOM[1][a](mouseEvent, comp);
+                      //newVDOM[1][a](mouseEvent, comp);
+                      comp[newVDOM[1][a]](mouseEvent);
                     }
                     dom.addEventListener(eventNames[e], comp.events[eventNames[e]]);
                   }
@@ -396,7 +397,8 @@ const Quas = {
               let eventNames = a.substr(3).split("-");
               for(let e in eventNames){
                 comp.events[eventNames[e]] = (mouseEvent)=>{
-                  newAttrs[a](mouseEvent, comp);
+                  //newAttrs[a](mouseEvent, comp);
+                  comp[newAttrs[a]](mouseEvent);
                 }
                 dom.addEventListener(eventNames[e], comp.events[eventNames[e]]);
               }
@@ -488,7 +490,7 @@ const Quas = {
         }
         for(let i in eventNames){
           comp.events[eventNames[i]] = (e)=>{
-            attrs[a](e, comp);
+            comp[attrs[a]](e);
           }
 
           el.addEventListener(eventNames[i], comp.events[eventNames[i]]);

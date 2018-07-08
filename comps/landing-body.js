@@ -50,8 +50,8 @@ export(
       });
     }
 
-    static clicked(){
-      console.log("clicked");
+    onClick(e){
+      console.log(e.type);
     }
 
     render(){
@@ -61,7 +61,7 @@ export(
             <div class="landing-top">
               <img class="landing-logo" q-async-imgsrc="'/img/logo_landing.png'">
               <div class="landing-desc">
-                <h1 on-click="{LandingBody.clicked}">Quas.js</h1>
+                <h1 on-click-mouseover="onClick">Quas.js</h1>
                 <h2>A progressive JavaScript UI library</h2>
               </div>
             </div>

@@ -270,7 +270,7 @@ export(
             </pre>
             //show code block button
             <div q-else-if="!func.showCode && func.code.length > 0"
-              class="show-code" on-click="{APIBody.showCode}" data-func="{func.name}">
+              class="show-code" on-click="showCode" data-func="{func.name}">
               Code {"</>"}
             </div>
           </div>
@@ -289,7 +289,7 @@ export(
     }
 
     //click event for code preview
-    static showCode(e, comp){
+    showCode(e){
       let funcName = e.target.attributes["data-func"].value;
       let clsName = Router.currentRoute.params.id;
       let docs = Store.data.api;
@@ -301,7 +301,7 @@ export(
                 if(docs[i].funcs[a].name == funcName){
                   //set show to true and update the render
                   docs[i].funcs[a].showCode= true;
-                  Quas.render(comp);
+                  Quas.render(this);
                 }
             }
         }
