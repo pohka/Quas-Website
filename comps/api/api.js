@@ -133,11 +133,11 @@ export(
 
               //class methods and props navigation (overview)
               <div class="api-cls-overview">
-                <div class="col">
+                <div q-if="cls.funcs.length > 0" class="col">
                   <h4>Methods</h4>
                   <ul q-template-for="['overview-item', cls.funcs, 'method']"></ul>
                 </div>
-                <div class="col">
+                <div q-if="cls.props.length > 0" class="col">
                   <h4>Properties</h4>
                   <ul q-template-for="['overview-item', cls.props, 'properties']"></ul>
                 </div>

@@ -563,7 +563,12 @@ Dev.stringifyVDOM = (vdom, tabs, isChild) => {
           hasShortHand = true;
         }
         else{
-          val = Dev.parseProps(attrs[a]);
+          if(attrs[a] == "\"\""){
+            val = attrs[a];
+          }
+          else{
+            val = Dev.parseProps(attrs[a]);
+          }
         }
 
         if(val !== undefined){
