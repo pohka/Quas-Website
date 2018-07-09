@@ -72,7 +72,7 @@ export(
   }
 
   static handler(params, data, parentVDOM, comp){
-    console.log("params:", params, "data",data);
+  //  console.log("params:", params, "data",data);
     //console.log(this);
     let lastCharWasSpace = false;
     let quoteException = false;
