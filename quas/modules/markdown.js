@@ -15,6 +15,24 @@ todo:
 - video
 */
 
+/*
+notes:
+---
+rules can create conflicts if their patterns are similar.
+
+example:
+rule 1: [text](link)
+rule 2: ![alt](src)
+
+rule 1 will match the pattern and ignore rule 2
+to prevent this conflict the rules should be in order of most complexity
+
+the new order should be:
+rule 1: ![alt](src)
+rule 2: [text](link)
+
+*/
+
 /**
   # module
   ---
@@ -74,36 +92,75 @@ export({
         return [vdom];
       }
     });
-    //
-    // Markdown.rules["ul"] = {
-    //   type : "starts-with-multiline",
-    //   pattern : /\*\s+|\s+\*\s+/,
-    //   output : (pattern, lines) => {
-    //   //  let initalSpace = parseInt(lines[0].indexOf("*")/2);
-    //     let parsedLines = [];
-    //     for(let i=0; i<lines.length; i++){
-    //       let text = lines[i].substr(lines[i].indexOf("*") + 1)
-    //       parsedLines.push(text);
-    //     }
-    //
-    //     return #<ul q-for-li="parsedLines"></ul>
-    //   }
-    // }
-    //
-    // Markdown.rules["quote"] = {
-    //   type : "starts-with-multiline",
-    //   pattern : />\s+/,
-    //   output : (pattern, lines) => {
-    //     for(let i=0; i<lines.length; i++){
-    //       let match = lines[i].match(pattern);
-    //         lines[i] = lines[i].substr(match[0].length);
-    //     }
-    //     let text = lines.join(" ");
-    //
-    //     return #<quote>{text}</quote>
-    //   }
-    // }
-    //
+
+    Markdown.addRule("starts-with-multiline", {
+      name : "list",
+      // matches * or - or 1.
+      pattern : /\s*(-|\*|(\d\.))\s*/,
+      output : (pattern, lines) => {
+        let isOrdered = false;
+        //matches digits such as 1. or 2.
+        let firstDigitMatch = lines[0].match(/\s*\d\.\s*/);
+
+        if(firstDigitMatch != null && firstDigitMatch.index == 0){
+          isOrdered = true;
+        }
+
+        for(let i=0; i<lines.length; i++){
+          let hasSpace = (lines[i].charAt(0).match(/\s/) != null);
+          let spaceCount;
+          if(hasSpace){
+            spaceCount = lines[i].match(/\s+/)[0].length;
+          }
+          else{
+            spaceCount = 0;
+          }
+          let match = lines[i].match(pattern);
+          if(match.index == 0){
+            lines[i] = lines[i].substr(match[0].length);
+          }
+        }
+
+        if(isOrdered){
+          return #<ol q-for-li="lines"></ol>;
+        }
+        else{
+          return #<ul q-for-li="lines"></ul>;
+        }
+      }
+    });
+
+
+    Markdown.addRule("starts-with-multiline", {
+      name : "quote",
+      pattern : />\s+/,
+      output : (pattern, lines) => {
+        let nodes = [];
+        for(let i=0; i<lines.length; i++){
+          let match = lines[i].match(pattern);
+          nodes.push(lines[i].substr(match[0].length));
+          if(i < lines.length-1){
+            nodes.push(["br", {}, [], []]);
+          }
+        }
+
+        return #<quote q-append="nodes"></quote>;
+      }
+    });
+
+    //allow option for async loading
+    Markdown.addRule("inline", {
+      name : "image",
+      pattern : /!\[.*?\]\(.*?\)/,
+      output : (pattern, match, text) => {
+        let els = match[0].substr(2, match[0].length-3).split("](");
+        let alt = els[0];
+        let src = els[1];
+        let vdom =  #<div><img src="{src}" alt="{alt}"></img></div>
+
+        return vdom;
+      }
+    });
 
     Markdown.addRule("inline", {
       name : "link",
@@ -151,7 +208,7 @@ export({
       while(match != null){
         let inlineVDOM = rule.output(rule.pattern, match, text);
         let beforeText = text.substr(0, match.index);
-        let afterText = text.substr(match.index + match[0].length + 1);
+        var afterText = text.substr(match.index + match[0].length);
         if(match.index > 0){
           vdoms.push(beforeText);
         }
@@ -159,10 +216,10 @@ export({
         text = afterText;
         match = text.match(rule.pattern);
       }
+    }
 
-      if(text.length > 0){
-        vdoms.push(text);
-      }
+    if(text.length > 0){
+     vdoms.push(text);
     }
 
     return vdoms;
@@ -175,22 +232,57 @@ export({
     let inBlock = false;
     let blockName = "";
     let blockText = [];
-  //  let isLastIndex = false;
+    let multiLine = [];
+    let multiLineName = "";
+    let isInMultiLine = false;
 
     for(let i=0; i<lines.length; i++){
       let line = lines[i];
       let matchingRule = false;
-      //isLastIndex = (lines.length-1 == i);
+      let trimmedLine = line.trim();
 
-      if(line.length == 0){
+      if(trimmedLine.length == 0){
         if(paragraph.length > 0){
           let nodes = Markdown.parseInlineRules(paragraph);
           vdoms.push(#<p q-append="nodes"></p>);
           paragraph = "";
         }
+
+        if(isInMultiLine){
+          let rule = Markdown.findRule(multiLineName,"starts-with-multiline");
+          let node = rule.output(rule.pattern, multiLine);
+          vdoms.push(node);
+          isInMultiLine = false;
+          multiLineName = "";
+          multiLine = [];
+        }
       }
       else{
         if(!inBlock){
+          //starts-with-multiline rule
+          for(let a=0; a<Markdown.rules["starts-with-multiline"].length && !matchingRule; a++){
+            let rule = Markdown.rules["starts-with-multiline"][a];
+            if(!isInMultiLine || (isInMultiLine && rule.name == multiLineName)){
+              let match = line.match(rule.pattern);
+              if(match != null && match.index == 0){
+                multiLine.push(line);
+                multiLineName = rule.name;
+                isInMultiLine = true;
+                matchingRule = true;
+              }
+            }
+          }
+
+          //end of multiline
+          if(isInMultiLine && !matchingRule){
+            let rule = Markdown.findRule(multiLineName,"starts-with-multiline");
+            let node = rule.output(rule.pattern, multiLine);
+            vdoms.push(node);
+            isInMultiLine = false;
+            multiLineName = "";
+            multiLine = [];
+          }
+
           //starts-with rule
           for(let a=0; a<Markdown.rules["starts-with"].length && !matchingRule; a++){
             let rule = Markdown.rules["starts-with"][a];
@@ -237,12 +329,6 @@ export({
         }
       }
     }
-
-    //clean up at the end
-    // if(inBlock){
-    //   let rule = Markdown.findRule(blockName, "block");
-    //
-    // }
 
     console.log("markdown result:", vdoms);
     return vdoms;
@@ -407,9 +493,6 @@ export({
         }
       }
     }
-
-    //console.log("vdoms:");
-    //console.log(vdoms);
 
     return vdoms;
   }
