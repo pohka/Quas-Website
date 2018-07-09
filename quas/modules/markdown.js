@@ -53,27 +53,20 @@ export({
       if(codeBlockOpen){
         //end of code block
         if(trimmedLine == "```"){
-          // let attrs = {
-          //   "q-code" : code,
-          //   "data-type" : codeLang
-          // };
-
-          vdoms.push(
-            // ["pre", {},
-            //   [
-            //     ["code", { "data-type" : codeLang }, [], [
-            //       // {
-            //       //   key : "q-code",
-            //       //   val : code
-            //       // }
-            //     ]]
-            //   ],
-            //   []
-            // ]
-            #<pre>
-              <code q-code="code" data-type="{codeLang}"></code>
-            </pre>
-          );
+          if(Quas.hasModule("CodeHighlighter")){
+            vdoms.push(
+              #<pre>
+                <code q-code="code" data-type="{codeLang}"></code>
+              </pre>
+            );
+          }
+          else{
+            vdoms.push(
+              #<pre>
+                <code data-type="{codeLang}">{code}</code>
+              </pre>
+            );
+          }
           code = "";
           codeLang = "";
           codeBlockOpen = false;
