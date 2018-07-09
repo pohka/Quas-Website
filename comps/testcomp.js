@@ -41,7 +41,7 @@ export(
           <div q-if="false">test a</div>
           <div q-else-if="false">test 3</div>
           <div q-else-if="false">test 4</div>
-          <div q-else>test 5</div>
+          <div q-else><a href="abd">test 5</a></div>
 
           <h2>appending?</h2>
           <div q-prepend="test" q-append="['world']">hello </div>

@@ -6,9 +6,9 @@
 	--shadow: #ddd;
 	--placeholder: #bbb;
 	--bg: #fff;
-	--pri: #06b5e0;
+	--pri: #ed8b16;
 	--pri2: #0670e0;
-	--pri_hover: #06b5e0bb;
+	--pri_hover: #f14713;
 	--pri_dark: #059abe;
 }
 html{
@@ -202,7 +202,7 @@ th{
 	padding-left: 30px;
 	width: 100%;
 	line-height: 40px;
-	color: var(--text);
+	color: var(--text) !important;
 	text-decoration: none;
 	cursor: pointer;
 	border-left: 6px solid transparent;
@@ -216,7 +216,7 @@ th{
 }
 
 .docs-nav-item:hover{
-	color: var(--pri2);
+	color: var(--pri);
 	background: var(--hover2);
 	border-left: 6px solid var(--shadow);
 }
