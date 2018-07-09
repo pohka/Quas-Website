@@ -1,15 +1,6 @@
 /*
 todo:
 - nested list items
-- ordered list
-- links [text](link)
-- list items with minus sign
-- images ![Alt Text](/imgs/logo.png)
-- *italic*  _italic_
-- **bold**
-- __bold__
-- _combine **them** too_
-- ~~stikethrough~~
 - tables
 - embed youtube
 - video
@@ -44,9 +35,6 @@ export({
   init : () => {
     Markdown.rules = {}
 
-    //need rule for matching paragraphs
-
-    //
     Markdown.addRule("starts-with", {
       name : "heading",
       pattern : /#+\s+/,
@@ -152,7 +140,7 @@ export({
     Markdown.addRule("inline", {
       name : "image",
       pattern : /!\[.*?\]\(.*?\)/,
-      output : (pattern, match, text) => {
+      output : (pattern, match) => {
         let els = match[0].substr(2, match[0].length-3).split("](");
         let alt = els[0];
         let src = els[1];
@@ -165,7 +153,7 @@ export({
     Markdown.addRule("inline", {
       name : "link",
       pattern : /\[.*?\]\(.*?\)/,
-      output : (pattern, match, text) => {
+      output : (pattern, match) => {
         let els = match[0].substr(1, match[0].length-2).split("](");
         let anchor = els[0];
         let link = els[1];
@@ -189,6 +177,33 @@ export({
         return vdom;
       }
     });
+
+    Markdown.addRule("inline", {
+      name : "bold",
+      pattern : /(\*\*.*?\*\*)|__.*?__/,
+      output : (pattern, match) => {
+        let text = match[0].substr(2, match[0].length-4);
+        return #<b>{text}</b>;
+      }
+    });
+
+    Markdown.addRule("inline", {
+      name : "italic",
+      pattern : /(\*.*?\*)|_.*?_/,
+      output : (pattern, match) => {
+        let text = match[0].substr(1, match[0].length-2);
+        return #<i>{text}</i>;
+      }
+    });
+
+    Markdown.addRule("inline", {
+      name : "strikethrough",
+      pattern : /~~.*?~~/,
+      output : (pattern, match) => {
+        let text = match[0].substr(2, match[0].length-4);
+        return #<s>{text}</s>;
+      }
+    });
   },
 
   addRule(type, obj){
@@ -206,7 +221,7 @@ export({
       let rule = Markdown.rules["inline"][a];
       let match = text.match(rule.pattern);
       while(match != null){
-        let inlineVDOM = rule.output(rule.pattern, match, text);
+        let inlineVDOM = rule.output(rule.pattern, match);
         let beforeText = text.substr(0, match.index);
         var afterText = text.substr(match.index + match[0].length);
         if(match.index > 0){
