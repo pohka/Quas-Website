@@ -96,12 +96,8 @@ th{
 	display: flex;
 	flex-wrap: wrap;
 	height: 400px;
-	box-shadow: 0px 2px 4px var(--shadow);
 	justify-content: center;
 	align-items: center;
-	color: white;
-	text-shadow: 2px 0 6px black;
-	background-image: url("/img/bg.jpg");
 }
 
 .landing-top h1{
