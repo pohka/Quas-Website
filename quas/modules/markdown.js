@@ -104,42 +104,34 @@ export({
     //   }
     // }
     //
-    // //should just be handling the parsing of the matched text and returning the result node
-    // //the text before and after should be solved by a bigger function
-    // Markdown.rules["link"] = {
-    //   type : "inline",
-    //   pattern : /\[.*?\]\(.*?\)/,
-    //   output : (pattern, line) => {
-    //     //let regex = new RegExp(pattern, "g");
-    //     //let matches =
-    //     let nodes = [];
-    //     let hasMatch = true;
-    //     let text = line;
-    //     while(hasMatch){
-    //       let match = text.match(pattern);
-    //       if(!match){
-    //         hasMatch = false;
-    //       }
-    //       else{
-    //         let textBefore = text.substr(0, match.index);
-    //         let matchedText = match[0];
-    //         text = text.substr(match.index + matchedText.length); //text after
-    //
-    //         if(textBefore.length > 0){
-    //           nodes.push(textBefore);
-    //         }
-    //
-    //         let arr = matchedText.substr(1,matchedText.length-2).split("](");
-    //
-    //         //should have case for opening cross origin links with _blank
-    //         //also using target="push"
-    //         nodes.push(
-    //           #<a href="{arr[1]}" target="push">{arr[0]}</a>
-    //         );
-    //       }
-    //     }
-    //   }
-    // }
+
+    Markdown.addRule("inline", {
+      name : "link",
+      pattern : /\[.*?\]\(.*?\)/,
+      output : (pattern, match, text) => {
+        let els = match[0].substr(1, match[0].length-2).split("](");
+        let anchor = els[0];
+        let link = els[1];
+
+        let matchOrigin = link.match(location.origin);
+        let isMatchingOrigin = (matchOrigin != null && matchOrigin.index == 0);
+        if(!isMatchingOrigin && link.charAt(0) == "/"){
+          isMatchingOrigin = true;
+        }
+
+
+        let vdom;
+        //cross origin link should open in new tab
+        if(!isMatchingOrigin){
+          vdom =  #<a href="{link}" target="_blank">{anchor}</a>
+        }
+        else{
+          vdom =  #<a href="{link}" target="push">{anchor}</a>
+        }
+
+        return vdom;
+      }
+    });
   },
 
   addRule(type, obj){
@@ -149,6 +141,31 @@ export({
     else{
       Markdown.rules[type].push(obj);
     }
+  },
+
+  parseInlineRules : (text) => {
+    let vdoms = [];
+    for(let a=0; a<Markdown.rules["inline"].length; a++){
+      let rule = Markdown.rules["inline"][a];
+      let match = text.match(rule.pattern);
+      while(match != null){
+        let inlineVDOM = rule.output(rule.pattern, match, text);
+        let beforeText = text.substr(0, match.index);
+        let afterText = text.substr(match.index + match[0].length + 1);
+        if(match.index > 0){
+          vdoms.push(beforeText);
+        }
+        vdoms.push(inlineVDOM);
+        text = afterText;
+        match = text.match(rule.pattern);
+      }
+
+      if(text.length > 0){
+        vdoms.push(text);
+      }
+    }
+
+    return vdoms;
   },
 
   newVersion : (text) =>{
@@ -167,7 +184,8 @@ export({
 
       if(line.length == 0){
         if(paragraph.length > 0){
-          vdoms.push(#<p>{paragraph}</p>);
+          let nodes = Markdown.parseInlineRules(paragraph);
+          vdoms.push(#<p q-append="nodes"></p>);
           paragraph = "";
         }
       }
@@ -221,10 +239,10 @@ export({
     }
 
     //clean up at the end
-    if(inBlock){
-      let rule = Markdown.findRule(blockName, "block");
-
-    }
+    // if(inBlock){
+    //   let rule = Markdown.findRule(blockName, "block");
+    //
+    // }
 
     console.log("markdown result:", vdoms);
     return vdoms;
