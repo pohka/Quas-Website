@@ -8,7 +8,7 @@ export(
         loaded : false,
         page : ""
       });
-      this.props.content = [];
+      this.props.content;
       this.fetchData();
     }
 
@@ -23,8 +23,7 @@ export(
       let page = Router.currentRoute.params.page;
       let comp = this;
       Quas.fetch("/docs/"+page+".md").then((res) => {
-          let vdoms = Markdown.parseToVDOM(res);
-          comp.props.content = vdoms
+          this.props.content = res;
           comp.setStates({
             loaded : true,
             page : page
@@ -45,8 +44,9 @@ export(
         );
       }
       else{
+        let vdoms = Markdown.parseToVDOM(this.props.content);
         return (
-          #<div class="docs-content" q-append="this.props.content"></div>
+          #<div class="docs-content" q-append="vdoms"></div>
         );
       }
     }
