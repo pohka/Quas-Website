@@ -83,7 +83,8 @@ const myModule = require("/modules/module-name.js")
 link "/mystyle.css"
 
 
-
+# important
+* don't reuse vdoms after they have been evaluated once as a custom attr are not handled if evaluated twice. This is quite noticeable if you use q-append
 
 
 

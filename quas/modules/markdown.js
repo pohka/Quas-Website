@@ -50,27 +50,37 @@ export({
     //heading
     Markdown.addRule("begin", {
       name : "heading",
+      inlineRulesEnabled : false,
       pattern : /#+\s*/,
 
-      output : (pattern, line) => {
+      output : function(line){
         let headingSize = line.match(/#+/)[0].length
-        let match = line.match(pattern)[0];
+        let match = line.match(this.pattern)[0];
         let text = line.substr(match.length);
 
-        let vdom = ["h"+headingSize, {}, [text], []];
+        let content
+        if(this.inlineRulesEnabled){
+          content = Markdown.parseInlineRules(text);
+        }
+        else{
+          content = [text];
+        }
 
-        return [vdom];
+        let vdom = ["h"+headingSize, {}, content, []];
+
+        return vdom;
       }
     });
 
     //code
     Markdown.addRule("block", {
       name : "code",
+      inlineRulesEnabled : false,
       pattern : /```+/,
 
       //text == text between open and close block
-      output : (pattern, lines) => {
-        let codeLang  = lines[0].replace(pattern, "").trim();
+      output : function(lines){
+        let codeLang  = lines[0].replace(this.pattern, "").trim();
         lines.shift(0);
         lines.pop();
         let code = lines.join("\n");
@@ -91,16 +101,17 @@ export({
           );
         }
 
-        return [vdom];
+        return vdom;
       }
     });
 
     //lists
     Markdown.addRule("multiline", {
       name : "list",
+      inlineRulesEnabled : true,
       // matches * or - or 1.
       pattern : /\s*(-|\*|(\d\.))\s*/,
-      output : (pattern, lines) => {
+      output : function(lines){
         let isOrdered = false;
         //matches digits such as 1. or 2.
         let firstDigitMatch = lines[0].match(/\s*\d\.\s*/);
@@ -118,7 +129,7 @@ export({
           else{
             spaceCount = 0;
           }
-          let match = lines[i].match(pattern);
+          let match = lines[i].match(this.pattern);
           if(match.index == 0){
             lines[i] = lines[i].substr(match[0].length);
           }
@@ -132,10 +143,10 @@ export({
 
 
         if(isOrdered){
-          return #<ol q-append="vdoms"></ol>
+          return #<ol q-append="vdoms"></ol>;
         }
         else{
-          return #<ul q-append="vdoms"></ul>
+          return #<ul q-append="vdoms"></ul>;
         }
       }
     });
@@ -143,11 +154,12 @@ export({
     //quote
     Markdown.addRule("multiline", {
       name : "quote",
+      inlineRulesEnabled : true,
       pattern : />\s*/,
-      output : (pattern, lines) => {
+      output : function(lines){
         let nodes = [];
         for(let i=0; i<lines.length; i++){
-          let match = lines[i].match(pattern);
+          let match = lines[i].match(this.pattern);
           nodes.push(lines[i].substr(match[0].length));
           if(i < lines.length-1){
             nodes.push(["br", {}, [], []]);
@@ -163,7 +175,7 @@ export({
     Markdown.addRule("inline", {
       name : "image",
       pattern : /!\[.*?\]\(.*?\)/,
-      output : (pattern, match) => {
+      output : function(match){
         let els = match[0].substr(2, match[0].length-3).split("](");
         let alt = els[0];
         let src = els[1];
@@ -177,7 +189,7 @@ export({
     Markdown.addRule("inline", {
       name : "link",
       pattern : /\[.*?\]\(.*?\)/,
-      output : (pattern, match) => {
+      output : function(match){
         let els = match[0].substr(1, match[0].length-2).split("](");
         let anchor = els[0];
         let link = els[1];
@@ -206,7 +218,7 @@ export({
     Markdown.addRule("inline", {
       name : "bold",
       pattern : /(\*\*.*?\*\*)|__.*?__/,
-      output : (pattern, match) => {
+      output : function(match){
         let text = match[0].substr(2, match[0].length-4);
         return #<b>{text}</b>;
       }
@@ -216,7 +228,7 @@ export({
     Markdown.addRule("inline", {
       name : "italic",
       pattern : /(\*.*?\*)|_.*?_/,
-      output : (pattern, match) => {
+      output : function(match){
         let text = match[0].substr(1, match[0].length-2);
         return #<i>{text}</i>;
       }
@@ -226,7 +238,7 @@ export({
     Markdown.addRule("inline", {
       name : "strikethrough",
       pattern : /~~.*?~~/,
-      output : (pattern, match) => {
+      output : function(match){
         let text = match[0].substr(2, match[0].length-4);
         return #<s>{text}</s>;
       }
@@ -279,7 +291,7 @@ export({
 
         if(isInMultiline){
           rule = Markdown.findRule(multilineName,"multiline");
-          let node = rule.output(rule.pattern, multilineLines);
+          let node = rule.output(multilineLines);
           vdoms.push(node);
           isInMultiline = false;
           multilineName = "";
@@ -305,7 +317,7 @@ export({
           //end of multiline
           if(isInMultiline && !matchingRule){
             rule = Markdown.findRule(multilineName,"multiline");
-            let node = rule.output(rule.pattern, multilineLines);
+            let node = rule.output(multilineLines);
             vdoms.push(node);
             isInMultiline = false;
             multilineName = "";
@@ -318,8 +330,8 @@ export({
             if(!rule.isDisabled){
               match = line.match(rule.pattern);
               if(match != null && match.index == 0){
-                let nodes = rule.output(rule.pattern, line)
-                vdoms = vdoms.concat(nodes);
+                let node = rule.output(line);
+                vdoms.push(node);
                 matchingRule = true;
               }
             }
@@ -344,8 +356,8 @@ export({
                 isInBlock = false;
                 matchingRule = true;
                 blockLines.push(line);
-                let nodes = rule.output(rule.pattern, blockLines);
-                vdoms = vdoms.concat(nodes);
+                let node = rule.output(blockLines);
+                vdoms.push(node);
                 blockLines = [];
               }
             }
@@ -376,7 +388,7 @@ export({
       if(!rule.isDisabled){
         let match = text.match(rule.pattern);
         while(match != null){
-          let inlineVDOM = rule.output(rule.pattern, match);
+          let inlineVDOM = rule.output(match);
           let beforeText = text.substr(0, match.index);
           var afterText = text.substr(match.index + match[0].length);
           if(match.index > 0){
