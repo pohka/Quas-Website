@@ -150,7 +150,6 @@ class Component{
       this.dom = undefined;
     }
     this.vdom = undefined;
-    console.log("-----------unmounting----------", this);
     Quas.emitEvent("unmount", this);
   }
 }
@@ -316,6 +315,7 @@ const Quas = {
       if(vdom === undefined){
         let text = document.createTextNode(newVDOM);
         parent.append(text);
+        returnVal = 1;
       }
       else if(vdom != newVDOM){
         parent.replaceChild(document.createTextNode(newVDOM), dom);
@@ -326,6 +326,7 @@ const Quas = {
     //old vdom is text node and new vdom is not a text node
     else if(vdom !== undefined && vdom.constructor == String && newVDOM.constructor != String){
       let newDOM = Quas.createElement(newVDOM, comp);
+
       parent.replaceChild(newDOM, dom);
       return returnVal;
     }
@@ -426,28 +427,29 @@ const Quas = {
     //children
     if(dom && returnVal > -1){
       let oldChildren;
-      if(vdom){
+      if(vdom !== undefined){
         oldChildren = vdom[2];
       }
       let newChildren;
-      if(newVDOM){
+      if(newVDOM !== undefined){
         newChildren = newVDOM[2];
       }
       let change = 0;
       for(let c=0; (newVDOM && newVDOM[2] && c<newVDOM[2].length) || (vdom && vdom[2] && c<vdom[2].length); c++){
         let nextOldChild;
-        if(oldChildren){
+        if(oldChildren !== undefined && c < oldChildren.length){
           nextOldChild = oldChildren[c];
         }
         let nextNewChild;
-        if(newChildren){
+        if(newChildren !== undefined){
           nextNewChild = newChildren[c];
         }
         let nextDOM;
 
-        if(dom.childNodes){
+        if(dom.childNodes !== undefined){
           nextDOM = dom.childNodes[c+change];
         }
+
         change += Quas.diffVDOM(comp, dom, nextDOM, nextOldChild, nextNewChild);
       }
     }

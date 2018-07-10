@@ -4,6 +4,12 @@ todo:
 - tables
 - embed youtube
 - video
+- hr tag
+
+- async images
+- parse multiple types of inline rules
+- parse inline for all text in other rules
+- option to disable inline rules for text e.g. quote with links and bold text disabled
 */
 
 /*
@@ -35,6 +41,7 @@ export({
   init : () => {
     Markdown.rules = {}
 
+    //heading
     Markdown.addRule("starts-with", {
       name : "heading",
       pattern : /#+\s+/,
@@ -50,6 +57,7 @@ export({
       }
     });
 
+    //code
     Markdown.addRule("block", {
       name : "code",
       pattern : /```+/,
@@ -81,6 +89,7 @@ export({
       }
     });
 
+    //lists
     Markdown.addRule("starts-with-multiline", {
       name : "list",
       // matches * or - or 1.
@@ -118,7 +127,7 @@ export({
       }
     });
 
-
+    //quote
     Markdown.addRule("starts-with-multiline", {
       name : "quote",
       pattern : />\s+/,
@@ -136,7 +145,8 @@ export({
       }
     });
 
-    //allow option for async loading
+    //todo: allow option for async loading
+    //image
     Markdown.addRule("inline", {
       name : "image",
       pattern : /!\[.*?\]\(.*?\)/,
@@ -150,6 +160,7 @@ export({
       }
     });
 
+    //link
     Markdown.addRule("inline", {
       name : "link",
       pattern : /\[.*?\]\(.*?\)/,
@@ -178,6 +189,7 @@ export({
       }
     });
 
+    //bold text
     Markdown.addRule("inline", {
       name : "bold",
       pattern : /(\*\*.*?\*\*)|__.*?__/,
@@ -187,6 +199,7 @@ export({
       }
     });
 
+    //italic text
     Markdown.addRule("inline", {
       name : "italic",
       pattern : /(\*.*?\*)|_.*?_/,
@@ -196,6 +209,7 @@ export({
       }
     });
 
+    //strike through text
     Markdown.addRule("inline", {
       name : "strikethrough",
       pattern : /~~.*?~~/,
@@ -206,6 +220,7 @@ export({
     });
   },
 
+  //adding a rule
   addRule(type, obj){
     if(!Markdown.rules[type]){
       Markdown.rules[type] = [obj];
@@ -215,6 +230,7 @@ export({
     }
   },
 
+  //parses inline rules
   parseInlineRules : (text) => {
     let vdoms = [];
     for(let a=0; a<Markdown.rules["inline"].length; a++){

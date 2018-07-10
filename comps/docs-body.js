@@ -13,7 +13,10 @@ export(
     }
 
     onPush(route){
-      this.fetchData();
+      if(this.state.page != Router.currentRoute.params.page){
+        this.state.loaded = false;
+        this.fetchData();
+      }
     }
 
     fetchData(){
