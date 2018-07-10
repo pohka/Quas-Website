@@ -50,7 +50,7 @@ export({
     //heading
     Markdown.addRule("begin", {
       name : "heading",
-      inlineRulesEnabled : false,
+      isInlineRulesEnabled : false,
       pattern : /#+\s*/,
 
       output : function(line){
@@ -59,7 +59,7 @@ export({
         let text = line.substr(match.length);
 
         let content
-        if(this.inlineRulesEnabled){
+        if(this.isInlineRulesEnabled){
           content = Markdown.parseInlineRules(text);
         }
         else{
@@ -75,7 +75,7 @@ export({
     //code
     Markdown.addRule("block", {
       name : "code",
-      inlineRulesEnabled : false,
+      isInlineRulesEnabled : false,
       pattern : /```+/,
 
       //text == text between open and close block
@@ -108,7 +108,7 @@ export({
     //lists
     Markdown.addRule("multiline", {
       name : "list",
-      inlineRulesEnabled : true,
+      isInlineRulesEnabled : true,
       // matches * or - or 1.
       pattern : /\s*(-|\*|(\d\.))\s*/,
       output : function(lines){
@@ -136,7 +136,7 @@ export({
         }
 
         let vdoms = [];
-        if(this.inlineRulesEnabled){
+        if(this.isInlineRulesEnabled){
           for(let i in lines){
             let liContent = Markdown.parseInlineRules(lines[i]);
             vdoms.push(#<li q-append="liContent"></li>);
@@ -161,11 +161,11 @@ export({
     //quote
     Markdown.addRule("multiline", {
       name : "quote",
-      inlineRulesEnabled : true,
+      isInlineRulesEnabled : true,
       pattern : />\s*/,
       output : function(lines){
         let nodes = [];
-        if(this.inlineRulesEnabled){
+        if(this.isInlineRulesEnabled){
           for(let i=0; i<lines.length; i++){
             let match = lines[i].match(this.pattern);
             let lineText = lines[i].substr(match[0].length);
@@ -405,11 +405,30 @@ export({
   //parses inline rules
   parseInlineRules(text){
     let vdoms = [];
-    for(let a=0; a<Markdown.rules["inline"].length; a++){
-      let rule = Markdown.rules["inline"][a];
-      if(!rule.isDisabled){
-        let match = text.match(rule.pattern);
-        while(match != null){
+    let matches = [];
+    let hasMatch = true;
+    let earliestRule = null;
+
+    while(hasMatch){
+      hasMatch = false;
+      earliestRule = null;
+
+      for(let a=0; a<Markdown.rules["inline"].length; a++){
+        let rule = Markdown.rules["inline"][a];
+        if(!rule.isDisabled){
+          let match = text.match(rule.pattern);
+          if(match != null){
+            if(earliestRule == null || (match.index < earliestRule.match.index)){
+              earliestRule = {match : match, ruleName : a};
+              hasMatch = true;
+            }
+          }
+        }
+      }
+
+      if(hasMatch){
+          let rule = Markdown.rules["inline"][earliestRule.ruleName];
+          let match = earliestRule.match;
           let inlineVDOM = rule.output(match);
           let beforeText = text.substr(0, match.index);
           var afterText = text.substr(match.index + match[0].length);
@@ -418,8 +437,6 @@ export({
           }
           vdoms.push(inlineVDOM);
           text = afterText;
-          match = text.match(rule.pattern);
-        }
       }
     }
 
@@ -474,10 +491,19 @@ export({
   },
 
   //enable or disable a rule
-  setRuleIsDisabled(isDisabled, name, type){
+  setRuleDisabled(isDisabled, name, type){
     let rule = Markdown.findRule(name, type);
     if(rule !== undefined){
       rule.isDisabled = isDisabled;
+      return true;
+    }
+    return false;
+  },
+
+  setInlineRulesEnabled(isEnabled, name, type){
+    let rule = Markdown.findRule(name, type);
+    if(rule !== undefined){
+      rule.isInlineRulesEnabled = isEnabled;
       return true;
     }
     return false;
