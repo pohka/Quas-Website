@@ -86,22 +86,26 @@ export({
         let code = lines.join("\n");
         let vdom;
 
-        if(Quas.hasModule("CodeHighlighter")){
-          vdom =  (
-            #<pre>
-              <code q-code="code" data-type="{codeLang}"></code>
-            </pre>
-          );
-        }
-        else{
+        // if(Quas.hasModule("CodeHighlighter")){
+        //   vdom =  (
+        //     #<pre>
+        //       <code q-code="code" data-type="{codeLang}"></code>
+        //     </pre>
+        //   );
+        // }
+        // else{
           vdom = (
             #<pre>
               <code data-type="{codeLang}">{code}</code>
             </pre>
           );
-        }
+  //      }
 
-        return vdom;
+        return (
+          #<pre>
+            <code data-type="{codeLang}">{code}</code>
+          </pre>
+        );
       }
     });
 
@@ -470,6 +474,9 @@ export({
   //adding a rule
   addRule(type, obj){
     obj.isDisabled = false;
+    if(type == "inline"){
+      obj.supportsInlineRules = false;
+    }
     if(!Markdown.rules[type]){
       Markdown.rules[type] = [obj];
     }
@@ -500,6 +507,7 @@ export({
     return false;
   },
 
+  //set if a rule should allow the use of inline rules
   setInlineRulesEnabled(isEnabled, name, type){
     let rule = Markdown.findRule(name, type);
     if(rule !== undefined){

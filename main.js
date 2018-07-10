@@ -1,7 +1,7 @@
 //modules
 import Quas.Router
-import Quas.CodeHighlighter;
 import Quas.Async
+import "/modules/code-highlighter.js"
 
 //components
 const Navbar = import "/comps/navbar.js"
@@ -19,6 +19,28 @@ import "/quas-site.css"
 
 
 function ready(){
+  //replacing the default code markdown rule
+  Markdown.removeRule("code", "block");
+  Markdown.addRule("block", {
+    name : "code",
+    isInlineRulesEnabled : false,
+    pattern : /```+/,
+    output : function(lines){
+      let codeLang  = lines[0].replace(this.pattern, "").trim();
+      lines.shift(0);
+      lines.pop();
+      let code = lines.join("\n");
+      let vdom;
+
+      return  (
+        #<pre>
+          <code q-code="code" data-type="{codeLang}"></code>
+        </pre>
+      );
+    }
+  });
+
+
   console.log("ready");
 
   let navbarProps = {

@@ -1,4 +1,4 @@
-import "/quas/css/code-highlighter.css";
+import "/modules/code-highlighter.css";
 
 export(
   class CodeHighlighter{
