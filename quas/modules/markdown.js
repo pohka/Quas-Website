@@ -136,9 +136,16 @@ export({
         }
 
         let vdoms = [];
-        for(let i in lines){
-          let liContent = Markdown.parseInlineRules(lines[i]);
-          vdoms.push(#<li q-append="liContent"></li>);
+        if(this.inlineRulesEnabled){
+          for(let i in lines){
+            let liContent = Markdown.parseInlineRules(lines[i]);
+            vdoms.push(#<li q-append="liContent"></li>);
+          }
+        }
+        else{
+          for(let i in lines){
+            vdoms.push(#<li>{lines[i]}</li>);
+          }
         }
 
 
@@ -158,11 +165,26 @@ export({
       pattern : />\s*/,
       output : function(lines){
         let nodes = [];
-        for(let i=0; i<lines.length; i++){
-          let match = lines[i].match(this.pattern);
-          nodes.push(lines[i].substr(match[0].length));
-          if(i < lines.length-1){
-            nodes.push(["br", {}, [], []]);
+        if(this.inlineRulesEnabled){
+          for(let i=0; i<lines.length; i++){
+            let match = lines[i].match(this.pattern);
+            let lineText = lines[i].substr(match[0].length);
+            let vdoms = Markdown.parseInlineRules(lineText);
+            for(let a in vdoms){
+              nodes.push(vdoms[a]);
+            }
+            if(i < lines.length-1){
+              nodes.push(["br", {}, [], []]);
+            }
+          }
+        }
+        else{
+          for(let i=0; i<lines.length; i++){
+            let match = lines[i].match(this.pattern);
+            nodes.push(lines[i].substr(match[0].length));
+            if(i < lines.length-1){
+              nodes.push(["br", {}, [], []]);
+            }
           }
         }
 
