@@ -35,6 +35,12 @@ rule 2: [text](link)
   ---
   Handling markdown
   ---
+
+  rule types:
+  - begin
+  - multiline
+  - block
+  - inline
 */
 export({
 
@@ -42,9 +48,9 @@ export({
     Markdown.rules = {}
 
     //heading
-    Markdown.addRule("starts-with", {
+    Markdown.addRule("begin", {
       name : "heading",
-      pattern : /#+\s+/,
+      pattern : /#+\s*/,
 
       output : (pattern, line) => {
         let headingSize = line.match(/#+/)[0].length
@@ -90,7 +96,7 @@ export({
     });
 
     //lists
-    Markdown.addRule("starts-with-multiline", {
+    Markdown.addRule("multiline", {
       name : "list",
       // matches * or - or 1.
       pattern : /\s*(-|\*|(\d\.))\s*/,
@@ -128,9 +134,9 @@ export({
     });
 
     //quote
-    Markdown.addRule("starts-with-multiline", {
+    Markdown.addRule("multiline", {
       name : "quote",
-      pattern : />\s+/,
+      pattern : />\s*/,
       output : (pattern, lines) => {
         let nodes = [];
         for(let i=0; i<lines.length; i++){
@@ -233,18 +239,30 @@ export({
     let vdoms = [];
     let lines = text.split(/\n/);
     let paragraph = "";
-    let inBlock = false;
-    let blockName = "";
-    let blockText = [];
-    let multiLine = [];
-    let multiLineName = "";
-    let isInMultiLine = false;
+
+    //block rule variables
+    let isInBlock = false; //true if within a block rule
+    let blockName = ""; //name of the current block rule
+    let blockLines = []; //lines collected within the current block
+
+    //multiline rule variables
+    let isInMultiline = false; //true if in a multiline rule
+    let multilineName = ""; //name of the current multiline rule
+    let multilineLines = []; //lines collected for a multiline rule
+
+    //reused vairables in the loop
+    let match,
+        line,
+        matchingRule,
+        trimmedLine,
+        rule;
 
     for(let i=0; i<lines.length; i++){
-      let line = lines[i];
-      let matchingRule = false;
-      let trimmedLine = line.trim();
+      line = lines[i];
+      matchingRule = false;
+      trimmedLine = line.trim();
 
+      //empty line
       if(trimmedLine.length == 0){
         if(paragraph.length > 0){
           let nodes = Markdown.parseInlineRules(paragraph);
@@ -252,46 +270,46 @@ export({
           paragraph = "";
         }
 
-        if(isInMultiLine){
-          let rule = Markdown.findRule(multiLineName,"starts-with-multiline");
-          let node = rule.output(rule.pattern, multiLine);
+        if(isInMultiline){
+          rule = Markdown.findRule(multilineName,"multiline");
+          let node = rule.output(rule.pattern, multilineLines);
           vdoms.push(node);
-          isInMultiLine = false;
-          multiLineName = "";
-          multiLine = [];
+          isInMultiline = false;
+          multilineName = "";
+          multilineLines = [];
         }
       }
       else{
-        if(!inBlock){
-          //starts-with-multiline rule
-          for(let a=0; a<Markdown.rules["starts-with-multiline"].length && !matchingRule; a++){
-            let rule = Markdown.rules["starts-with-multiline"][a];
-            if(!rule.isDisabled && (!isInMultiLine || (isInMultiLine && rule.name == multiLineName))){
-              let match = line.match(rule.pattern);
+        if(!isInBlock){
+          //multiline rule
+          for(let a=0; a<Markdown.rules["multiline"].length && !matchingRule; a++){
+            rule = Markdown.rules["multiline"][a];
+            if(!rule.isDisabled && (!isInMultiline || (isInMultiline && rule.name == multilineName))){
+              match = line.match(rule.pattern);
               if(match != null && match.index == 0){
-                multiLine.push(line);
-                multiLineName = rule.name;
-                isInMultiLine = true;
+                multilineLines.push(line);
+                multilineName = rule.name;
+                isInMultiline = true;
                 matchingRule = true;
               }
             }
           }
 
           //end of multiline
-          if(isInMultiLine && !matchingRule){
-            let rule = Markdown.findRule(multiLineName,"starts-with-multiline");
-            let node = rule.output(rule.pattern, multiLine);
+          if(isInMultiline && !matchingRule){
+            rule = Markdown.findRule(multilineName,"multiline");
+            let node = rule.output(rule.pattern, multilineLines);
             vdoms.push(node);
-            isInMultiLine = false;
-            multiLineName = "";
-            multiLine = [];
+            isInMultiline = false;
+            multilineName = "";
+            multilineLines = [];
           }
 
-          //starts-with rule
-          for(let a=0; a<Markdown.rules["starts-with"].length && !matchingRule; a++){
-            let rule = Markdown.rules["starts-with"][a];
+          //begin rule
+          for(let a=0; a<Markdown.rules["begin"].length && !matchingRule; a++){
+            rule = Markdown.rules["begin"][a];
             if(!rule.isDisabled){
-              let match = line.match(rule.pattern);
+              match = line.match(rule.pattern);
               if(match != null && match.index == 0){
                 let nodes = rule.output(rule.pattern, line)
                 vdoms = vdoms.concat(nodes);
@@ -303,36 +321,37 @@ export({
 
         //block rule
         for(let a=0; a<Markdown.rules["block"].length && !matchingRule; a++){
-          let rule = Markdown.rules["block"][a];
+          rule = Markdown.rules["block"][a];
           if(!rule.isDisabled){
-            if(!inBlock){
-              let match = line.match(rule.pattern);
+            if(!isInBlock){
+              match = line.match(rule.pattern);
               if(match != null && match.index == 0){
-                inBlock = true;
+                isInBlock = true;
                 matchingRule = true;
                 blockName = rule.name;
               }
             }
-            else if(inBlock && blockName == rule.name){
+            else if(isInBlock && blockName == rule.name){
               let match = line.match(rule.pattern);
               if(match != null && match.index == 0){
-                inBlock = false;
+                isInBlock = false;
                 matchingRule = true;
-                blockText.push(line);
-                let nodes = rule.output(rule.pattern, blockText);
+                blockLines.push(line);
+                let nodes = rule.output(rule.pattern, blockLines);
                 vdoms = vdoms.concat(nodes);
-                blockText = [];
+                blockLines = [];
               }
             }
           }
         }
 
-        if(inBlock){
-          blockText.push(line);
+        //add line to block lines
+        if(isInBlock){
+          blockLines.push(line);
         }
 
-
-        if(!matchingRule && !inBlock){
+        //no rule matched this line and not in a block rule
+        if(!matchingRule && !isInBlock){
           paragraph += line;
         }
       }
@@ -401,6 +420,7 @@ export({
     }
   },
 
+  //remove a rule
   removeRule(name, type){
     let rules = Markdown.rules[type];
     for(let i=0; i<rules.length; i++){
@@ -412,10 +432,11 @@ export({
     return false;
   },
 
-  setRuleIsDisabled(disabled, name, type){
+  //enable or disable a rule
+  setRuleIsDisabled(isDisabled, name, type){
     let rule = Markdown.findRule(name, type);
     if(rule !== undefined){
-      rule.isDisabled = disabled;
+      rule.isDisabled = isDisabled;
       return true;
     }
     return false;
