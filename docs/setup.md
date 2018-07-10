@@ -17,7 +17,7 @@ tes__t__ing **bold** text and *italic* text this is also _italic_ and this is ~~
 
 ## Starting Point
 Once quas has loaded it will starts its executing the ready function
-- item 1
+- [test](https://i.imgur.com/2xY5jVy.png) 1
 - item 2
 - item 3
 - item 4

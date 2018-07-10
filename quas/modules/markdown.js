@@ -44,7 +44,7 @@ rule 2: [text](link)
 */
 export({
 
-  init : () => {
+  init(){
     Markdown.rules = {}
 
     //heading
@@ -124,11 +124,18 @@ export({
           }
         }
 
+        let vdoms = [];
+        for(let i in lines){
+          let liContent = Markdown.parseInlineRules(lines[i]);
+          vdoms.push(#<li q-append="liContent"></li>);
+        }
+
+
         if(isOrdered){
-          return #<ol q-for-li="lines"></ol>;
+          return #<ol q-append="vdoms"></ol>
         }
         else{
-          return #<ul q-for-li="lines"></ul>;
+          return #<ul q-append="vdoms"></ul>
         }
       }
     });
@@ -235,7 +242,7 @@ export({
 
     @return {Array<AST>}
   */
-  parseToVDOM : (text) =>{
+  parseToVDOM(text){
     let vdoms = [];
     let lines = text.split(/\n/);
     let paragraph = "";
@@ -362,7 +369,7 @@ export({
   },
 
   //parses inline rules
-  parseInlineRules : (text) => {
+  parseInlineRules(text){
     let vdoms = [];
     for(let a=0; a<Markdown.rules["inline"].length; a++){
       let rule = Markdown.rules["inline"][a];
