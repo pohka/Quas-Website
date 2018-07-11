@@ -30,7 +30,6 @@ function ready(){
       lines.shift(0);
       lines.pop();
       let code = lines.join("\n");
-      let vdom;
 
       return  (
         #<pre>

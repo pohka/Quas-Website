@@ -1,6 +1,5 @@
 /*
 todo:
-- nested list items
 - tables
 - embed youtube
 - video
@@ -84,23 +83,6 @@ export({
         lines.shift(0);
         lines.pop();
         let code = lines.join("\n");
-        let vdom;
-
-        // if(Quas.hasModule("CodeHighlighter")){
-        //   vdom =  (
-        //     #<pre>
-        //       <code q-code="code" data-type="{codeLang}"></code>
-        //     </pre>
-        //   );
-        // }
-        // else{
-          vdom = (
-            #<pre>
-              <code data-type="{codeLang}">{code}</code>
-            </pre>
-          );
-  //      }
-
         return (
           #<pre>
             <code data-type="{codeLang}">{code}</code>
@@ -124,41 +106,86 @@ export({
           isOrdered = true;
         }
 
+        let curDepth = 0;
+        let items = [isOrdered]; //index zero is boolean, true if ordered list
+        const depthLimit = 3;
+
+        //created the nest data arrays
         for(let i=0; i<lines.length; i++){
-          let hasSpace = (lines[i].charAt(0).match(/\s/) != null);
-          let spaceCount;
-          if(hasSpace){
-            spaceCount = lines[i].match(/\s+/)[0].length;
+          let spaceCount = lines[i].match(/\s*/)[0].length;
+          let match = lines[i].match(this.pattern);
+          let item = lines[i].substr(match[0].length);
+          let nextDepth = parseInt(spaceCount/2);
+
+          //deeper nesting, limited to 3
+          if(curDepth < nextDepth && curDepth+1 < depthLimit){
+            let firstDigitMatch = lines[i].match(/\s*\d\.\s*/);
+            isOrdered = false;
+            if(firstDigitMatch != null && firstDigitMatch.index == 0){
+              isOrdered = true;
+            }
+
+            if(curDepth == 0){
+              items.push([isOrdered]);
+            }
+            else if(curDepth == 1){
+              items[items.length-1].push([isOrdered]);
+            }
+
+            curDepth++;
           }
           else{
-            spaceCount = 0;
+            //escaping nesting nesting
+            if(curDepth > nextDepth){
+              curDepth = nextDepth;
+            }
           }
-          let match = lines[i].match(this.pattern);
-          if(match.index == 0){
-            lines[i] = lines[i].substr(match[0].length);
+
+
+          if(curDepth == 1){
+            items[items.length-1].push(item);
+          }
+          else if(curDepth == 2){
+            let nest = items[items.length-1];
+            nest[nest.length-1].push(item);
+          }
+          else{
+            items.push(item);
           }
         }
 
-        let vdoms = [];
-        if(this.isInlineRulesEnabled){
-          for(let i in lines){
-            let liContent = Markdown.parseInlineRules(lines[i]);
-            vdoms.push(#<li q-append="liContent"></li>);
+        //generate the template based on the generated data
+        return this.template(items);
+      },
+
+      //recursively builds nested ordered and unordered lists
+      template : function(items){
+        let childNodes = [];
+        let isOrdered = items[0];
+        for(let i=1; i<items.length; i++){
+          if(!Array.isArray(items[i])){
+            if(this.isInlineRulesEnabled){
+              let content = Markdown.parseInlineRules(items[i]);
+              childNodes.push(#<li q-append="content"></li>);
+            }
+            else{
+              childNodes.push(#<li>{items[i]}</li>);
+            }
           }
-        }
-        else{
-          for(let i in lines){
-            vdoms.push(#<li>{lines[i]}</li>);
+          else{
+            let nestedList = this.template(items[i]);
+            childNodes.push(nestedList);
           }
         }
 
-
+        let node;
         if(isOrdered){
-          return #<ol q-append="vdoms"></ol>;
+          node = #<ol q-append="childNodes"></ol>;
         }
         else{
-          return #<ul q-append="vdoms"></ul>;
+          node = #<ul q-append="childNodes"></ul>;
         }
+        return node;
       }
     });
 
