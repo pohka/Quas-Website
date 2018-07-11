@@ -13,7 +13,7 @@
 export({
 
   //initalization
-  init : () => {
+  init(){
     Router.routes = [];
     Router.aliases = [];
     Router.redirects = [];
@@ -63,7 +63,7 @@ export({
     });
     ```
   */
-  map : (data) => {
+  map(data){
     Router.setFullPathToChildRoutes(data.children, data.path);
     data.fullpath = data.path;
     Router.routes.push(data);
@@ -76,7 +76,7 @@ export({
     @param {Array<Object>} children - child nodes of the route
     @param {String} parentPath - path of the parent node
   */
-  setFullPathToChildRoutes : (children, parentPath) => {
+  setFullPathToChildRoutes(children, parentPath){
     if(!children){
       return;
     }
@@ -94,7 +94,7 @@ export({
 
     @param {Object} route - 404 route data
   */
-  setRoute404 : (route) => {
+  setRoute404(route){
     Router.route404 = route;
   },
 
@@ -115,7 +115,7 @@ export({
 
 
   */
-  matchingRoutePath : (routeFullpath, path) => {
+  matchingRoutePath(routeFullpath, path){
     let a = routeFullpath.split("/");
     let bInfo = path.split("#");
     let b = bInfo[0].split("/");
@@ -162,7 +162,7 @@ export({
     Router.convertToDynamicPath("/about", {});
     ```
   */
-  convertToDynamicPath : (path, params) => {
+  convertToDynamicPath(path, params){
     for(let i in params){
       let exp = new RegExp(":"+i, "g");
       path = path.replace(exp, params[i]);
@@ -178,7 +178,7 @@ export({
     loads the route based on the current url
     ---
   */
-  load : () => {
+  load(){
     let path = window.location.pathname;
 
     let route = Router.findRouteByPath(path);
@@ -238,7 +238,7 @@ export({
     // <meta property="og:title" content="My Title">
     ```
   */
-  setMetaData : (data) =>{
+  setMetaData(data){
     let head = document.getElementsByTagName('head')[0];
     for(let i=0; i<data.length; i++){
       let meta = document.createElement("meta");
@@ -277,7 +277,7 @@ export({
     });
     ```
   */
-  addAlias : (alias) => {
+  addAlias(alias){
     Router.aliases.push(alias);
   },
 
@@ -304,7 +304,7 @@ export({
     });
     ```
   */
-  addRedirect : (redirect) => {
+  addRedirect(redirect){
     Router.redirects.push(redirect);
   },
 
@@ -321,7 +321,7 @@ export({
     Router.findRouteByPath("/home");
     ```
   */
-  findRouteByPath : (path) => {
+  findRouteByPath(path){
     let route;
     for(let i=0; i<Router.redirects.length; i++){
       let params = Router.matchingRoutePath(Router.redirects[i].from, path);
@@ -365,7 +365,7 @@ export({
 
     @return {Object|undefined}
   */
-  findRouteByPathLoop : (path, routes, parentComps) => {
+  findRouteByPathLoop(path, routes, parentComps){
     for(let i=0; i<routes.length; i++){
       //found match
       let match = Router.matchingRoutePath(routes[i].fullpath, path);
@@ -427,7 +427,7 @@ export({
 
     @return {Object}
   */
-  routeToInfo : (route) => {
+  routeToInfo(route){
     let info = {};
     for(let k in route){
       if(k != "comps" && k != "children"){
@@ -452,7 +452,7 @@ export({
     console.log(homeRouteInfo.fullpath);
     ```
   */
-  getRouteInfoByID : (id, routes) => {
+  getRouteInfoByID(id, routes){
     if(!routes){
       routes = Router.routes;
     }
@@ -479,7 +479,7 @@ export({
     let homeRouteInfo = Router.getRouteInfoByPath("/home");
     ```
   */
-  getRouteInfoByPath : (path, routes) => {
+  getRouteInfoByPath(path, routes){
     if(!routes){
       routes = Router.routes;
     }
@@ -505,7 +505,7 @@ export({
     @param {String} routeID - Route ID
     @param {Object} params - Route parameters
   */
-  pushByID : (routeID, params) => {
+  pushByID(routeID, params){
     //find route
     let info = Router.getRouteInfoByID(routeID);
     if(info){
@@ -528,7 +528,7 @@ export({
     @param {Boolean} isPopstate - (optional) set to  true if pushing from a history popstate
 
   */
-   push : (route, isPopstate) => {
+   push(route, isPopstate){
      //404
      if(!route){
        if(!Router.route404){ //no action if 404 route is not set

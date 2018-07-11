@@ -5,7 +5,7 @@ export({
   observers : {},
   observerCount : 0,
 
-  init : () => {
+  init(){
     Quas.addListener(Store, "unmount");
 
     //observe prototype function for components
@@ -39,7 +39,7 @@ export({
   },
 
   //emits the state change to all the observers
-  emitStateChange : (stateName) =>{
+  emitStateChange(stateName){
     for(let i in Store.observers[stateName]){
       Quas.render(Store.observers[stateName][i]);
     }
@@ -47,7 +47,7 @@ export({
 
   //triggered by unmount event
   //removes observer when they are unmounted
-  onEvent : (eventName, comp) => {
+  onEvent(eventName, comp){
     if(comp.observerID === undefined || eventName != "unmount") return;
 
     for(let state in Store.observers){

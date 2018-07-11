@@ -18,7 +18,7 @@ export({
     console.log(token);
     ```
   */
-  get : (key) => {
+  get(key){
     var name = key + "=";
     var decodedCookie = decodeURIComponent(document.cookie);
     var ca = decodedCookie.split(';');
@@ -43,7 +43,7 @@ export({
   @param {Date} date - (optional) default is 12hrs from now
   @param {String} path - (optional) default is "/"
   */
-  set : (k, v, date, path) => {
+  set(k, v, date, path){
     if(path === undefined){
       path = "/";
     }
@@ -63,7 +63,7 @@ export({
 
     @param {String} key
   */
-  clear : (k) => {
+  clear(k){
     document.cookie = k + "=;expires=Thu, 01 Jan 1970 00:00:01 GMT;path=/";
   }
 })

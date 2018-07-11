@@ -16,7 +16,7 @@
   ```
 */
 export({
-  init : ()=>{
+  init(){
     Quas.async = {};
     Quas.customAttrs["async"] = (params, data, parentVDOM, comp) => {
       //async load img

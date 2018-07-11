@@ -5,13 +5,13 @@ helps get data from a form when submitted
 */
 export({
   //prevents default and returns the data of all the form inputs
-  onSubmit : (e) => {
+  onSubmit(e){
     e.preventDefault();
     return FormHelper.getData(e.target);
   },
 
   //returns the data for all the child nodes in the given form element
-  getData : (formEl) => {
+  getData(formEl){
     let result = {};
     for(let i=0; i<formEl.childNodes.length; i++){
       let node = formEl.childNodes[i];
@@ -23,7 +23,7 @@ export({
   },
 
   //returns the input data of a node and also the gets data in the child nodes with recursion
-  getDataRecur : (node) => {
+  getDataRecur(node){
     let data = {};
     if(node.attributes && node.name !== undefined && node.name!=""){
       if(node.type == "checkbox"){
@@ -57,7 +57,7 @@ export({
   },
 
   //updates the data with new data
-  updateData : (data, newData) => {
+  updateData(data, newData){
     for(let i in newData){
       //checkboxes edge case
       if(data[i] !== undefined && Array.isArray(newData[i])){

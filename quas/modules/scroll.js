@@ -16,7 +16,7 @@ export({
 
     @param {Number} offsetY - offset from the top of the element
   */
-  toHash : (offsetY) =>{
+  toHash(offsetY){
     let hash = window.location.hash;
     if(hash){
       let el = document.querySelector(hash);

@@ -189,7 +189,7 @@ const Quas = {
     Quas.render(myComp);
     ```
   */
-  render : (comp, parent) => {
+  render(comp, parent){
     //if parent passed is a query selector string
     if(parent && parent.constructor === String){
       parent = document.querySelector(parent);
@@ -256,7 +256,7 @@ const Quas = {
 
      @return {Boolean}
   */
-  diffRootVDOM : (comp, vdom, newVDOM) => {
+  diffRootVDOM(comp, vdom, newVDOM){
     let hasDiff = false;
 
 
@@ -300,7 +300,7 @@ const Quas = {
 
      @return {Number}
   */
-  diffVDOM : (comp, parent, dom, vdom, newVDOM) => {
+  diffVDOM(comp, parent, dom, vdom, newVDOM){
     let returnVal = 0;
 
     if(newVDOM === undefined){
@@ -456,7 +456,7 @@ const Quas = {
     return returnVal;
   },
 
-  eventCallback : (e, val, comp)=>{
+  eventCallback(e, val, comp){
     let deliIndex = val.indexOf(":");
     if(deliIndex > -1){
       let funcName = val.substr(0, deliIndex);
@@ -484,7 +484,7 @@ const Quas = {
 
     @return {Element|String}
   */
-  createElement : (vdom, comp, parent) => {
+  createElement(vdom, comp, parent){
     //if a text node
     if(!Array.isArray(vdom)){
       if(!parent){
@@ -621,7 +621,7 @@ const Quas = {
     });
     ```
   */
-  ajax : (req) => {
+  ajax(req){
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
@@ -736,7 +736,7 @@ const Quas = {
       .catch((err) => console.error(err));
     ```
   */
-  fetch : (url, type, req) => {
+  fetch(url, type, req){
     return fetch(url, req)
       .then((response) => {
         if (!response.ok) return new Error(response);
@@ -771,7 +771,7 @@ const Quas = {
 
     @return {Boolean}
   */
-  evalVDOM : (rootVDOM, comp) => {
+  evalVDOM(rootVDOM, comp){
     //not a root vdom
     if(Array.isArray(rootVDOM)){
 
@@ -794,7 +794,7 @@ const Quas = {
   @param {Component} component
 
   */
-  evalVDOMChild : (vdom, comp) => {
+  evalVDOMChild(vdom, comp){
     //will be true if a true conditional statement has been found in this block
     let isConditionSolved = false;
     let removedChild;
@@ -886,7 +886,7 @@ const Quas = {
 
 
   */
-  evalCustomAttr : (attr, parentVDOM, comp) => {
+  evalCustomAttr(attr, parentVDOM, comp){
     let arr = attr.key.split("-");
     let data = attr.val;
     let command = arr[0];
@@ -994,7 +994,7 @@ const Quas = {
 
     @return {Object}
   */
-  getBrowserInfo : () => {
+  getBrowserInfo(){
     var ua=navigator.userAgent,tem,M=ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
     if(/trident/i.test(M[1])){
         tem=/\brv[ :]+(\d+)/g.exec(ua) || [];
@@ -1024,7 +1024,7 @@ const Quas = {
     // => {key : "val", foo : "bar"}
     ```
   */
-  getUrlValues : () => {
+  getUrlValues(){
     let str = window.location.search;
     if(str.charAt(0)=="?"){
       str = str.substr(1, str.length-1);
@@ -1071,7 +1071,7 @@ const Quas = {
     //updated: /home?search=the%20mouse
     ```
   */
-  setUrlValues : (newVals, reload) => {
+  setUrlValues(newVals, reload){
     let data = Quas.getUrlValues();
     for(let key in newVals){
       data[key] = encodeURI(newVals[key]);
@@ -1103,11 +1103,11 @@ const Quas = {
 
   @return {Boolean}
   */
-  hasModule : (name) => {
+  hasModule(name){
     return (typeof Quas.modules[name] !== "undefined");
   },
 
-  addListener : (obj, eventName) => {
+  addListener(obj, eventName){
     if(!Quas.eventListeners[eventName]){
       Quas.eventListeners[eventName] = [obj];
     }
@@ -1116,7 +1116,7 @@ const Quas = {
     }
   },
 
-  emitEvent : (eventName, val) => {
+  emitEvent(eventName, val){
     for(let i in Quas.eventListeners[eventName]){
       Quas.eventListeners[eventName][i].onEvent(eventName, val);
     }

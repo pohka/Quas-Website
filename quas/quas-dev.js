@@ -20,7 +20,7 @@ const VDOM = {
 
     @return {String}
   */
-  tag : (vdom) => {
+  tag(vdom){
     return vdom[0];
   },
   /**
@@ -32,7 +32,7 @@ const VDOM = {
 
     @return {Object}
   */
-  attrs : (vdom) => {
+  attrs(vdom){
     return vdom[1];
   },
 
@@ -45,7 +45,7 @@ const VDOM = {
 
     @return {Array<AST|String>}
   */
-  childNodes : (vdom) => {
+  childNodes(vdom){
     return vdom[2];
   },
 
@@ -57,7 +57,7 @@ const VDOM = {
     @param {AST} vdom
     @param {AST|String} child
   */
-  addChild : (vdom, childNode) => {
+  addChild(vdom, childNode){
     vdom[2].push(childNode);
   },
   /**
@@ -69,7 +69,7 @@ const VDOM = {
 
     @return {AST|String}
   */
-  getLastChild : (vdom) => {
+  getLastChild(vdom){
     return vdom[2][vdom[2].length-1];
   },
   /**
@@ -89,7 +89,7 @@ const VDOM = {
 
     @return {AST}
   */
-  createNode : (tag, attrs, children, customAttrs) => {
+  createNode(tag, attrs, children, customAttrs){
     if(!attrs){
       attrs = {};
     }
@@ -124,7 +124,7 @@ const VDOM = {
 
     @return {Boolean}
   */
-  isTextNode : (vdom) => {
+  isTextNode(vdom){
     return !Array.isArray(vdom);
   },
 
@@ -137,11 +137,11 @@ const VDOM = {
 
   @return {Array<Object>}
   */
-  customAttrs : (vdom) => {
+  customAttrs(vdom){
     return vdom[3];
   },
 
-  addCustomAttr : (vdom, key, val) => {
+  addCustomAttr(vdom, key, val){
     let attr = {
       key : key.replace(/q-/, ""),
       val : val
@@ -164,7 +164,7 @@ const VDOM = {
 
     @return {Object}
   */
-  condition : (vdom) => {
+  condition(vdom){
     return vdom[4];
   }
 }
