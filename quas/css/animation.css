@@ -1,0 +1,9 @@
+@keyframes animIn {
+  from {
+    margin-left: -300px;
+  }
+}
+
+@keyframes animOut {
+  to {margin-left: -300px;}
+}

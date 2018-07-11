@@ -15,7 +15,9 @@ const APIBody = import "/comps/api/api.js"
 const APINav = import "/comps/api/api-nav.js"
 
 //css
+import "/quas/css/animation.css"
 import "/quas-site.css"
+
 
 
 function ready(){
