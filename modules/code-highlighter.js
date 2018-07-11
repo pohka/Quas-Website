@@ -1,77 +1,74 @@
 import "/modules/code-highlighter.css";
 
-export(
-  class CodeHighlighter{
-    static init(key){
-      this.jsKeyWords = [
-        "arguments",
-        "await",
-        "break",
-        "case",
-        "catch",
-        "class",
-        "const",
-        "continue",
-        "debugger",
-        "default",
-        "delete",
-        "do",
-        "else",
-        "enum",
-        "eval",
-        "export",
-        "extends",
-        "false",
-        "finally",
-        "for",
-        "function",
-        "if",
-        "implements",
-        "import",
-        "in",
-        "instanceof",
-        "interface",
-        "let",
-        "new",
-        "null",
-        "package",
-        "private",
-        "protected",
-        "public",
-        "return",
-        "static",
-        "super",
-        "switch",
-        "this",
-        "throw",
-        "true",
-        "try",
-        "typeof",
-        "var",
-        "void",
-        "while",
-        "with",
-        "yield"
-      ];
+const CodeHighlighter = export({
+  init(key){
+    this.jsKeyWords = [
+      "arguments",
+      "await",
+      "break",
+      "case",
+      "catch",
+      "class",
+      "const",
+      "continue",
+      "debugger",
+      "default",
+      "delete",
+      "do",
+      "else",
+      "enum",
+      "eval",
+      "export",
+      "extends",
+      "false",
+      "finally",
+      "for",
+      "function",
+      "if",
+      "implements",
+      "import",
+      "in",
+      "instanceof",
+      "interface",
+      "let",
+      "new",
+      "null",
+      "package",
+      "private",
+      "protected",
+      "public",
+      "return",
+      "static",
+      "super",
+      "switch",
+      "this",
+      "throw",
+      "true",
+      "try",
+      "typeof",
+      "var",
+      "void",
+      "while",
+      "with",
+      "yield"
+    ];
 
-      this.jsKeyWordEnd = [
-        "{",
-        "}",
-        "(",
-        ")",
-        ";",
-        ":",
-        "."
-      ];
+    this.jsKeyWordEnd = [
+      "{",
+      "}",
+      "(",
+      ")",
+      ";",
+      ":",
+      "."
+    ];
 
-      this.isHTML = false;
-
-
+    this.isHTML = false;
 
     Quas.customAttrs["code"] = this.handler;
-  }
+  },
 
-  static handler(params, data, parentVDOM, comp){
+  handler(params, data, parentVDOM, comp){
     let lastCharWasSpace = false;
     let quoteException = false;
     let word = "";
@@ -173,7 +170,6 @@ export(
             }
             //ending a keyword with a symbol
             else if(isKeyWordEnd && CodeHighlighter.jsKeyWords.indexOf(word.trim()) > -1){
-              console.log("here");
               CodeHighlighter.highlightWord(parentVDOM, word, "");
               word = char;
               lastCharWasSpace = false;
@@ -210,9 +206,9 @@ export(
         }
       }
     }
-  }
+  },
 
-  static highlightWord(parentVDOM, word, char){
+  highlightWord(parentVDOM, word, char){
     let text = word + char;
     let isChange = false;
     if(!CodeHighlighter.isHTML && text.indexOf("\<quas\>") > -1){
@@ -243,13 +239,12 @@ export(
         parentVDOM[2].push(vdom);
       }
     }
-  }
+  },
 
-  static highlightHTMLLine(parentVDOM, word){
+  highlightHTMLLine(parentVDOM, word){
     let strs = word.split(/<(.*?)>/g);
     let tags = word.match(/<(.*?)>/g);
 
-  //  console.log(strs);
     let isTag = false;
     for(let i=0; i<strs.length; i++){
 
