@@ -35,6 +35,7 @@ class Component{
     }
 
     this._state = {};
+    this.store = {};
     let comp = this;
 
     //proxy to listen to the setting of state
@@ -975,6 +976,22 @@ const Quas = {
            }
          }
        }
+    }
+
+    else if(command == "store"){
+      if(comp.store[data] === undefined){
+        comp.store[data] = "";
+      }
+
+      if(comp.onStoreInput === undefined){
+        comp.onStoreInput = function(e, key){
+          console.log(key);
+         comp.store[key] = e.target.value;
+         Quas.render(comp);
+        };
+      }
+      parentVDOM[1]["on-change-keyup"] = "onStoreInput:" + data;
+
     }
     //developer designed custom attr
     else{

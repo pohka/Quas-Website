@@ -185,6 +185,8 @@ Dev.imports = {
 
 Dev.bundle = {};
 
+Dev.customAttrsValueIsString = ["store"];
+
 /*
   ---
   Transpiles a JavaScript file with HTML syntax into thr AST syntax
@@ -622,9 +624,17 @@ Dev.stringifyVDOM = (vdom, tabs, isChild) => {
         }
 
         str +=  Dev.tabs(tabs + 2) + "{\n" +
-                Dev.tabs(tabs + 3) + "key: \"" + customAttrs[i].key + "\",\n" +
-                Dev.tabs(tabs + 3) + "val: (" + customAttrs[i].val + ")\n" +
-                Dev.tabs(tabs + 2) + "}";
+                Dev.tabs(tabs + 3) + "key: \"" + customAttrs[i].key + "\",\n";
+
+        //true if the custom attr value should be a string
+        if(Dev.customAttrsValueIsString.indexOf(customAttrs[i].key) > -1){
+          str += Dev.tabs(tabs + 3) + "val: \"" + customAttrs[i].val + "\"\n";
+        }
+        //add as javascript
+        else{
+        str += Dev.tabs(tabs + 3) + "val: (" + customAttrs[i].val + ")\n";
+        }
+        str += Dev.tabs(tabs + 2) + "}";
 
         if(i < customAttrs.length){
           str += ",\n";

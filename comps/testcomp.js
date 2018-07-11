@@ -9,6 +9,9 @@ export(
         TestComp.counter = 0;
       }
       this.state.counter = 0;
+      this.store.name = "";
+      this.store.abc = "";
+      this.store.age = 0;
     }
 
     onSubmit(e){
@@ -18,6 +21,11 @@ export(
 
     onClick(e){
       this.state.counter += 1;
+    }
+
+    onInput(e){
+
+      console.log("input:" + e.target.value);
     }
 
     render(){
@@ -42,6 +50,11 @@ export(
           <div q-else-if="false">test 3</div>
           <div q-else-if="false">test 4</div>
           <div q-else><a href="abd">test 5</a></div>
+          <br>
+          <div>
+            <input type="text" placeholder="input" q-store="abc">
+            <div>output: {this.store.abc}</div>
+          </div>
 
           <h2>appending?</h2>
           <div q-prepend="test" q-append="['world']">hello </div>
@@ -60,9 +73,9 @@ export(
           </div>
 
           <form on-submit="onSubmit">
-            <label>Name: </label><input type="text" name="fname">
+            <label>Name: </label><input type="text" name="fname" q-store="name">
 
-            <label>Age: </label><input type="number" name="age" min="0" max="100">
+            <label>Age: {this.store.age}</label><input type="number" value="0" name="age" min="0" max="100" q-store="age">
 
             <br><br>
 
