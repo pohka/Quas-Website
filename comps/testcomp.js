@@ -12,6 +12,7 @@ export(
       this.store.name = "";
       this.store.abc = "";
       this.store.age = 0;
+      this.store.car = "";
     }
 
     onSubmit(e){
@@ -90,6 +91,17 @@ export(
             Pass: <input type="password" name="pass">
 
             <br><br>
+
+            <select q-store="car" name="car">
+              <option value="" disabled selected>Select Car</option>
+              <option value="volvo">Volvo</option>
+              <option value="saab">Saab</option>
+              <option value="mercedes">Mercedes</option>
+              <option value="audi">Audi</option>
+            </select>
+            <div>{this.store.car}</div>
+
+            <br>
 
             <input type="hidden" name="custId" value="3487">
 
