@@ -16,12 +16,12 @@ export(
 
       this.anims = {
         enter : {
-          type : "zoomIn",
+          type : "pinchX",
           duration : 0.3,
-          timing : "ease-in-out"
+          timing : "ease-in-out",
         },
         exit : {
-          type : "expand",
+          type : "pinchX",
           duration : 0.2,
           direction : "reverse"
         }

@@ -1,6 +1,15 @@
-@keyframes slide {
+@keyframes slideLeft {
   from {
     transform: translate3d(-100%, 0, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes slideRight {
+  from {
+    transform: translate3d(100%, 0, 0);
   }
   to {
     transform: translate3d(0, 0, 0);
@@ -17,31 +26,36 @@
   }
 }
 
+@keyframes slideUp {
+  from {
+    transform: translate3d(0, 100%, 0);
+  }
+
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
 @keyframes pop {
   0% {
-    opacity: 0;
     transform: scale3d(0.4, 0.4, 0.4);
   }
 
   70% {
-    opacity: 1;
     transform: scale3d(1.1, 1.1, 1.1);
   }
 
   100% {
-    opacity: 1;
     transform: scale3d(1, 1, 1);
   }
 }
 
 @keyframes popSlideLeft {
   0% {
-    opacity: 0;
     transform: translate3d(-100%, 0, 0) scale3d(0.8, 0.8, 0.8);
   }
 
   40% {
-    opacity: 1;
     transform: translate3d(-20%, 0, 0) scale3d(1.1, 1.1, 1.1);
   }
 
@@ -50,19 +64,16 @@
   }
 
   100% {
-    opacity: 1;
     transform: translate3d(0, 0, 0) scale3d(1, 1, 1);
   }
 }
 
 @keyframes popSlideRight {
   0% {
-    opacity: 0;
     transform: translate3d(100%, 0, 0) scale3d(0.8, 0.8, 0.8);
   }
 
   40% {
-    opacity: 1;
     transform: translate3d(20%, 0, 0) scale3d(1.1, 1.1, 1.1);
   }
 
@@ -71,7 +82,6 @@
   }
 
   100% {
-    opacity: 1;
     transform: translate3d(0, 0, 0) scale3d(1, 1, 1);
   }
 }
@@ -165,7 +175,7 @@
     opacity: 0;
   }
 
-  20% {
+  30% {
     opacity: 0;
   }
 
@@ -223,7 +233,7 @@
   }
 }
 
-@keyframes zoomIn {
+@keyframes fadeZoomIn {
   from {
     transform: scale3d(0.3, 0.3, 0.3);
     opacity: 0;
@@ -235,7 +245,7 @@
   }
 }
 
-@keyframes zoomOut {
+@keyframes fadeZoomOut {
   from {
     transform: scale3d(1.5, 1.5, 1.5);
     opacity: 0;
@@ -247,19 +257,36 @@
   }
 }
 
+@keyframes zoomIn {
+  from {
+    transform: scale3d(0.3, 0.3, 0.3);
+  }
+
+  to {
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+@keyframes zoomOut {
+  from {
+    transform: scale3d(1.5, 1.5, 1.5);
+  }
+
+  to {
+    transform: scale3d(1, 1, 1);
+  }
+}
+
 @keyframes pinchY {
   from {
     transform: scale3d(1, 1.5, 1);
-    opacity: 0;
   }
 
   80% {
     transform: scale3d(1, 0.9, 1);
-    opacity: 1;
   }
 
   to {
-    opacity: 1;
     transform: scale3d(1, 1, 1);
   }
 }
@@ -267,16 +294,13 @@
 @keyframes pinchX {
   from {
     transform: scale3d(1.5, 1, 1);
-    opacity: 0;
   }
 
   80% {
     transform: scale3d(0.9, 1, 1);
-    opacity: 1;
   }
 
   to {
-    opacity: 1;
     transform: scale3d(1, 1, 1);
   }
 }
