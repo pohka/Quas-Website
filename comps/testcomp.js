@@ -13,6 +13,19 @@ export(
       this.store.abc = "";
       this.store.age = 0;
       this.store.car = "";
+
+      this.anims = {
+        enter : {
+          type : "zoomIn",
+          duration : 0.3,
+          timing : "ease-in-out"
+        },
+        exit : {
+          type : "expand",
+          duration : 0.2,
+          direction : "reverse"
+        }
+      }
     }
 
     onSubmit(e){

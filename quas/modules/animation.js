@@ -18,7 +18,7 @@ export({
       style += " " + anim.iterations;
     }
     if(anim.direction !== undefined){
-      style += " " + anim.iterations;
+      style += " " + anim.direction;
     }
     style += ";";
 

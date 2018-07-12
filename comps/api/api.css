@@ -10,12 +10,12 @@
   margin-top: 30px;
 }
 
-@keyframes expand {
+/* @keyframes expand {
   from {
     transform: scaleX(0.5);
     opacity: 0;
   }
-}
+} */
 
 .api-code{
   /* animation: expand .3s ease-in-out; */
@@ -121,15 +121,7 @@
   font-weight: bold;
 }
 
-@keyframes slidein {
-  from {
-    margin-left: -300px;
-  }
-}
 
-@keyframes slideout {
-  to {margin-left: -300px;}
-}
 
 
 .api-nav h3{

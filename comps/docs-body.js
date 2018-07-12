@@ -10,6 +10,19 @@ export(
       });
       this.props.content;
       this.fetchData();
+      this.anims = {
+        enter : {
+          type : "slide",
+          duration : 0.3,
+          timing : "ease-in-out",
+        },
+        exit : {
+          type : "slide",
+          duration : 0.2,
+          timing : "ease-in-out",
+          direction : "reverse"
+        }
+      }
     }
 
     onPush(route){

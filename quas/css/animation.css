@@ -1,9 +1,282 @@
-@keyframes animIn {
+@keyframes slide {
   from {
-    margin-left: 300px;
+    transform: translate3d(-100%, 0, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
   }
 }
 
-@keyframes animOut {
-  to {margin-left: 300px;}
+@keyframes slideDown {
+  from {
+    transform: translate3d(0, -100%, 0);
+  }
+
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes pop {
+  0% {
+    opacity: 0;
+    transform: scale3d(0.4, 0.4, 0.4);
+  }
+
+  70% {
+    opacity: 1;
+    transform: scale3d(1.1, 1.1, 1.1);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+@keyframes popSlideLeft {
+  0% {
+    opacity: 0;
+    transform: translate3d(-100%, 0, 0) scale3d(0.8, 0.8, 0.8);
+  }
+
+  40% {
+    opacity: 1;
+    transform: translate3d(-20%, 0, 0) scale3d(1.1, 1.1, 1.1);
+  }
+
+  60% {
+    transform: translate3d(-10%, 0, 0) scale3d(1.05, 1.05, 1.05);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale3d(1, 1, 1);
+  }
+}
+
+@keyframes popSlideRight {
+  0% {
+    opacity: 0;
+    transform: translate3d(100%, 0, 0) scale3d(0.8, 0.8, 0.8);
+  }
+
+  40% {
+    opacity: 1;
+    transform: translate3d(20%, 0, 0) scale3d(1.1, 1.1, 1.1);
+  }
+
+  60% {
+    transform: translate3d(10%, 0, 0) scale3d(1.05, 1.05, 1.05);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale3d(1, 1, 1);
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.1;
+  }
+  70% {
+    opacity: 0.3;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeSlideDown {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -100%, 0);
+  }
+  30% {
+    opacity: 0.1;
+  }
+  70% {
+    opacity: 0.3;
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 100%, 0);
+  }
+  30% {
+    opacity: 0.1;
+  }
+  70% {
+    opacity: 0.3;
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes fadeSlideLeft {
+  from {
+    opacity: 0;
+    transform: translate3d(-100%, 0, 0);
+  }
+  30% {
+    opacity: 0.1;
+  }
+  70% {
+    opacity: 0.3;
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes fadeSlideRight {
+  from {
+    opacity: 0;
+    transform: translate3d(100%, 0, 0);
+  }
+  30% {
+    opacity: 0.1;
+  }
+  70% {
+    opacity: 0.3;
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes flipX {
+  from {
+    transform: perspective(400px) rotate3d(1, 0, 0, 90deg);
+    opacity: 0;
+  }
+
+  20% {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+    transform: perspective(400px);
+  }
+}
+
+@keyframes flipY {
+  from {
+    transform: perspective(400px) rotate3d(0, 1, 0, 90deg);
+    opacity: 0;
+  }
+
+  20% {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+    transform: perspective(400px) rotate3d(0, 1, 0, 0deg);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate3d(0, 0, 1, -90deg);
+    opacity: 0;
+  }
+
+  20% {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+    transform: rotate3d(0, 0, 1, 0deg);
+  }
+}
+
+@keyframes spinAnti {
+  from {
+    transform: rotate3d(0, 0, 1, 90deg);
+    opacity: 0;
+  }
+
+  20% {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+    transform: rotate3d(0, 0, 1, 0deg);
+  }
+}
+
+@keyframes zoomIn {
+  from {
+    transform: scale3d(0.3, 0.3, 0.3);
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+@keyframes zoomOut {
+  from {
+    transform: scale3d(1.5, 1.5, 1.5);
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+@keyframes pinchY {
+  from {
+    transform: scale3d(1, 1.5, 1);
+    opacity: 0;
+  }
+
+  80% {
+    transform: scale3d(1, 0.9, 1);
+    opacity: 1;
+  }
+
+  to {
+    opacity: 1;
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+@keyframes pinchX {
+  from {
+    transform: scale3d(1.5, 1, 1);
+    opacity: 0;
+  }
+
+  80% {
+    transform: scale3d(0.9, 1, 1);
+    opacity: 1;
+  }
+
+  to {
+    opacity: 1;
+    transform: scale3d(1, 1, 1);
+  }
 }
