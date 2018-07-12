@@ -185,7 +185,7 @@ th{
   background: var(--hover);
   box-shadow:0 0 4px var(--shadow);
   height: 100%;
-  animation: slidein .2s ease-in-out;
+  /* animation: slidein .2s ease-in-out; */
 }
 
 .docs-nav-list{
@@ -218,7 +218,7 @@ th{
 .docs-content{
 	padding: 20px;
 	width: 800px;
-	/* animation: animIn 2s ease-in; */
+	/* animation: animIn .2s ease-in; */
 	line-height: 1.6;
 }
 

@@ -1,7 +1,9 @@
 //modules
 import Quas.Router
 import Quas.Async
+import Quas.Animation
 import "/modules/code-highlighter.js"
+
 
 //components
 const Navbar = import "/comps/navbar.js"
@@ -15,7 +17,6 @@ const APIBody = import "/comps/api/api.js"
 const APINav = import "/comps/api/api-nav.js"
 
 //css
-import "/quas/css/animation.css"
 import "/quas-site.css"
 
 

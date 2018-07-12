@@ -36,6 +36,7 @@ class Component{
 
     this._state = {};
     this.store = {};
+    this.anim = {};
     let comp = this;
 
     //proxy to listen to the setting of state
@@ -147,11 +148,40 @@ class Component{
   */
   unmount(){
     if(this.dom){
-      this.dom.remove();
-      this.dom = undefined;
+      //animation exit
+      if(Quas.hasModule("Animation") && this.anim.exit !== undefined){
+        let style = "animation:" + this.anim.exit.type + " " + this.anim.exit.duration + "s " + this.anim.exit.effect + ";";
+        this.dom.setAttribute("style", style);
+        setTimeout(()=>{
+          this.dom.remove();
+          this.dom = undefined;
+          Quas.emitEvent("unmount", this);
+        }, this.anim.exit.duration*1000);
+      }
+      //removing dom with no animation
+      else{
+        this.dom.remove();
+        this.dom = undefined;
+        Quas.emitEvent("unmount", this);
+      }
     }
-    this.vdom = undefined;
-    Quas.emitEvent("unmount", this);
+    //already removed dom
+    else{
+      this.vdom = undefined;
+      Quas.emitEvent("unmount", this);
+    }
+  }
+
+  mount(parent){
+    this.dom = Quas.createElement(this.vdom, this);
+    if(this.dom){
+      //has enter animation
+      if(Quas.hasModule("Animation") && this.anim.enter !== undefined){
+        Animation.play(this, "enter");
+      }
+
+      parent.appendChild(this.dom);
+    }
   }
 }
 
@@ -215,10 +245,7 @@ const Quas = {
       let shouldUse = Quas.evalVDOM(rawVDOM, comp);
       if(shouldUse){
         comp.vdom = rawVDOM;
-        comp.dom = Quas.createElement(comp.vdom, comp);
-        if(comp.dom){
-          parent.appendChild(comp.dom);
-        }
+        comp.mount(parent);
       }
     }
 

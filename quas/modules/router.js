@@ -589,26 +589,62 @@ export({
        }
      }
 
-     //unmount the old components
-     for(let i=0; i<Router.comps.length; i++){
-       Router.comps[i].unmount();
-     }
+     if(Quas.hasModule("Animation")){
+       let maxAnimDuration = 0;
+       //unmount the old components
+       for(let i=0; i<Router.comps.length; i++){
+         if(Router.comps[i].anim !== undefined && Router.comps[i].anim.exit !== undefined){
+           let duration = Router.comps[i].anim.exit.duration;
+           if(duration > maxAnimDuration){
+             maxAnimDuration = duration;
+           }
+         }
+         
+         Router.comps[i].unmount();
+       }
+       console.log("max duration:", maxAnimDuration);
 
-     //render the new components
-     for(let i=0; i<newComps.length; i++){
-       Quas.render(newComps[i], "#app");
-     }
+       setTimeout(()=>{
+         //render the new components
+         for(let i=0; i<newComps.length; i++){
+           Quas.render(newComps[i], "#app");
+         }
 
-     //set the current components
-     Router.comps = newComps;
-     for(let i=0; i<reuseComps.length; i++){
-       Router.comps.push(reuseComps[i]);
-     }
+         //set the current components
+         Router.comps = newComps;
+         for(let i=0; i<reuseComps.length; i++){
+           Router.comps.push(reuseComps[i]);
+         }
 
-     for(let r=0; r<Router.comps.length; r++){
-       if(typeof Router.comps[r].onAfterPush === "function"){
-         Router.comps[r].onAfterPush();
+         for(let r=0; r<Router.comps.length; r++){
+           if(typeof Router.comps[r].onAfterPush === "function"){
+             Router.comps[r].onAfterPush();
+           }
+         }
+       }, maxAnimDuration*1000);
+     }
+     else{
+       //unmount the old components
+       for(let i=0; i<Router.comps.length; i++){
+         Router.comps[i].unmount();
+       }
+
+       //render the new components
+       for(let i=0; i<newComps.length; i++){
+         Quas.render(newComps[i], "#app");
+       }
+
+       //set the current components
+       Router.comps = newComps;
+       for(let i=0; i<reuseComps.length; i++){
+         Router.comps.push(reuseComps[i]);
+       }
+
+       for(let r=0; r<Router.comps.length; r++){
+         if(typeof Router.comps[r].onAfterPush === "function"){
+           Router.comps[r].onAfterPush();
+         }
        }
      }
-  }
+   }
 });
