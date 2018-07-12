@@ -2,7 +2,6 @@
 import Quas.Router
 import Quas.Async
 import Quas.Animation
-import Quas.Structs
 import "/modules/code-highlighter.js"
 
 
@@ -21,10 +20,14 @@ const APINav = import "/comps/api/api-nav.js"
 import "/pre.css"
 import "/quas-site.css"
 
+//testing
+import Quas.Satructs
+import Quas.UrlParams
+
 
 
 function ready(){
-  let AIState = Structs.Enum(["attack", "patrol", "flee"]);
+  let AIState = Satructs.Enum(["attack", "patrol", "flee"]);
   let curState = AIState.flee;
   console.log("curState", curState);
 
