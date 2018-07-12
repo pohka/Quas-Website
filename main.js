@@ -2,6 +2,7 @@
 import Quas.Router
 import Quas.Async
 import Quas.Animation
+import Quas.Structs
 import "/modules/code-highlighter.js"
 
 
@@ -23,6 +24,10 @@ import "/quas-site.css"
 
 
 function ready(){
+  let AIState = Structs.Enum(["attack", "patrol", "flee"]);
+  let curState = AIState.flee;
+  console.log("curState", curState);
+
   //replacing the default code markdown rule
   Markdown.removeRule("code", "block");
   Markdown.addRule("block", {
