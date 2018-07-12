@@ -14,8 +14,6 @@ export(
       this.store.age = 0;
       this.store.car = "";
 
-      let enterAnim = Animation.build("slide", "left", false, true);
-
       this.anims = {
         enter : {
           type : "shiftLeft",
@@ -26,8 +24,7 @@ export(
         exit : {
           type : "shiftRight",
           duration : 0.2,
-          useFade : true,
-          out : true
+          useFade : true
         }
       }
     }

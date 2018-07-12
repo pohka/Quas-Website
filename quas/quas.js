@@ -150,12 +150,20 @@ class Component{
     if(this.dom){
       //animation exit
       if(Quas.hasModule("Animation") && this.anims.exit !== undefined){
+        if(this.anims.exit.out === undefined){
+          this.anims.exit.out = true;
+        }
+
         Animation.play(this, "exit");
 
         let totalTime = this.anims.exit.duration;
         if(this.anims.exit.delay !== undefined){
           totalTime += this.anims.exit.delay;
         }
+        //remove 30ms before the animation ends
+        //this is to prevent flashing bug
+        totalTime -= 0.03;
+
         setTimeout(()=>{
           this.dom.remove();
           this.dom = undefined;

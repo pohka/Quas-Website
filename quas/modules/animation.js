@@ -30,8 +30,6 @@ export({
 
     style += ";";
 
-
-
     //remove once the animation is finished
     setTimeout(function(){
       comp.dom.setAttribute("style", style);
@@ -41,9 +39,5 @@ export({
         }
       }, anim.duration * 1000);
     }, delay*1000);
-  },
-
-  build(name, direction, useFade, isEnter){
-
   }
 });
