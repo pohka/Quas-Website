@@ -10,7 +10,7 @@ export(
         enter : {
           type : "slide",
           duration : 0.3,
-          timing : "ease-out"
+          timing : "ease-out",
         },
         exit : {
           type : "slide",

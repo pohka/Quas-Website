@@ -14,16 +14,20 @@ export(
       this.store.age = 0;
       this.store.car = "";
 
+      let enterAnim = Animation.build("slide", "left", false, true);
+
       this.anims = {
         enter : {
-          type : "pinchX",
+          type : "shiftLeft",
           duration : 0.3,
           timing : "ease-in-out",
+          useFade : true
         },
         exit : {
-          type : "pinchX",
+          type : "shiftRight",
           duration : 0.2,
-          direction : "reverse"
+          useFade : true,
+          out : true
         }
       }
     }
@@ -57,7 +61,7 @@ export(
       let test = ['div',{},['test'],[]];
 
       return (
-        #<div>
+        #<div id="testcomp">
           <div q-if="true">test 1</div>
           <div q-else="true">test 2</div>
           <div q-if="false">test a</div>

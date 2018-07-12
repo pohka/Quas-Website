@@ -50,7 +50,7 @@
   }
 }
 
-@keyframes popSlideLeft {
+@keyframes shiftLeft {
   0% {
     transform: translate3d(-100%, 0, 0) scale3d(0.8, 0.8, 0.8);
   }
@@ -68,7 +68,7 @@
   }
 }
 
-@keyframes popSlideRight {
+@keyframes shiftRight {
   0% {
     transform: translate3d(100%, 0, 0) scale3d(0.8, 0.8, 0.8);
   }
@@ -86,7 +86,7 @@
   }
 }
 
-@keyframes fade {
+@keyframes fadeIn {
   from {
     opacity: 0;
   }
@@ -101,73 +101,21 @@
   }
 }
 
-@keyframes fadeSlideDown {
+@keyframes fadeOut {
   from {
-    opacity: 0;
-    transform: translate3d(0, -100%, 0);
+    opacity: 1;
   }
   30% {
-    opacity: 0.1;
+    opacity: 0.9;
   }
   70% {
-    opacity: 0.3;
+    opacity: 0.1;
   }
   to {
-    opacity: 1;
-    transform: translate3d(0, 0, 0);
+    opacity: 0;
   }
 }
 
-@keyframes fadeSlideUp {
-  from {
-    opacity: 0;
-    transform: translate3d(0, 100%, 0);
-  }
-  30% {
-    opacity: 0.1;
-  }
-  70% {
-    opacity: 0.3;
-  }
-  to {
-    opacity: 1;
-    transform: translate3d(0, 0, 0);
-  }
-}
-
-@keyframes fadeSlideLeft {
-  from {
-    opacity: 0;
-    transform: translate3d(-100%, 0, 0);
-  }
-  30% {
-    opacity: 0.1;
-  }
-  70% {
-    opacity: 0.3;
-  }
-  to {
-    opacity: 1;
-    transform: translate3d(0, 0, 0);
-  }
-}
-
-@keyframes fadeSlideRight {
-  from {
-    opacity: 0;
-    transform: translate3d(100%, 0, 0);
-  }
-  30% {
-    opacity: 0.1;
-  }
-  70% {
-    opacity: 0.3;
-  }
-  to {
-    opacity: 1;
-    transform: translate3d(0, 0, 0);
-  }
-}
 
 @keyframes flipX {
   from {
@@ -201,7 +149,7 @@
   }
 }
 
-@keyframes spin {
+@keyframes spinRight {
   from {
     transform: rotate3d(0, 0, 1, -90deg);
     opacity: 0;
@@ -217,7 +165,7 @@
   }
 }
 
-@keyframes spinAnti {
+@keyframes spinLeft {
   from {
     transform: rotate3d(0, 0, 1, 90deg);
     opacity: 0;
@@ -230,30 +178,6 @@
   to {
     opacity: 1;
     transform: rotate3d(0, 0, 1, 0deg);
-  }
-}
-
-@keyframes fadeZoomIn {
-  from {
-    transform: scale3d(0.3, 0.3, 0.3);
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-    transform: scale3d(1, 1, 1);
-  }
-}
-
-@keyframes fadeZoomOut {
-  from {
-    transform: scale3d(1.5, 1.5, 1.5);
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-    transform: scale3d(1, 1, 1);
   }
 }
 

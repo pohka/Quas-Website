@@ -14,12 +14,20 @@ export({
     if(anim.delay !== undefined){
       delay = anim.delay;
     }
-    if(anim.iterations !== undefined){
-      style += " " + anim.iterations;
+    // animation out
+    if(anim.out){
+      style += " reverse";
+      if(anim.useFade){
+        style += ",fadeOut " + anim.duration + "s";
+      }
     }
-    if(anim.direction !== undefined){
-      style += " " + anim.direction;
+    //animation in
+    else{
+      if(anim.useFade){
+        style += ",fadeIn " + anim.duration + "s";
+      }
     }
+
     style += ";";
 
 
@@ -33,5 +41,9 @@ export({
         }
       }, anim.duration * 1000);
     }, delay*1000);
+  },
+
+  build(name, direction, useFade, isEnter){
+
   }
 });
