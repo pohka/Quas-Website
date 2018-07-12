@@ -8,15 +8,15 @@ export(
       DocsNav.path = route.fullpath;
       this.anims = {
         enter : {
-          type : "slide",
+          type : "slideLeft",
           duration : 0.3,
           timing : "ease-out",
         },
         exit : {
-          type : "slide",
+          type : "slideLeft",
           duration : 0.15,
-          timing : "ease-in-out",
-          direction : "reverse"
+          timing : "ease-out",
+          fade : true
         }
       }
     }

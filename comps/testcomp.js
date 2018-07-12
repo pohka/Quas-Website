@@ -19,12 +19,12 @@ export(
           type : "shiftLeft",
           duration : 0.3,
           timing : "ease-in-out",
-          useFade : true
+          fFade : true
         },
         exit : {
           type : "shiftRight",
           duration : 0.2,
-          useFade : true
+          fade : true
         }
       }
     }

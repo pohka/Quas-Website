@@ -17,13 +17,13 @@ export({
     // animation out
     if(anim.out){
       style += " reverse";
-      if(anim.useFade){
+      if(anim.fade){
         style += ",fadeOut " + anim.duration + "s";
       }
     }
     //animation in
     else{
-      if(anim.useFade){
+      if(anim.fade){
         style += ",fadeIn " + anim.duration + "s";
       }
     }

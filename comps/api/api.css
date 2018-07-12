@@ -10,15 +10,10 @@
   margin-top: 30px;
 }
 
-/* @keyframes expand {
-  from {
-    transform: scaleX(0.5);
-    opacity: 0;
-  }
-} */
 
 .api-code{
-  /* animation: expand .3s ease-in-out; */
+  height:auto;
+  animation: smallZoomIn .3s;
 }
 
 .show-code{

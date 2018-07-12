@@ -6,6 +6,19 @@ export(
         super();
         this.createTemplates();
         this.observe("isAPILoaded");
+        this.anims = {
+          enter : {
+            type : "slideLeft",
+            duration : 0.3,
+            timing : "ease-out",
+          },
+          exit : {
+            type : "slideLeft",
+            duration : 0.15,
+            timing : "ease-out",
+            fade : true
+          }
+        }
     }
 
     createTemplates(){

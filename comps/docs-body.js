@@ -12,15 +12,16 @@ export(
       this.fetchData();
       this.anims = {
         enter : {
-          type : "slide",
+          type : "smallPop",
           duration : 0.3,
-          timing : "ease-in-out",
+          timing : "ease-in",
+          fade : true
         },
         exit : {
-          type : "slide",
+          type : "zoomIn",
           duration : 0.2,
           timing : "ease-in-out",
-          direction : "reverse"
+          fade: true
         }
       }
     }

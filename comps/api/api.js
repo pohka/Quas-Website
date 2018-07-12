@@ -25,6 +25,20 @@ export(
       }
 
       this.observe("isAPILoaded");
+      this.anims = {
+        enter : {
+          type : "smallPop",
+          duration : 0.3,
+          timing : "ease-in",
+          fade : true
+        },
+        exit : {
+          type : "zoomIn",
+          duration : 0.2,
+          timing : "ease-in-out",
+          fade: true
+        }
+      }
     }
 
     initTemplates(){

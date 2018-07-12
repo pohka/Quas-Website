@@ -186,6 +186,7 @@ th{
   background: var(--hover);
   box-shadow:0 0 4px var(--shadow);
   height: 100%;
+	z-index: 10;
   /* animation: slidein .2s ease-in-out; */
 }
 

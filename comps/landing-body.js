@@ -4,6 +4,15 @@ export(
   class LandingBody extends Component{
     constructor(){
       super();
+
+      this.anims = {
+        enter : {
+          type : "smallZoomIn",
+          duration : 0.2,
+          timing : "ease-in-out",
+        }
+      }
+
       this.props.cards = [
         {
           img : "small-rocket-ship-silhouette.png",
