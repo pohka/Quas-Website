@@ -6,16 +6,16 @@ export(
       super(props);
       let route = Router.getRouteInfoByID("docs");
       DocsNav.path = route.fullpath;
-      this.anim = {
+      this.anims = {
         enter : {
           type : "slidein",
           duration : 0.3,
-          effect : "ease-in-out"
+          timing : "ease-out"
         },
         exit : {
           type : "slideout",
           duration : 0.15,
-          effect : "ease-in-out"
+          timing : "ease-in-out"
         }
       }
     }

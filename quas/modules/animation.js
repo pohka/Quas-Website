@@ -3,13 +3,35 @@ import "/quas/css/animation.css"
 export({
   play(comp, animName){
     //set the style of the animation
-    let anim = comp.anim[animName];
-    let style = "animation:" + anim.type + " " + anim.duration + "s " + anim.effect + ";";
-    comp.dom.setAttribute("style", style);
+
+    //animation: type duration timing delay iterations direction;
+    let anim = comp.anims[animName];
+    let delay = 0;
+    let style = "animation:" + anim.type + " " + anim.duration + "s";
+    if(anim.timing !== undefined){
+      style += " " + anim.timing;
+    }
+    if(anim.delay !== undefined){
+      delay = anim.delay;
+    }
+    if(anim.iterations !== undefined){
+      style += " " + anim.iterations;
+    }
+    if(anim.direction !== undefined){
+      style += " " + anim.iterations;
+    }
+    style += ";";
+
+
 
     //remove once the animation is finished
-    setTimeout(()=>{
-      comp.dom.setAttribute("style", "");
-    }, anim.duration * 1000);
+    setTimeout(function(){
+      comp.dom.setAttribute("style", style);
+      setTimeout(function(){
+        if(comp.dom){
+          comp.dom.setAttribute("style", "");
+        }
+      }, anim.duration * 1000);
+    }, delay*1000);
   }
 });

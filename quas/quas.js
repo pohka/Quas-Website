@@ -36,7 +36,7 @@ class Component{
 
     this._state = {};
     this.store = {};
-    this.anim = {};
+    this.anims = {};
     let comp = this;
 
     //proxy to listen to the setting of state
@@ -149,14 +149,18 @@ class Component{
   unmount(){
     if(this.dom){
       //animation exit
-      if(Quas.hasModule("Animation") && this.anim.exit !== undefined){
-        let style = "animation:" + this.anim.exit.type + " " + this.anim.exit.duration + "s " + this.anim.exit.effect + ";";
-        this.dom.setAttribute("style", style);
+      if(Quas.hasModule("Animation") && this.anims.exit !== undefined){
+        Animation.play(this, "exit");
+
+        let totalTime = this.anims.exit.duration;
+        if(this.anims.exit.delay !== undefined){
+          totalTime += this.anims.exit.delay;
+        }
         setTimeout(()=>{
           this.dom.remove();
           this.dom = undefined;
           Quas.emitEvent("unmount", this);
-        }, this.anim.exit.duration*1000);
+        }, totalTime*1000);
       }
       //removing dom with no animation
       else{
@@ -176,7 +180,7 @@ class Component{
     this.dom = Quas.createElement(this.vdom, this);
     if(this.dom){
       //has enter animation
-      if(Quas.hasModule("Animation") && this.anim.enter !== undefined){
+      if(Quas.hasModule("Animation") && this.anims.enter !== undefined){
         Animation.play(this, "enter");
       }
 

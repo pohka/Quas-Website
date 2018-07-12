@@ -593,13 +593,16 @@ export({
        let maxAnimDuration = 0;
        //unmount the old components
        for(let i=0; i<Router.comps.length; i++){
-         if(Router.comps[i].anim !== undefined && Router.comps[i].anim.exit !== undefined){
-           let duration = Router.comps[i].anim.exit.duration;
+         if(Router.comps[i].anims !== undefined && Router.comps[i].anims.exit !== undefined){
+           let duration = Router.comps[i].anims.exit.duration;
+           if(Router.comps[i].anims.exit.delay !== undefined){
+             duration += Router.comps[i].anims.exit.delay;
+           }
            if(duration > maxAnimDuration){
              maxAnimDuration = duration;
            }
          }
-         
+
          Router.comps[i].unmount();
        }
        console.log("max duration:", maxAnimDuration);
