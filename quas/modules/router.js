@@ -608,45 +608,35 @@ export({
        console.log("max duration:", maxAnimDuration);
 
        setTimeout(()=>{
-         //render the new components
-         for(let i=0; i<newComps.length; i++){
-           Quas.render(newComps[i], "#app");
-         }
-
-         //set the current components
-         Router.comps = newComps;
-         for(let i=0; i<reuseComps.length; i++){
-           Router.comps.push(reuseComps[i]);
-         }
-
-         for(let r=0; r<Router.comps.length; r++){
-           if(typeof Router.comps[r].onAfterPush === "function"){
-             Router.comps[r].onAfterPush();
-           }
-         }
+         this.pushEnd(newComps, reuseComps);
        }, maxAnimDuration*1000);
      }
      else{
-       //unmount the old components
-       for(let i=0; i<Router.comps.length; i++){
-         Router.comps[i].unmount();
-       }
+       this.pushEnd(newComps, reuseComps);
+     }
+   },
 
-       //render the new components
-       for(let i=0; i<newComps.length; i++){
-         Quas.render(newComps[i], "#app");
-       }
+   //end of the push function after the animation has finished
+   pushEnd(newComps, reuseComps){
+     //unmount the old components
+     for(let i=0; i<Router.comps.length; i++){
+       Router.comps[i].unmount();
+     }
 
-       //set the current components
-       Router.comps = newComps;
-       for(let i=0; i<reuseComps.length; i++){
-         Router.comps.push(reuseComps[i]);
-       }
+     //render the new components
+     for(let i=0; i<newComps.length; i++){
+       Quas.render(newComps[i], "#app");
+     }
 
-       for(let r=0; r<Router.comps.length; r++){
-         if(typeof Router.comps[r].onAfterPush === "function"){
-           Router.comps[r].onAfterPush();
-         }
+     //set the current components
+     Router.comps = newComps;
+     for(let i=0; i<reuseComps.length; i++){
+       Router.comps.push(reuseComps[i]);
+     }
+
+     for(let r=0; r<Router.comps.length; r++){
+       if(typeof Router.comps[r].onAfterPush === "function"){
+         Router.comps[r].onAfterPush();
        }
      }
    }
