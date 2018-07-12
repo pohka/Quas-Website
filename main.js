@@ -21,15 +21,15 @@ import "/pre.css"
 import "/quas-site.css"
 
 //testing
-import Quas.Satructs
+import Quas.Structs
 import Quas.UrlParams
 
 
 
 function ready(){
-  let AIState = Satructs.Enum(["attack", "patrol", "flee"]);
+  let AIState = Structs.Enum(["attack", "patrol", "flee"]);
   let curState = AIState.flee;
-  console.log("curState", curState);
+  console.log("curState", curState, AIState.flee == curState);
 
   //replacing the default code markdown rule
   Markdown.removeRule("code", "block");
