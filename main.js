@@ -2,6 +2,7 @@
 import Quas.Router
 import Quas.Async
 import Quas.Animation
+import Quas.DateHelper
 import "/modules/code-highlighter.js"
 
 
@@ -30,6 +31,13 @@ function ready(){
   let AIState = Structs.Enum(["attack", "patrol", "flee"]);
   let curState = AIState.flee;
   console.log("curState", curState, AIState.flee == curState);
+
+  let test = new Date();
+  console.log("test date:", test);
+  test.sub({ year : 0, day : 25, second: 5});
+  console.log("test date:", test);
+  console.log("from now: " + test.fromNowFull("second", true));
+  console.log("10s in ms:", Date.toMilliseconds({month: 1, day: 3}));
 
   //replacing the default code markdown rule
   Markdown.removeRule("code", "block");
