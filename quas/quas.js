@@ -524,7 +524,7 @@ const Quas = {
 
     @return {Element|String}
   */
-  createElement(vdom, comp, parent){
+  createElement(vdom, comp, parent, ns){
     //if a text node
     if(!Array.isArray(vdom)){
       if(!parent){
@@ -541,7 +541,20 @@ const Quas = {
     let children = vdom[2];
     let root, action;
 
-    let el = document.createElement(tag)
+    //dealing with namespaces for svg and html tags
+    if(!ns){
+      ns = Quas.namespace[tag];
+    }
+    let isInNS = (ns !== undefined);
+
+    let el
+    if(!isInNS){
+      el = document.createElement(tag);
+    }
+    else{
+      el = document.createElementNS(ns, tag);
+    }
+
 
     //attributes
     for(let a in attrs){
@@ -564,7 +577,12 @@ const Quas = {
       }
       //basic attr
       else{
-        el.setAttribute(a, attrs[a]);
+        if(!isInNS){
+          el.setAttribute(a, attrs[a]);
+        }
+        else{
+          el.setAttributeNS(null, a, attrs[a]);
+        }
       }
     }
 
@@ -588,7 +606,7 @@ const Quas = {
     //children
     if(children !== undefined){
       for(let i=0; i<children.length; i++){
-        let child = Quas.createElement(children[i], comp, el);
+        let child = Quas.createElement(children[i], comp, el, ns);
         if(child !== undefined){
           el.appendChild(child);
         }
@@ -1103,6 +1121,10 @@ const Quas = {
 Quas.customAttrs = {}; //custom attributes
 Quas.modules = {}; //container for all the modules
 Quas.eventListeners = {}; //a collection of objects listening to events
+Quas.namespace = {
+  svg : "http://www.w3.org/2000/svg",
+  html : "http://www.w3.org/1999/xhtml"
+};
 
 
 //calls the ready function once the document is loaded

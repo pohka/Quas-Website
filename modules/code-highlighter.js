@@ -111,7 +111,8 @@ const CodeHighlighter = export({
               text = word;
               word = char;
             }
-            parentVDOM[2].push(["span", {"class":"code-comment"}, [text], []]);
+            parentVDOM[2].push(#<span .code-comment>{text}</span>);
+
             isComment = false;
             isMultilineComment = false;
 
@@ -150,7 +151,7 @@ const CodeHighlighter = export({
           else if(isQuote && quoteOpen && char == quoteType){
             word += char;
             quoteOpen = false;
-            parentVDOM[2].push(["span", {"class":"code-quote"}, [word], []]);
+            parentVDOM[2].push(#<span .code-quote>{word}</span>);
 
             quoteException = true;
 
@@ -211,7 +212,7 @@ const CodeHighlighter = export({
   highlightWord(parentVDOM, word, char){
     let text = word + char;
     let isChange = false;
-    if(!CodeHighlighter.isHTML && text.indexOf("\<quas\>") > -1){
+    if(!CodeHighlighter.isHTML && text.indexOf(/#\</) > -1){
       CodeHighlighter.isHTML = true;
       isChange = true;
     }
@@ -225,9 +226,9 @@ const CodeHighlighter = export({
       let after = ">" + arr[1];
 
       //html tag
-      parentVDOM[2].push(["span", {}, [pre], []]);
-      parentVDOM[2].push(["span", {"class":"code-htmltag"}, [mid], []]);
-      parentVDOM[2].push(["span", {}, [after], []]);
+      parentVDOM[2].push(#<span>{pre}</span>);
+      parentVDOM[2].push(#<span .code-htmltag>{mid}</span>);
+      parentVDOM[2].push(#<span>{after}</span>);
     }
     else{
       //javascript
@@ -291,9 +292,9 @@ const CodeHighlighter = export({
       isTag = !isTag;
     }
 
-
-    if(word.indexOf("\</quas\>") > -1){
-      CodeHighlighter.isHTML = false;
-    }
+    //need to detect the next of html block
+    // if(word.indexOf("\</quas\>") > -1){
+    //   CodeHighlighter.isHTML = false;
+    // }
   }
 });

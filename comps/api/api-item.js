@@ -3,7 +3,7 @@ export((props)=>{
   let returnTypes = props.return.join(" | ");
 
   let paramNames = [];
-  let tableVDOM;
+  let paramTable;
   if(props.params.length > 0){
 
     let hasOptional = false;
@@ -33,7 +33,7 @@ export((props)=>{
       }
       return "No";
     });
-    tableVDOM = table.gen();
+    paramTable = table.gen();
 
       for(let a=0; a<props.params.length; a++){
         paramNames.push(props.params[a].name);
@@ -57,9 +57,7 @@ export((props)=>{
           <p>{props.desc}</p>
         </pre>
         //parameter table
-        //<div q-if="tableVDOM !== undefined">{tableVDOM}</div>
-        <table q-if="tableVDOM" q-append="tableVDOM"></table>
-
+        <table q-if="paramTable" q-append="paramTable"></table>
 
         //return value
         <div q-if="returnTypes.length > 0" class="api-content-item-return">
