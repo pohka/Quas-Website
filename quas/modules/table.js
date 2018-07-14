@@ -71,6 +71,20 @@ export(
       this.rowData = [];
     }
 
+    //accending by default
+    sortBy(columnKey, isDecending){
+      if(isDecending){
+        this.rowData = this.rowData.sort((b, a) => {
+          return a[columnKey].localeCompare(b[columnKey]);
+        });
+      }
+      else{
+        this.rowData = this.rowData.sort((a, b) => {
+          return a[columnKey].localeCompare(b[columnKey]);
+        });
+      }
+    }
+
     //generate the vdoms for the table heading and body
     gen(){
       let th = [];

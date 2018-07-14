@@ -3,7 +3,6 @@ export((props)=>{
   let returnTypes = props.return.join(" | ");
 
   let paramNames = [];
-
   let tableVDOM;
   if(props.params.length > 0){
 
@@ -14,36 +13,33 @@ export((props)=>{
       }
     }
 
-    let headings = ["Parameter", "Type", "Description"];
-    if(hasOptional){
-      headings.push("Optional");
+    let table = new Table({
+      name : "Parameter",
+      types : "Type",
+      desc : "Description",
+      optional : "Optional"
+    });
+
+    if(!hasOptional){
+      table.setColumnDisabled("optional", true);
     }
+    table.addRows(props.params);
+    table.addRowOperation("types", (data) => {
+      return data.join(" | ");
+    });
+    table.addRowOperation("optional", (data) => {
+      if(data){
+        return "Yes";
+      }
+      return "No";
+    });
+    tableVDOM = table.gen();
 
-    let tableRows = [];
-    for(let a=0; a<props.params.length; a++){
-      paramNames.push(props.params[a].name);
+      for(let a=0; a<props.params.length; a++){
+        paramNames.push(props.params[a].name);
+      }
 
-        let rowItems = [
-          props.params[a].name,
-          props.params[a].types.join(' | '),
-          props.params[a].desc
-        ];
 
-        if(hasOptional){
-          let optionStr = "No";
-          if(props.params[a].optional){
-            optionStr = "Yes";
-          }
-          rowItems.push(optionStr);
-        }
-        tableRows.push(rowItems);
-    }
-
-    tableVDOM = (
-      #<table q-for-tr-td="tableRows">
-        <tr q-for-th="headings"></tr>
-      </table>
-    );
   }
 
   return (
@@ -61,7 +57,9 @@ export((props)=>{
           <p>{props.desc}</p>
         </pre>
         //parameter table
-        <div q-if="tableVDOM !== undefined">{tableVDOM}</div>
+        //<div q-if="tableVDOM !== undefined">{tableVDOM}</div>
+        <table q-if="tableVDOM" q-append="tableVDOM"></table>
+
 
         //return value
         <div q-if="returnTypes.length > 0" class="api-content-item-return">
