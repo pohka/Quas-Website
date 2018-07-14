@@ -340,7 +340,7 @@ const Quas = {
 
      @return {Number}
   */
-  diffVDOM(comp, parent, dom, vdom, newVDOM){
+  diffVDOM(comp, parent, dom, vdom, newVDOM, ns){
     let returnVal = 0;
 
     if(newVDOM === undefined){
@@ -363,17 +363,21 @@ const Quas = {
       return returnVal;
     }
 
-    //old vdom is text node and new vdom is not a text node
-    else if(vdom !== undefined && vdom.constructor == String && newVDOM.constructor != String){
-      let newDOM = Quas.createElement(newVDOM, comp);
+    if(!ns){
+      ns = Quas.namespace[newVDOM[0]];
+    }
+    let isInNS = (ns !== undefined);
 
+    //old vdom is text node and new vdom is not a text node
+    if(vdom !== undefined && vdom.constructor == String && newVDOM.constructor != String){
+      let newDOM = Quas.createElement(newVDOM, comp, undefined, ns);
       parent.replaceChild(newDOM, dom);
       return returnVal;
     }
 
     //old vdom doesn't have this new dom element
     if(vdom === undefined){
-      let newDOM = Quas.createElement(newVDOM, comp);
+      let newDOM = Quas.createElement(newVDOM, comp, undefined, ns);
       parent.appendChild(newDOM);
       returnVal = 1;
       return returnVal;
@@ -381,7 +385,7 @@ const Quas = {
     else{
       //diff tags
       if(vdom[0] != newVDOM[0]){
-        let newDOM = Quas.createElement(newVDOM, comp);
+        let newDOM = Quas.createElement(newVDOM, comp, undefined, ns);
         if(!dom){
           parent.appendChild(newDOM);
           returnVal = 1;
@@ -490,7 +494,7 @@ const Quas = {
           nextDOM = dom.childNodes[c+change];
         }
 
-        change += Quas.diffVDOM(comp, dom, nextDOM, nextOldChild, nextNewChild);
+        change += Quas.diffVDOM(comp, dom, nextDOM, nextOldChild, nextNewChild, ns);
       }
     }
     return returnVal;
