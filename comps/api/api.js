@@ -1,6 +1,7 @@
 import Quas.Router
 import Quas.Scroll
 import Quas.Store
+import Quas.Table
 
 //templates
 const APIItem = import "/comps/api/api-item.js"
@@ -39,6 +40,17 @@ export(
           fade: true
         }
       }
+
+      this.props.propTable = new Table({
+        name : "Name",
+        types : "Type",
+        desc : "Description"
+      });
+      this.props.propTable.addRowOperation("types", (data)=>{
+        return data.join(" | ");
+      });
+    //  this.props.propTable.setColumnDisabled("desc", true);
+
     }
 
     initTemplates(){
@@ -114,6 +126,8 @@ export(
     }
 
     render(){
+
+
       if(!Store.state.isAPILoaded){
         return (
           #<div class="docs-content">
@@ -138,6 +152,7 @@ export(
         }
         else{
           let cls = APIBody.findDocByName(pageID);
+          this.props.propTable.setRows(cls.props);
 
           return (
             #<div class="api-con">
@@ -159,13 +174,7 @@ export(
 
               <div q-if="cls.props.length > 0">
                 <h2 id="properties">Properties</h2>
-                <table q-template-for="['props-table-row', cls.props]">
-                  <tr>
-                    <th>Name</th>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </table>
+                <table q-append="this.props.propTable.gen()"></table>
               </div>
               <h2 q-if="cls.funcs.length > 0">Methods</h2>
               <div q-template-for="['api-item', cls.funcs]"></div>
