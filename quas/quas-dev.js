@@ -212,6 +212,7 @@ Dev.transpile = (bundle) => {
   let tagContent = "";
   let inMultiLineTag = false;
   let prevLine = "";
+  let lastLineWasEmpty = false;
 
 
   for(let i=0; i<lines.length; i++){
@@ -338,9 +339,18 @@ Dev.transpile = (bundle) => {
           hasHtmlBlockChanged = false;
         }
       }
-
+      //add curLine, but dont allow multiple empty lines
       else {
-        result += curLine + "\n";
+        if(curLine.trim().length == 0){
+          if(!lastLineWasEmpty){
+            lastLineWasEmpty = true;
+            result += "\n";
+          }
+        }
+        else{
+          lastLineWasEmpty = false;
+          result += curLine + "\n";
+        }
       }
     }
   }
