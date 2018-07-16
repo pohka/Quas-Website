@@ -1,5 +1,7 @@
 import Quas.Router
 
+---
+
 export(
   class DocsNav extends Component{
     constructor(props){

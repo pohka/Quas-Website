@@ -1,6 +1,8 @@
 import Quas.Router
 import "/comps/navbar.css";
 
+---
+
 export (
   class Navbar extends Component{
     constructor(props){

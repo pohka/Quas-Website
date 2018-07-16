@@ -1,4 +1,4 @@
-
+---
 export(
   /*
   let t = new Table({

@@ -25,7 +25,7 @@ import "/quas-site.css"
 import Quas.Structs
 import Quas.UrlParams
 
-
+---
 
 function ready(){
   let AIState = Structs.Enum(["attack", "patrol", "flee"]);

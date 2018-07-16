@@ -1,3 +1,4 @@
+---
 export(
   class error404 extends Component{
     render(){

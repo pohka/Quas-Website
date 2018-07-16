@@ -1,5 +1,7 @@
 import "/quas/css/animation.css"
 
+---
+
 export({
   play(comp, animName){
     //set the style of the animation

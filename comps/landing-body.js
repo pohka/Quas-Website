@@ -1,18 +1,11 @@
 import "/comps/card.css";
 
+---
+
 export(
   class LandingBody extends Component{
     constructor(){
       super();
-
-      this.anims = {
-      //  enter : {
-      //    type : "smallZoomIn",
-      //    duration : 0.2,
-        //  fade : true
-      //    timing : "ease-in-out",
-      //  }
-      }
 
       this.props.cards = [
         {
@@ -49,7 +42,7 @@ export(
         {
           img : "small-rocket-ship-silhouette.png",
           title : "Bundling",
-          text : "No config file, mport your modules and components directly within your code"
+          text : "No config file, import your modules and components directly within your code"
         },
       ];
     }

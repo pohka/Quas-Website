@@ -1229,6 +1229,7 @@ Dev.parseImports = (filename, file, importLeftSide) => {
   let multiLineCommentOpen = false;
   let parsedFile = "";
   let hasImport = false;
+  let isInImportHeader = true;
 
   for(let i=0; i<lines.length; i++){
     let validLine = "";
@@ -1249,56 +1250,66 @@ Dev.parseImports = (filename, file, importLeftSide) => {
       validLine = validLine.split("//")[0];
     }
 
-    let importMatch = validLine.match(importRegex);
-  //  let importCssMatch = validLine.match(importCssRegex);
-    if(importMatch){
-      let els = validLine.split(importRegex);
-      let leftSide = els[0];
-      console.log("inital match:" + leftSide);
-      let rightSide = els[1].trim();
-      let quoteMatch = rightSide.match(quoteRegex);
 
-      //css or js import
-      if(quoteMatch){
-        let path = quoteMatch[0].substr(1, quoteMatch[0].length-2);
-        let pathInfo = path.split(".");
-        let extention = pathInfo[pathInfo.length-1];
+    let headerEndMatch = validLine.match(/---+/);
+    if(headerEndMatch != null && headerEndMatch.index == 0){
+      isInImportHeader = false;
+    }
+    else if(isInImportHeader){
+      let importMatch = validLine.match(importRegex);
+      //console.log("matching import: ", validLine);
 
-        //javascipt
-        if(extention == "js"){
-          hasImport = true;
-          Dev.import(path, extention, leftSide);
+      if(importMatch){
+        let els = validLine.split(importRegex);
+        let leftSide = els[0];
+        let rightSide = els[1].trim();
+        let quoteMatch = rightSide.match(quoteRegex);
+
+        //css or js import
+        if(quoteMatch){
+          let path = quoteMatch[0].substr(1, quoteMatch[0].length-2);
+          let pathInfo = path.split(".");
+          let extention = pathInfo[pathInfo.length-1];
+
+          //javascipt
+          if(extention == "js"){
+            hasImport = true;
+            Dev.import(path, extention, leftSide);
+          }
+
+          //css
+          else{
+            Dev.import(path, extention);
+          }
         }
-
-        //css
+        //built in modules
+        //import Quas.Router
         else{
-          Dev.import(path, extention);
-        }
-      }
-      //built in modules
-      //import Quas.Router
-      else{
-        let arr = rightSide.split(/\s+|;/)[0].split(".");
+          let arr = rightSide.split(/\s+|;/)[0].split(".");
 
-        let scope = Dev.convertTitleCaseToKebabCase(arr[0]);
-        let moduleFileName = Dev.convertTitleCaseToKebabCase(arr[1]);
-        let moduleName = "";
-        if(moduleFileName !== undefined){
-          moduleName = Dev.convertKebabCaseToTitleCase(moduleFileName);
+          let scope = Dev.convertTitleCaseToKebabCase(arr[0]);
+          let moduleFileName = Dev.convertTitleCaseToKebabCase(arr[1]);
+          let moduleName = "";
+          if(moduleFileName !== undefined){
+            moduleName = Dev.convertKebabCaseToTitleCase(moduleFileName);
+          }
+
+          let left = "const " + moduleName + " = ";
+          let path = "/" + scope + "/modules/" + moduleFileName + ".js";
+          let extention = "js";
+          hasImport = true;
+
+          console.log("LEFT:", left);
+          Dev.import(path, extention, left);
         }
 
-        let left = "const " + moduleName + " = ";
-        let path = "/" + scope + "/modules/" + moduleFileName + ".js";
-        let extention = "js";
+
+        //if not a css import
         hasImport = true;
-
-        console.log("LEFT:", left);
-        Dev.import(path, extention, left);
       }
-
-
-      //if not a css import
-      hasImport = true;
+      else{
+        parsedFile += lines[i] + "\n";
+      }
     }
     else{
       parsedFile += lines[i] + "\n";

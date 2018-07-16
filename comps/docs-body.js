@@ -1,5 +1,7 @@
 import Quas.Markdown
 
+---
+
 export(
   class DocsBody extends Component{
     constructor(){

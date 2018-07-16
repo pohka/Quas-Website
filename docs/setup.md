@@ -30,4 +30,10 @@ Once quas has loaded it will starts its executing the ready function
 function ready(){
 	//your code goes here
 }
+
+class error404 extends Component{
+  render(){
+    return #<h1>404</h1>
+  }
+}
 ```

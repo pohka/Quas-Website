@@ -1,5 +1,7 @@
 import Quas.Store
 
+---
+
 export(
   class APINav extends Component{
     constructor(){
