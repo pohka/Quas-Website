@@ -35,7 +35,7 @@ class Component{
     }
 
     this._state = {};
-    this.store = {};
+    this.input = {};
     this.anims = {};
     let comp = this;
 
@@ -1039,19 +1039,19 @@ const Quas = {
        }
     }
 
-    else if(command == "store"){
-      if(comp.store[data] === undefined){
-        comp.store[data] = "";
+    else if(command == "input"){
+      if(comp.input[data] === undefined){
+        comp.input[data] = "";
       }
 
       if(comp.onStoreInput === undefined){
-        comp.onStoreInput = function(e, key){
+        comp.onInputChanged = function(e, key){
           console.log(key);
-         comp.store[key] = e.target.value;
+         comp.input[key] = e.target.value;
          Quas.render(comp);
         };
       }
-      parentVDOM[1]["on-change-keyup"] = "onStoreInput:" + data;
+      parentVDOM[1]["on-change-keyup"] = "onInputChanged:" + data;
 
     }
     //developer designed custom attr

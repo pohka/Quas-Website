@@ -9,17 +9,19 @@ export(
         TestComp.counter = 0;
       }
       this.state.counter = 0;
-      this.store.name = "";
-      this.store.abc = "";
-      this.store.age = 0;
-      this.store.car = "";
+      this.input = {
+        name : "",
+        abc : "",
+        age : 0,
+        car : ""
+      };
 
       this.anims = {
         enter : {
           type : "shiftLeft",
           duration : 0.3,
           timing : "ease-in-out",
-          fFade : true
+          fade : true
         },
         exit : {
           type : "shiftRight",
@@ -67,8 +69,8 @@ export(
           <div q-else><a href="abd">test 5</a></div>
           <br>
           <div>
-            <input type="text" placeholder="input" q-store="abc">
-            <div>output: {this.store.abc}</div>
+            <input type="text" placeholder="input" q-input="abc">
+            <div>output: {this.input.abc}</div>
           </div>
 
           <h2>appending?</h2>
@@ -88,9 +90,9 @@ export(
           </div>
 
           <form on-submit="onSubmit">
-            <label>Name: </label><input type="text" name="fname" q-store="name">
+            <label>Name: </label><input type="text" name="fname" q-input="name">
 
-            <label>Age: {this.store.age}</label><input type="number" value="0" name="age" min="0" max="100" q-store="age">
+            <label>Age: {this.input.age}</label><input type="number" value="0" name="age" min="0" max="100" q-input="age">
 
             <br><br>
 
@@ -106,14 +108,14 @@ export(
 
             <br><br>
 
-            <select q-store="car" name="car">
+            <select q-input="car" name="car">
               <option value="" disabled selected>Select Car</option>
               <option value="volvo">Volvo</option>
               <option value="saab">Saab</option>
               <option value="mercedes">Mercedes</option>
               <option value="audi">Audi</option>
             </select>
-            <div>{this.store.car}</div>
+            <div>{this.input.car}</div>
 
             <br>
 

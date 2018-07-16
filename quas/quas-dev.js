@@ -185,7 +185,7 @@ Dev.imports = {
 
 Dev.bundle = {};
 
-Dev.customAttrsValueIsString = ["store"];
+Dev.customAttrsValueIsString = ["input"];
 
 /*
   ---
