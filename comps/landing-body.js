@@ -6,11 +6,12 @@ export(
       super();
 
       this.anims = {
-        enter : {
-          type : "smallZoomIn",
-          duration : 0.2,
-          timing : "ease-in-out",
-        }
+      //  enter : {
+      //    type : "smallZoomIn",
+      //    duration : 0.2,
+        //  fade : true
+      //    timing : "ease-in-out",
+      //  }
       }
 
       this.props.cards = [

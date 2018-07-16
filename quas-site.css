@@ -82,12 +82,23 @@ th{
 	margin-top: 80px;
 }
 
+@keyframes slideUpSmall {
+  from {
+    transform: translate3d(0, 30%, 0);
+  }
+
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
 .landing-top{
 	display: flex;
 	flex-wrap: wrap;
 	height: 400px;
 	justify-content: center;
 	align-items: center;
+	animation: slideUpSmall 0.4s, fadeIn 0.3s;
 }
 
 .landing-top h1{
