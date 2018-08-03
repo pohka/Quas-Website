@@ -2,7 +2,21 @@ import "/quas/css/animation.css"
 
 ---
 
+/**
+  # module
+  ---
+  Animations for entering an exiting
+  ---
+*/
 export({
+  /**
+   ---
+   Plays an animation
+   ---
+
+   @param {Component} component
+   @param {String} animationName
+  */
   play(comp, animName){
     //set the style of the animation
 

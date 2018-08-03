@@ -1,4 +1,17 @@
 ---
+
+/**
+  # module
+  ---
+  Adds extra prototype functions onto the the Date object
+
+  add()
+  sub()
+  fromNow()
+  fromNowFull()
+  toMilliseconds()
+  ---
+*/
 export({
     init(){
       const msInSec = 1000;

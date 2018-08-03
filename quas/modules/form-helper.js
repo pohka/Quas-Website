@@ -1,16 +1,34 @@
 ---
-/*
-form helper
-
-helps get data from a form when submitted
+/**
+  # module
+  ---
+  Helps get data from a form
+  ---
 */
 export({
-  //prevents default and returns the data of all the form inputs
+  /**
+    ---
+    Prevents the default form submission event and returns the data of all the form inputs as an Object
+    ---
+
+    @param {Event} event
+
+    @return {Object}
+  */
   onSubmit(e){
     e.preventDefault();
     return FormHelper.getData(e.target);
   },
 
+  /**
+    ---
+    Returns the data for all the child nodes in the given form element
+    ---
+
+    @param {Element} formElement
+
+    @return {Object}
+  */
   //returns the data for all the child nodes in the given form element
   getData(formEl){
     let result = {};

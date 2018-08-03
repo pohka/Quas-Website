@@ -19,7 +19,6 @@
 
 class Component{
   /**
-    # func
     @param {Object} props - All the properties for this component
   */
   constructor(props){
@@ -59,18 +58,29 @@ class Component{
 
   }
 
-  addChildComponent(cls, props){
-    if(!this.children){
-      this.children = {};
-    }
-    if(!this.children[cls.constructor.name]){
-      this.children[cls.constructor.name] = [new cls(props)];
-    }
-    else{
-      this.children[cls.constructor.name].push(new cls(props));
-    }
-  }
+  // addChildComponent(cls, props){
+  //   if(!this.children){
+  //     this.children = {};
+  //   }
+  //   if(!this.children[cls.constructor.name]){
+  //     this.children[cls.constructor.name] = [new cls(props)];
+  //   }
+  //   else{
+  //     this.children[cls.constructor.name].push(new cls(props));
+  //   }
+  // }
 
+  /**
+    ---
+    Set multiple states at once. Calling this function will trigger the view of this component to be updated
+    ---
+
+    ```
+    comp.setStates({ position : 'top' });
+    ```
+
+    @param {Object} states
+  */
   setStates(obj){
     let hasChange = false;
     for(let i in obj){
@@ -85,12 +95,50 @@ class Component{
     }
   }
 
+  /**
+    ---
+    Set multiple states at once without updating the view. This should be used when initalizing states in the constructor of the component
+    ---
+
+    ```
+    comp.initStates({ position : 'top' });
+    ```
+
+    @param {Object} states
+  */
   initStates(obj){
     for(let i in obj){
       this._state[i] = obj[i];
     }
   }
 
+  /**
+    ---
+    Adds a template to this component which can then be used later with the custom html attributes. The function should return an AST
+    ---
+
+    ```
+    Comp extends Component{
+      initTemplates(){
+        this.addTemplate("key", (name) => {
+          return #<div>hello {name}</div>;
+        });
+      }
+
+      render(){
+        let names = ["john", "tim"];
+        return (
+          #<div q-template-for="['key', names]"></div>
+        );
+      }
+    }
+
+    comp.initStates({ position : 'top' });
+    ```
+
+    @param {String} key
+    @param {Function} function
+  */
   addTemplate(key, callback){
     if(!this.templates){
       this.templates = {};
@@ -98,13 +146,17 @@ class Component{
     this.templates[key] = callback;
   }
 
+  /**
+    ---
+    Generates a the result of a template using the key
+    ---
+  */
   genTemplate(key, props, val){
     return this.templates[key](props, val);
   }
 
 
   /**
-    # function
     ---
     Sets the properties and updates the component
     ---
@@ -143,8 +195,9 @@ class Component{
   }
 
   /**
-    # func
+    ---
     Removes the component from the DOM tree
+    ---
   */
   unmount(){
     if(this.dom){
@@ -184,6 +237,12 @@ class Component{
     }
   }
 
+  /*
+    ---
+    Mounts this component to the DOM tree as a child of the given parent Element
+    ---
+    @param {Element} parent
+  */
   mount(parent){
     this.dom = Quas.createElement(this.vdom, this);
     if(this.dom){
@@ -500,6 +559,17 @@ const Quas = {
     return returnVal;
   },
 
+  /*
+    ---
+    Reads the value of an event attribute and returns the result of the callback function
+
+    e.g. on-click="onClickFunc:2"
+    ---
+
+    @param {Event} event
+    @param {String} value
+    @param {Component} component
+  */
   eventCallback(e, val, comp){
     let deliIndex = val.indexOf(":");
     if(deliIndex > -1){
@@ -525,6 +595,7 @@ const Quas = {
     @param {AST} vdom - description of the element
     @param {Component} component - the component of the vdom
     @param {String|Element|undefined} parent - (exclude) parent vdom node
+    @param {Namespace|undefined} namespace - only used for nested namespaces
 
     @return {Element|String}
   */
@@ -1097,8 +1168,14 @@ const Quas = {
   /**
   # func
   ---
-  Returns true if using the router module
+  Returns true if a module with the same name has been imported
   ---
+
+  ```
+  Quas.hasModule("Router");
+  ```
+
+  @param {String} name
 
   @return {Boolean}
   */
@@ -1106,6 +1183,18 @@ const Quas = {
     return (typeof Quas.modules[name] !== "undefined");
   },
 
+  /**
+    ---
+    Allows an object to listen to global events. Events will be emitted through onEvent. The object must contain a function called onEvent which takes the parameters eventName and value
+    ---
+
+    ```
+    Quas.addListener(myObj, 'test');
+    ```
+
+    @param {Object} obj
+    @param {String} eventName
+  */
   addListener(obj, eventName){
     if(!Quas.eventListeners[eventName]){
       Quas.eventListeners[eventName] = [obj];
@@ -1115,6 +1204,18 @@ const Quas = {
     }
   },
 
+  /**
+    ---
+    Emits a global event to all the listeners. This will call their onEvent function
+    ---
+
+    ```
+    Quas.emitEvent('test', 123);
+    ```
+
+    @param {String} eventName
+    @param {?} value
+  */
   emitEvent(eventName, val){
     for(let i in Quas.eventListeners[eventName]){
       Quas.eventListeners[eventName][i].onEvent(eventName, val);
@@ -1125,6 +1226,8 @@ const Quas = {
 Quas.customAttrs = {}; //custom attributes
 Quas.modules = {}; //container for all the modules
 Quas.eventListeners = {}; //a collection of objects listening to events
+
+//namespaces to be used for svg and html tags
 Quas.namespace = {
   svg : "http://www.w3.org/2000/svg",
   html : "http://www.w3.org/1999/xhtml"

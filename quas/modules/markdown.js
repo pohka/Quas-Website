@@ -479,7 +479,18 @@ export({
     return vdoms;
   },
 
-  //find a rule by name with a given type
+  /**
+    ---
+    Find and return a rule by name with a given type
+    --
+
+    ```
+    Markdown.findRule("bold", "inline");
+    ```
+
+    @param {String} ruleName
+    @param {type} ruleType - begin/multiline/block/inline
+  */
   findRule(name, type){
     if(!type){
       for(let a in Markdown.rules){
@@ -499,7 +510,27 @@ export({
     }
   },
 
-  //adding a rule
+  /**
+    ---
+    Add a rule to the markdown. The rule objec tmust have a name, pattern and an output function which returns the resulting AST
+    ---
+
+    ```
+    Markdown.addRule("inline", {
+      name : "bold",
+      //matches: __text__ or **text**
+      pattern : /(\*\*.*?\*\*)|__.*?__/,
+      output : function(match){
+        let text = match[0].substr(2, match[0].length-4);
+        return #<b>{text}</b>;
+      }
+    });
+    ```
+
+    @param {String} type - begin/multiline/block/inline
+    @param {Object} rule
+
+  */
   addRule(type, obj){
     obj.isDisabled = false;
     if(type == "inline"){
@@ -513,7 +544,14 @@ export({
     }
   },
 
-  //remove a rule
+  /**
+    ---
+    Removes a rule from the markdown
+    ---
+
+    @param {String} ruleName
+    @param {String} ruleType - begin/multiline/block/inline
+  */
   removeRule(name, type){
     let rules = Markdown.rules[type];
     for(let i=0; i<rules.length; i++){
@@ -525,7 +563,15 @@ export({
     return false;
   },
 
-  //enable or disable a rule
+  /**
+    ---
+    Enable or disable a rule
+    ---
+
+    @param {Boolean} isDisabled - set to true will disable the rule
+    @param {String} ruleName
+    @param {String} ruleType - begin/multiline/block/inline
+  */
   setRuleDisabled(isDisabled, name, type){
     let rule = Markdown.findRule(name, type);
     if(rule !== undefined){
@@ -535,7 +581,15 @@ export({
     return false;
   },
 
-  //set if a rule should allow the use of inline rules
+  /**
+    ---
+    Set if a rule should parse for inline rules
+    ---
+
+    @param {Boolean} isEnabled
+    @param {String} ruleName
+    @param {String} ruleType - begin/multiline/block/inline
+  */
   setInlineRulesEnabled(isEnabled, name, type){
     let rule = Markdown.findRule(name, type);
     if(rule !== undefined){
